@@ -41,21 +41,13 @@ export default function DesignCard({ design }: DesignCardProps) {
           <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               className="p-2 bg-white rounded-full shadow-md hover:bg-gold hover:text-white transition-colors"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                // Add to wishlist logic
-              }}
+              type="button"
             >
               <FiHeart size={20} />
             </button>
             <button
               className="p-2 bg-white rounded-full shadow-md hover:bg-gold hover:text-white transition-colors"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                // Add to cart logic
-              }}
+              type="button"
             >
               <FiShoppingCart size={20} />
             </button>
