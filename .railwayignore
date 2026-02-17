@@ -14,7 +14,6 @@ __tests__/
 __mocks__/
 
 # Next.js
-.next/
 out/
 dist/
 
@@ -33,9 +32,6 @@ docker-compose.yml
 .dockerignore
 
 # Documentation
-README.md
-CONTRIBUTING.md
-LICENSE
 *.md
 
 # Environment
