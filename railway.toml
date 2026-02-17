@@ -1,6 +1,5 @@
-# Railway Configuration
+# Railway Configuration for Next.js
 
-# This file configures your environment and deployment settings for Railway.
-
-#Node version configuration
-NODE_VERSION = "20.19.0"
+root-level:
+  buildCommand: "npm ci && npm run build"
+  startCommand: "npm start"
