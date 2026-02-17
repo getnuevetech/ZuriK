@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { mockDesigns } from '@/data/mockDesigns';
 import { DesignFilters } from '@/types';
@@ -9,7 +9,7 @@ import DesignGrid from '@/components/designs/DesignGrid';
 import { FiSliders } from 'react-icons/fi';
 import Button from '@/components/ui/Button';
 
-export default function DesignsPage() {
+function DesignsPageContent() {
   const searchParams = useSearchParams();
   const [filters, setFilters] = useState<DesignFilters>({});
   const [showFilters, setShowFilters] = useState(false);
@@ -134,5 +134,20 @@ export default function DesignsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function DesignsPage() {
+  return (
+    <Suspense fallback={
+      <div className="bg-gray-50 min-h-screen py-8 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading designs...</p>
+        </div>
+      </div>
+    }>
+      <DesignsPageContent />
+    </Suspense>
   );
 }
