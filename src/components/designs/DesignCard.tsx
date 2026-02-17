@@ -1,4 +1,5 @@
-import React from 'react';
+'use client';
+
 import Link from 'next/link';
 import { FiHeart, FiShoppingCart } from 'react-icons/fi';
 import { Design } from '@/types';
