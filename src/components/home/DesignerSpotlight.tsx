@@ -83,7 +83,6 @@ export default function DesignerSpotlight() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-gray-400 hover:text-gold transition-colors"
-                        onClick={(e) => e.stopPropagation()}
                       >
                         <FiInstagram size={18} />
                       </a>
@@ -94,7 +93,6 @@ export default function DesignerSpotlight() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-gray-400 hover:text-gold transition-colors"
-                        onClick={(e) => e.stopPropagation()}
                       >
                         <FiFacebook size={18} />
                       </a>
@@ -105,7 +103,6 @@ export default function DesignerSpotlight() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-gray-400 hover:text-gold transition-colors"
-                        onClick={(e) => e.stopPropagation()}
                       >
                         <FiGlobe size={18} />
                       </a>
