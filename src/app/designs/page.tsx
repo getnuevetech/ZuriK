@@ -61,7 +61,7 @@ export default function DesignsPage() {
         return (b.rating || 0) - (a.rating || 0);
       case 'featured':
       default:
-        return b.featured === a.featured ? 0 : b.featured ? 1 : -1;
+        return b.featured === a.featured ? 0 : b.featured ? -1 : 1;
     }
   });
 

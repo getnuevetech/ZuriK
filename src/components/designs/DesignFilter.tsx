@@ -10,6 +10,19 @@ interface DesignFilterProps {
   onFilterChange: (filters: DesignFilters) => void;
 }
 
+// Helper function to check if a price range is selected
+const isPriceRangeSelected = (
+  filters: DesignFilters, 
+  rangeMin: number, 
+  rangeMax: number
+): boolean => {
+  const minMatches = filters.minPrice === rangeMin;
+  const maxMatches = rangeMax === Infinity 
+    ? !filters.maxPrice 
+    : filters.maxPrice === rangeMax;
+  return minMatches && maxMatches;
+};
+
 export default function DesignFilter({ filters, onFilterChange }: DesignFilterProps) {
   const handleCategoryChange = (category: string) => {
     onFilterChange({
@@ -119,7 +132,7 @@ export default function DesignFilter({ filters, onFilterChange }: DesignFilterPr
               <input
                 type="radio"
                 name="priceRange"
-                checked={filters.minPrice === range.min && (filters.maxPrice === range.max || (range.max === Infinity && !filters.maxPrice))}
+                checked={isPriceRangeSelected(filters, range.min, range.max)}
                 onChange={() => handlePriceRangeChange(range.min, range.max)}
                 className="mr-2 text-gold focus:ring-gold"
               />
