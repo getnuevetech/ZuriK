@@ -37,7 +37,6 @@ README.md
 CONTRIBUTING.md
 LICENSE
 *.md
-!RAILWAY_DEPLOYMENT.md
 
 # Environment
 .env.local
