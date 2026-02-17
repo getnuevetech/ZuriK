@@ -62,10 +62,10 @@ african-fashion-ecommerce/
 
 ### Prerequisites
 - Node.js 18+ and npm
-- Docker and Docker Compose
-- PostgreSQL (or use Docker)
+- Docker and Docker Compose (recommended)
+- PostgreSQL (optional if using Docker)
 
-### Setup
+### Quick Start with Docker (Recommended)
 
 1. **Clone the repository**
 ```bash
@@ -73,33 +73,52 @@ git clone https://github.com/agolomola/african-fashion-ecommerce.git
 cd african-fashion-ecommerce
 ```
 
-2. **Install dependencies**
+2. **Configure environment variables**
 ```bash
+# Copy example env file and configure
+cp .env.example .env
+# Edit .env with your configuration
+```
+
+3. **Start all services with Docker Compose**
+```bash
+docker-compose up
+```
+
+This will start:
+- PostgreSQL database on port 5432
+- Backend API on http://localhost:3001
+- Frontend on http://localhost:3000
+
+### Manual Setup (Without Docker)
+
+1. **Clone and install dependencies**
+```bash
+git clone https://github.com/agolomola/african-fashion-ecommerce.git
+cd african-fashion-ecommerce
 npm install
-cd apps/frontend && npm install
-cd ../backend && npm install
 ```
 
-3. **Configure environment variables**
+2. **Configure environment variables**
 ```bash
-# Copy example env files
-cp apps/frontend/.env.example apps/frontend/.env.local
-cp apps/backend/.env.example apps/backend/.env
+# Create env files for each service
+cp .env.example apps/backend/.env
+cp .env.example apps/frontend/.env.local
 ```
 
-4. **Start services with Docker Compose**
+3. **Start PostgreSQL** (if not using Docker)
 ```bash
-npm run dev
+# Using local PostgreSQL
+createdb african_fashion_db
 ```
 
-Or start services individually:
-
+4. **Start services**
 ```bash
-# Frontend (http://localhost:3000)
-npm run frontend:dev
-
-# Backend (http://localhost:3001)
+# Terminal 1 - Backend (http://localhost:3001)
 npm run backend:dev
+
+# Terminal 2 - Frontend (http://localhost:3000)
+npm run frontend:dev
 ```
 
 ### Database Migrations
@@ -110,6 +129,31 @@ npm run db:generate -- -n MigrationName
 
 # Run migrations
 npm run db:migrate
+
+# Revert last migration
+cd apps/backend && npm run migration:revert
+```
+
+## 🐳 Docker Commands
+
+```bash
+# Start all services
+docker-compose up
+
+# Start in detached mode
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+
+# Rebuild containers
+docker-compose up --build
+
+# Stop and remove volumes (fresh start)
+docker-compose down -v
 ```
 
 ## 🎨 African Color Palette
@@ -127,18 +171,58 @@ Once the backend is running, visit:
 
 ## 🚢 Deployment
 
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for Railway deployment instructions.
+### Docker Build
 
-### Quick Deploy to Railway
+Build Docker images locally:
 
 ```bash
-# Install Railway CLI
-npm i -g @railway/cli
+# Build backend
+docker build -f Dockerfile.backend -t african-fashion-backend .
 
-# Login and deploy
+# Build frontend
+docker build -f Dockerfile.frontend -t african-fashion-frontend .
+
+# Run with docker-compose
+docker-compose up
+```
+
+### Railway Deployment
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete Railway deployment guide.
+
+**Quick Deploy**:
+
+1. Install Railway CLI:
+```bash
+npm i -g @railway/cli
+```
+
+2. Login and link project:
+```bash
 railway login
+railway link
+```
+
+3. Deploy:
+```bash
 railway up
 ```
+
+### Environment Variables
+
+Before deploying, ensure all environment variables are configured. See [.env.example](./.env.example) for required variables.
+
+**Critical Variables**:
+- `DATABASE_URL` - PostgreSQL connection string
+- `JWT_SECRET` - Secret for JWT tokens (min 32 chars)
+- `NEXTAUTH_SECRET` - NextAuth secret (min 32 chars)
+- `STRIPE_SECRET_KEY` - Stripe payment integration
+- `CLOUDINARY_*` - Image storage credentials
+
+### Health Checks
+
+- Backend: `http://your-backend-url/api/health`
+- Frontend: `http://your-frontend-url`
 
 ## 🧪 Testing
 
