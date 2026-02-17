@@ -10,9 +10,11 @@ RUN npm install
 COPY . .
 RUN npm run build
 
+RUN npm prune --production
+
 ENV NODE_ENV=production
 ENV PORT=8080
 
 EXPOSE 8080
 
-CMD ["node", ".next/standalone/server.js"]
+CMD ["npm", "start"]
