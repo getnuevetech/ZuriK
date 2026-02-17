@@ -1,4 +1,3 @@
-import React from 'react';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
 
@@ -73,7 +72,7 @@ export default function Hero() {
                     className="w-full h-48 object-cover rounded-lg shadow-xl"
                   />
                   <img
-                    src="https://images.unsplash.com/photo-1509551388413-e18d0ac5d495?w=400&h=500&fit=crop"
+                    src="https://images.unsplash.com/photo-1595826423098-27d0ba1d6cbb?w=400&h=500&fit=crop"
                     alt="African Fashion"
                     className="w-full h-64 object-cover rounded-lg shadow-xl"
                   />
