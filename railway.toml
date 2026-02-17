@@ -1,5 +1,12 @@
-# Railway Configuration for Next.js
+[build]
+builder = "NIXPACKS"
+buildCommand = "npm ci && npm run build"
 
-root-level:
-  buildCommand: "npm ci && npm run build"
-  startCommand: "npm start"
+deply
+startCommand = "npm start"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+
+[env]
+NODE_VERSION = "20.19.0"
+NODE_ENV = "production"
