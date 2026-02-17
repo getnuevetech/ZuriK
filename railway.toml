@@ -1,12 +1,6 @@
-[build]
-builder = "NIXPACKS"
-buildCommand = "cd apps/frontend && npm ci && npm run build"
+# Railway Configuration
 
-[deploy]
-startCommand = "cd apps/frontend && npm start"
-restartPolicyType = "ON_FAILURE"
-restartPolicyMaxRetries = 10
+# This file configures your environment and deployment settings for Railway.
 
-[env]
-NODE_VERSION = "20.x"
-NODE_ENV = "production"
+#Node version configuration
+NODE_VERSION = "20.19.0"
