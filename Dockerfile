@@ -1,26 +1,26 @@
-# Use Node.js 20 as a base image
-FROM node:20
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y libatomic1 && rm -rf /var/lib/apt/lists/*
+# Use an official Node.js runtime as a parent image
+FROM node:14
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json files
+# Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install --production
+# Install all dependencies including devDependencies during build
+RUN npm install
 
-# Copy the rest of the application
+# Copy the rest of the application code
 COPY . .
 
-# Build the Next.js application
+# Build the application
 RUN npm run build
 
-# Expose the port the app runs on
-EXPOSE 3000
+# Prune devDependencies for production
+RUN npm prune --production
 
-# Start the application
+# Expose the port the app runs on
+EXPOSE 8080
+
+# Define the command to run the application
 CMD [ "npm", "start" ]
