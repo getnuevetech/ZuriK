@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { mockDesigns } from '@/data/mockDesigns';
-import { FiHeart, FiShoppingCart, FiChevronLeft, FiChevronRight, FiStar } from 'react-icons/fi';
+import { FiHeart, FiShoppingCart, FiStar } from 'react-icons/fi';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import { formatPrice } from '@/utils/helpers';

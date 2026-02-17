@@ -1,14 +1,10 @@
 import type { Metadata } from 'next';
-import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-const playfair = Playfair_Display({ 
-  subsets: ['latin'], 
-  variable: '--font-playfair' 
-});
+// Note: Google Fonts are loaded via CSS in production
+// Using system fonts as fallback during build
 
 export const metadata: Metadata = {
   title: 'African Fashion eCommerce - Authentic African Designs',
@@ -22,7 +18,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
+    <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link 
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Playfair+Display:wght@400..900&display=swap" 
+          rel="stylesheet" 
+        />
+      </head>
       <body className="font-sans">
         <div className="flex flex-col min-h-screen">
           <Header />

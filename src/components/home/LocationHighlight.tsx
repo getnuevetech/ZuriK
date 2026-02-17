@@ -1,6 +1,5 @@
 import React from 'react';
 import Link from 'next/link';
-import { AFRICAN_COUNTRIES } from '@/utils/constants';
 
 export default function LocationHighlight() {
   // Select featured countries
