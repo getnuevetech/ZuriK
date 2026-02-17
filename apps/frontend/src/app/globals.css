@@ -1,0 +1,161 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-gold: #D4AF37;
+    --color-gold-light: #E5C95B;
+    --color-gold-dark: #B8941C;
+    --color-dark: #1a1a1a;
+    --color-dark-light: #2d2d2d;
+    --color-dark-lighter: #404040;
+    --color-cream: #F5F1E8;
+    --color-cream-light: #FAF8F3;
+    --color-cream-dark: #E8E1D3;
+    --color-accent: #C41E3A;
+    --color-accent-light: #DC465D;
+    --color-accent-dark: #9A1729;
+  }
+
+  body {
+    @apply bg-cream text-dark font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  /* Premium Card Style */
+  .card {
+    @apply bg-white rounded-lg shadow-sm border border-cream-dark p-6 transition-shadow hover:shadow-md;
+  }
+
+  /* African Pattern Background */
+  .pattern-bg {
+    background-image: 
+      linear-gradient(45deg, rgba(212, 175, 55, 0.05) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(212, 175, 55, 0.05) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, rgba(212, 175, 55, 0.05) 75%),
+      linear-gradient(-45deg, transparent 75%, rgba(212, 175, 55, 0.05) 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  }
+
+  /* Premium Button Base */
+  .btn {
+    @apply px-6 py-3 rounded-md font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-gold text-dark hover:bg-gold-dark focus:ring-gold;
+  }
+
+  .btn-secondary {
+    @apply bg-dark text-white hover:bg-dark-light focus:ring-dark;
+  }
+
+  .btn-outline {
+    @apply border-2 border-dark text-dark hover:bg-dark hover:text-white focus:ring-dark;
+  }
+
+  .btn-accent {
+    @apply bg-accent text-white hover:bg-accent-dark focus:ring-accent;
+  }
+
+  /* Input Styles */
+  .input {
+    @apply w-full px-4 py-2 border border-cream-dark rounded-md focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent bg-white;
+  }
+
+  /* Badge Styles */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+  }
+
+  /* Container */
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Premium Image Container */
+  .image-container {
+    @apply relative overflow-hidden rounded-lg;
+  }
+
+  .image-overlay {
+    @apply absolute inset-0 bg-gradient-to-t from-dark/60 to-transparent opacity-0 transition-opacity duration-300;
+  }
+
+  .image-container:hover .image-overlay {
+    @apply opacity-100;
+  }
+
+  /* Gold Accent Line */
+  .accent-line {
+    @apply relative;
+  }
+
+  .accent-line::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-20 h-1 bg-gold;
+  }
+
+  /* Loading Spinner */
+  .spinner {
+    @apply inline-block animate-spin rounded-full border-4 border-solid border-gold border-r-transparent;
+  }
+}
+
+@layer utilities {
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .text-shadow-lg {
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Gradient Text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-gold via-gold-light to-gold bg-clip-text text-transparent;
+  }
+
+  /* Premium Shadow */
+  .shadow-premium {
+    box-shadow: 0 10px 40px rgba(212, 175, 55, 0.1);
+  }
+
+  /* Smooth Scroll */
+  .smooth-scroll {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-cream;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gold rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gold-dark;
+}
+
+/* Selection */
+::selection {
+  @apply bg-gold text-dark;
+}
+
+::-moz-selection {
+  @apply bg-gold text-dark;
+}
