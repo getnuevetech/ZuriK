@@ -1,11 +1,1 @@
-[build]
-builder = "NIXPACKS"
-buildCommand = "npm install"
-
-[deploy]
-startCommand = "npm run start"
-restart = "always"
-
-[env]
-NODE_VERSION = "14"
-NODE_ENV = "production"
+key = "value"
