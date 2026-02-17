@@ -1,130 +1,107 @@
-import React from 'react';
 import Link from 'next/link';
-import { FiInstagram, FiFacebook, FiGlobe } from 'react-icons/fi';
-import { mockDesigners } from '@/data/mockDesigners';
+import { FiHeart, FiShoppingCart } from 'react-icons/fi';
+import { Design } from '@/types';
 import Card from '@/components/ui/Card';
+import Badge from '@/components/ui/Badge';
+import { formatPrice } from '@/utils/helpers';
 
-export default function DesignerSpotlight() {
-  const spotlightDesigners = mockDesigners.slice(0, 3);
+interface DesignCardProps {
+  design: Design;
+}
 
+export default function DesignCard({ design }: DesignCardProps) {
   return (
-    <section className="py-16 bg-african-cream">
-      <div className="container-custom">
-        {/* Section Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-serif font-bold text-african-dark mb-4">
-            Designer Spotlight
-          </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Meet the talented creators behind the designs. Each designer brings 
-            their unique vision and cultural heritage to every piece.
+    <Card hoverable>
+      <Link href={`/designs/${design.id}`}>
+        {/* Image */}
+        <div className="relative h-80 overflow-hidden group">
+          <img
+            src={design.images[0]}
+            alt={design.name}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+          
+          {/* Badges */}
+          <div className="absolute top-4 left-4 flex flex-col gap-2">
+            {design.featured && (
+              <Badge variant="gold" className="backdrop-blur-sm bg-gold/90">
+                Featured
+              </Badge>
+            )}
+            {!design.inStock && (
+              <Badge variant="error" className="backdrop-blur-sm bg-red-500/90 text-white">
+                Sold Out
+              </Badge>
+            )}
+          </div>
+
+          {/* Quick Actions */}
+          <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              className="p-2 bg-white rounded-full shadow-md hover:bg-gold hover:text-white transition-colors"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Add to wishlist logic
+              }}
+            >
+              <FiHeart size={20} />
+            </button>
+            <button
+              className="p-2 bg-white rounded-full shadow-md hover:bg-gold hover:text-white transition-colors"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Add to cart logic
+              }}
+            >
+              <FiShoppingCart size={20} />
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-4">
+          <div className="mb-2">
+            <p className="text-sm text-gold">{design.designer.name}</p>
+            <p className="text-xs text-gray-500">{design.country}</p>
+          </div>
+          
+          <h3 className="text-lg font-semibold text-african-dark mb-2 line-clamp-2">
+            {design.name}
+          </h3>
+          
+          <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+            {design.description}
           </p>
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-1 mb-3">
+            {design.tags.slice(0, 2).map((tag) => (
+              <span
+                key={tag}
+                className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          {/* Price and Rating */}
+          <div className="flex items-center justify-between">
+            <div className="text-xl font-bold text-african-dark">
+              {formatPrice(design.price, design.currency as any)}
+            </div>
+            {design.rating && (
+              <div className="flex items-center gap-1 text-sm">
+                <span>⭐</span>
+                <span className="font-semibold">{design.rating}</span>
+                <span className="text-gray-500">({design.reviewCount})</span>
+              </div>
+            )}
+          </div>
         </div>
-
-        {/* Designers Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {spotlightDesigners.map((designer) => (
-            <Card key={designer.id} hoverable>
-              <Link href={`/designers/${designer.id}`}>
-                {/* Cover Image */}
-                <div className="h-48 overflow-hidden relative">
-                  <img
-                    src={designer.coverImage || 'https://images.unsplash.com/photo-1558769132-cb1aea3c9763?w=800'}
-                    alt={designer.name}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                </div>
-
-                {/* Profile Image */}
-                <div className="relative px-6 pb-6">
-                  <div className="-mt-12 mb-4">
-                    <img
-                      src={designer.profileImage || 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200'}
-                      alt={designer.name}
-                      className="w-24 h-24 rounded-full border-4 border-white object-cover shadow-lg"
-                    />
-                  </div>
-
-                  {/* Designer Info */}
-                  <h3 className="text-xl font-serif font-bold text-african-dark mb-2">
-                    {designer.name}
-                  </h3>
-                  <p className="text-sm text-gold mb-3">
-                    {designer.country}
-                  </p>
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-3">
-                    {designer.bio}
-                  </p>
-
-                  {/* Stats */}
-                  <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
-                    <div>
-                      <span className="font-semibold text-african-dark">
-                        {designer.designCount}
-                      </span>{' '}
-                      Designs
-                    </div>
-                    <div>
-                      <span className="font-semibold text-african-dark">
-                        {designer.rating}
-                      </span>{' '}
-                      ⭐
-                    </div>
-                  </div>
-
-                  {/* Social Links */}
-                  <div className="flex gap-3 pt-4 border-t border-gray-200">
-                    {designer.socialLinks?.instagram && (
-                      <a
-                        href={`https://instagram.com/${designer.socialLinks.instagram}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-400 hover:text-gold transition-colors"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <FiInstagram size={18} />
-                      </a>
-                    )}
-                    {designer.socialLinks?.facebook && (
-                      <a
-                        href={`https://facebook.com/${designer.socialLinks.facebook}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-400 hover:text-gold transition-colors"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <FiFacebook size={18} />
-                      </a>
-                    )}
-                    {designer.socialLinks?.website && (
-                      <a
-                        href={designer.socialLinks.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-400 hover:text-gold transition-colors"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <FiGlobe size={18} />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </Link>
-            </Card>
-          ))}
-        </div>
-
-        {/* View All Button */}
-        <div className="text-center mt-12">
-          <Link
-            href="/designers"
-            className="text-gold hover:text-gold-dark font-semibold"
-          >
-            View All Designers →
-          </Link>
-        </div>
-      </div>
-    </section>
+      </Link>
+    </Card>
   );
 }
