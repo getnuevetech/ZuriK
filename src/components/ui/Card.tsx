@@ -7,14 +7,12 @@ interface CardProps {
   children: React.ReactNode;
   className?: string;
   hoverable?: boolean;
-  onClick?: () => void;
 }
 
 export default function Card({
   children,
   className,
   hoverable = false,
-  onClick,
 }: CardProps) {
   return (
     <div
@@ -23,7 +21,6 @@ export default function Card({
         hoverable && 'hover:shadow-xl hover:-translate-y-1 cursor-pointer',
         className
       )}
-      onClick={onClick}
     >
       {children}
     </div>
