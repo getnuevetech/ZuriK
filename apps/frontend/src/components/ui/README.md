@@ -5,14 +5,17 @@ Reusable UI components for the African Fashion eCommerce platform.
 ## Components
 
 ### Button
+
 Button component with multiple variants and sizes.
 
 **Props:**
+
 - `variant`: 'primary' | 'secondary' | 'outline' | 'accent' (default: 'primary')
 - `size`: 'sm' | 'md' | 'lg' (default: 'md')
 - `isLoading`: boolean (default: false)
 
 **Usage:**
+
 ```tsx
 import { Button } from '@/components/ui';
 
@@ -21,30 +24,30 @@ import { Button } from '@/components/ui';
 ```
 
 ### Input
+
 Text input with label, error state, and icon support.
 
 **Props:**
+
 - `label`: string
 - `error`: string
 - `icon`: React.ReactNode
 - `helperText`: string
 
 **Usage:**
+
 ```tsx
 import { Input } from '@/components/ui';
 
-<Input 
-  label="Email" 
-  placeholder="Enter your email"
-  error="Invalid email"
-  icon={<EmailIcon />}
-/>
+<Input label="Email" placeholder="Enter your email" error="Invalid email" icon={<EmailIcon />} />;
 ```
 
 ### Select
+
 Dropdown select with label and error state.
 
 **Props:**
+
 - `label`: string
 - `error`: string
 - `options`: SelectOption[]
@@ -52,6 +55,7 @@ Dropdown select with label and error state.
 - `helperText`: string
 
 **Usage:**
+
 ```tsx
 import { Select } from '@/components/ui';
 
@@ -62,17 +66,20 @@ import { Select } from '@/components/ui';
     { value: 'gh', label: 'Ghana' },
   ]}
   placeholder="Select a country"
-/>
+/>;
 ```
 
 ### Badge
+
 Badge component for status/tags with color variants.
 
 **Props:**
+
 - `variant`: 'default' | 'gold' | 'accent' | 'success' | 'warning' | 'info' (default: 'default')
 - `size`: 'sm' | 'md' | 'lg' (default: 'md')
 
 **Usage:**
+
 ```tsx
 import { Badge } from '@/components/ui';
 
@@ -81,14 +88,17 @@ import { Badge } from '@/components/ui';
 ```
 
 ### Card
+
 Container card component with optional sub-components.
 
 **Props:**
+
 - `hover`: boolean (default: false)
 - `padding`: 'none' | 'sm' | 'md' | 'lg' (default: 'md')
 - `onClick`: () => void
 
 **Sub-components:**
+
 - `CardHeader`
 - `CardTitle`
 - `CardDescription`
@@ -96,6 +106,7 @@ Container card component with optional sub-components.
 - `CardFooter`
 
 **Usage:**
+
 ```tsx
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui';
 
@@ -104,16 +115,16 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui';
     <CardTitle>Product Name</CardTitle>
     <CardDescription>Product description</CardDescription>
   </CardHeader>
-  <CardContent>
-    Content goes here
-  </CardContent>
-</Card>
+  <CardContent>Content goes here</CardContent>
+</Card>;
 ```
 
 ### Modal
+
 Modal dialog with overlay and close button.
 
 **Props:**
+
 - `isOpen`: boolean
 - `onClose`: () => void
 - `title`: string
@@ -121,32 +132,42 @@ Modal dialog with overlay and close button.
 - `showCloseButton`: boolean (default: true)
 
 **Sub-components:**
+
 - `ModalFooter`
 
 **Usage:**
+
 ```tsx
 import { Modal, ModalFooter, Button } from '@/components/ui';
 
 <Modal isOpen={isOpen} onClose={handleClose} title="Confirm Action">
   <p>Are you sure you want to proceed?</p>
   <ModalFooter>
-    <Button variant="outline" onClick={handleClose}>Cancel</Button>
-    <Button variant="primary" onClick={handleConfirm}>Confirm</Button>
+    <Button variant="outline" onClick={handleClose}>
+      Cancel
+    </Button>
+    <Button variant="primary" onClick={handleConfirm}>
+      Confirm
+    </Button>
   </ModalFooter>
-</Modal>
+</Modal>;
 ```
 
 ### Spinner
+
 Loading spinner component.
 
 **Props:**
+
 - `size`: 'sm' | 'md' | 'lg' | 'xl' (default: 'md')
 - `color`: 'gold' | 'dark' | 'accent' | 'white' (default: 'gold')
 
 **Sub-components:**
+
 - `SpinnerOverlay` - Full screen loading overlay
 
 **Usage:**
+
 ```tsx
 import { Spinner, SpinnerOverlay } from '@/components/ui';
 
@@ -166,6 +187,7 @@ The components use the African-inspired color palette defined in `globals.css`:
 ## Development
 
 All components are built with:
+
 - TypeScript for type safety
 - React functional components with hooks
 - Tailwind CSS for styling

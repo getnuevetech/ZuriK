@@ -4,15 +4,7 @@ import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import {
-  ArrowLeft,
-  Star,
-  MapPin,
-  ShoppingCart,
-  Mail,
-  Instagram,
-  Check,
-} from 'lucide-react';
+import { ArrowLeft, Star, MapPin, ShoppingCart, Mail, Instagram, Check } from 'lucide-react';
 import { Header, Footer } from '@/components/common';
 import { Button, Badge } from '@/components/ui';
 import { mockDesigns } from '@/data/mockDesigns';
@@ -35,9 +27,7 @@ export default function DesignDetailPage() {
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <h1 className="text-3xl font-bold text-dark mb-4">Design Not Found</h1>
-            <p className="text-gray-600 mb-6">
-              The design you're looking for doesn't exist.
-            </p>
+            <p className="text-gray-600 mb-6">The design you're looking for doesn't exist.</p>
             <Link href="/designs">
               <Button>
                 <ArrowLeft className="w-4 h-4 mr-2" />
@@ -123,12 +113,8 @@ export default function DesignDetailPage() {
             <div className="space-y-6">
               {/* Title & Category */}
               <div>
-                <Badge className="bg-gold text-dark mb-3">
-                  {design.category}
-                </Badge>
-                <h1 className="text-4xl font-bold text-dark mb-2">
-                  {design.name}
-                </h1>
+                <Badge className="bg-gold text-dark mb-3">{design.category}</Badge>
+                <h1 className="text-4xl font-bold text-dark mb-2">{design.name}</h1>
                 <div className="flex items-center gap-4 text-gray-600">
                   <div className="flex items-center gap-1">
                     <MapPin className="w-4 h-4" />
@@ -136,9 +122,7 @@ export default function DesignDetailPage() {
                   </div>
                   <div className="flex items-center gap-1">
                     <Star className="w-5 h-5 fill-gold text-gold" />
-                    <span className="font-medium text-dark">
-                      {design.rating.toFixed(1)}
-                    </span>
+                    <span className="font-medium text-dark">{design.rating.toFixed(1)}</span>
                     <span>({design.reviewCount} reviews)</span>
                   </div>
                 </div>
@@ -154,19 +138,13 @@ export default function DesignDetailPage() {
 
               {/* Description */}
               <div>
-                <h2 className="text-xl font-semibold text-dark mb-3">
-                  Description
-                </h2>
-                <p className="text-gray-700 leading-relaxed">
-                  {design.description}
-                </p>
+                <h2 className="text-xl font-semibold text-dark mb-3">Description</h2>
+                <p className="text-gray-700 leading-relaxed">{design.description}</p>
               </div>
 
               {/* Available Fabrics */}
               <div>
-                <h2 className="text-xl font-semibold text-dark mb-3">
-                  Compatible Fabrics
-                </h2>
+                <h2 className="text-xl font-semibold text-dark mb-3">Compatible Fabrics</h2>
                 <div className="flex flex-wrap gap-2">
                   {design.compatibleFabrics.map((fabric) => (
                     <Badge
@@ -214,9 +192,7 @@ export default function DesignDetailPage() {
 
               {/* Designer Info Card */}
               <div className="bg-white rounded-lg p-6 border border-cream-dark mt-8">
-                <h2 className="text-xl font-semibold text-dark mb-4">
-                  About the Designer
-                </h2>
+                <h2 className="text-xl font-semibold text-dark mb-4">About the Designer</h2>
                 <div className="flex items-start gap-4">
                   {/* Designer Avatar */}
                   {design.designer.avatar ? (
@@ -246,9 +222,7 @@ export default function DesignDetailPage() {
                       <span>{design.designer.country}</span>
                     </div>
                     {design.designer.bio && (
-                      <p className="text-gray-700 text-sm mb-3">
-                        {design.designer.bio}
-                      </p>
+                      <p className="text-gray-700 text-sm mb-3">{design.designer.bio}</p>
                     )}
                     {design.designer.instagramHandle && (
                       <a

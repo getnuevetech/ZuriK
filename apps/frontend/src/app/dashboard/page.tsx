@@ -29,10 +29,10 @@ const mockOrders: Order[] = [
     userId: '1',
     user: mockUser,
     items: [],
-    subtotal: 125.00,
-    platformFee: 12.50,
-    shippingFee: 15.00,
-    totalAmount: 152.50,
+    subtotal: 125.0,
+    platformFee: 12.5,
+    shippingFee: 15.0,
+    totalAmount: 152.5,
     status: OrderStatus.PROCESSING,
     shippingAddress: {
       street: '123 Fashion Street',
@@ -52,8 +52,8 @@ const mockOrders: Order[] = [
     user: mockUser,
     items: [],
     subtotal: 89.99,
-    platformFee: 9.00,
-    shippingFee: 12.00,
+    platformFee: 9.0,
+    shippingFee: 12.0,
     totalAmount: 110.99,
     status: OrderStatus.SHIPPED,
     shippingAddress: {
@@ -73,10 +73,10 @@ const mockOrders: Order[] = [
     userId: '1',
     user: mockUser,
     items: [],
-    subtotal: 200.00,
-    platformFee: 20.00,
-    shippingFee: 20.00,
-    totalAmount: 240.00,
+    subtotal: 200.0,
+    platformFee: 20.0,
+    shippingFee: 20.0,
+    totalAmount: 240.0,
     status: OrderStatus.DELIVERED,
     shippingAddress: {
       street: '123 Fashion Street',
@@ -91,7 +91,9 @@ const mockOrders: Order[] = [
   },
 ];
 
-const getStatusBadgeVariant = (status: OrderStatus): 'default' | 'gold' | 'accent' | 'success' | 'warning' | 'info' => {
+const getStatusBadgeVariant = (
+  status: OrderStatus
+): 'default' | 'gold' | 'accent' | 'success' | 'warning' | 'info' => {
   switch (status) {
     case OrderStatus.DELIVERED:
       return 'success';
@@ -130,8 +132,18 @@ export default function DashboardPage() {
                     href="/dashboard"
                     className="flex items-center px-4 py-2 text-sm font-medium text-white bg-gold rounded-md hover:bg-gold-dark transition-colors"
                   >
-                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    <svg
+                      className="w-5 h-5 mr-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                      />
                     </svg>
                     Dashboard
                   </Link>
@@ -139,8 +151,18 @@ export default function DashboardPage() {
                     href="/dashboard/orders"
                     className="flex items-center px-4 py-2 text-sm font-medium text-dark hover:bg-cream-dark rounded-md transition-colors"
                   >
-                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    <svg
+                      className="w-5 h-5 mr-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                      />
                     </svg>
                     Orders
                   </Link>
@@ -148,8 +170,18 @@ export default function DashboardPage() {
                     href="/dashboard/profile"
                     className="flex items-center px-4 py-2 text-sm font-medium text-dark hover:bg-cream-dark rounded-md transition-colors"
                   >
-                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    <svg
+                      className="w-5 h-5 mr-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
                     </svg>
                     Profile
                   </Link>
@@ -157,8 +189,18 @@ export default function DashboardPage() {
                     href="/dashboard/measurements"
                     className="flex items-center px-4 py-2 text-sm font-medium text-dark hover:bg-cream-dark rounded-md transition-colors"
                   >
-                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    <svg
+                      className="w-5 h-5 mr-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                      />
                     </svg>
                     Measurements
                   </Link>
@@ -166,9 +208,24 @@ export default function DashboardPage() {
                     href="/dashboard/settings"
                     className="flex items-center px-4 py-2 text-sm font-medium text-dark hover:bg-cream-dark rounded-md transition-colors"
                   >
-                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <svg
+                      className="w-5 h-5 mr-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
                     </svg>
                     Settings
                   </Link>
@@ -199,8 +256,18 @@ export default function DashboardPage() {
                       <p className="text-3xl font-bold">{totalOrders}</p>
                     </div>
                     <div className="p-3 bg-white/20 rounded-full">
-                      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                      <svg
+                        className="w-8 h-8"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                        />
                       </svg>
                     </div>
                   </div>
@@ -215,8 +282,18 @@ export default function DashboardPage() {
                       <p className="text-3xl font-bold">${totalSpent.toFixed(2)}</p>
                     </div>
                     <div className="p-3 bg-white/20 rounded-full">
-                      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <svg
+                        className="w-8 h-8"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
                       </svg>
                     </div>
                   </div>
@@ -231,8 +308,18 @@ export default function DashboardPage() {
                       <p className="text-3xl font-bold">{savedItems}</p>
                     </div>
                     <div className="p-3 bg-white/20 rounded-full">
-                      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      <svg
+                        className="w-8 h-8"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                        />
                       </svg>
                     </div>
                   </div>
@@ -268,12 +355,20 @@ export default function DashboardPage() {
                             </Badge>
                           </div>
                           <div className="text-sm text-dark-lighter space-y-1">
-                            <p>Placed on: {order.createdAt.toLocaleDateString('en-US', { 
-                              year: 'numeric', 
-                              month: 'long', 
-                              day: 'numeric' 
-                            })}</p>
-                            <p>Total: <span className="font-semibold text-dark">${order.totalAmount.toFixed(2)}</span></p>
+                            <p>
+                              Placed on:{' '}
+                              {order.createdAt.toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                              })}
+                            </p>
+                            <p>
+                              Total:{' '}
+                              <span className="font-semibold text-dark">
+                                ${order.totalAmount.toFixed(2)}
+                              </span>
+                            </p>
                           </div>
                         </div>
                         <div className="flex gap-2">

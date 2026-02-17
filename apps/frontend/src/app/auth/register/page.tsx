@@ -11,27 +11,30 @@ import { useAuthStore } from '@/store/authStore';
 import { UserRole } from '@/types';
 import { AFRICAN_COUNTRIES, USER_ROLE_LABELS } from '@/utils/constants';
 
-const registerSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string(),
-  firstName: z.string().min(2, 'First name must be at least 2 characters'),
-  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
-  username: z.string()
-    .min(3, 'Username must be at least 3 characters')
-    .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'),
-  role: z.nativeEnum(UserRole, {
-    errorMap: () => ({ message: 'Please select a role' }),
-  }),
-  country: z.string().min(1, 'Please select a country'),
-  phone: z.string().optional(),
-  acceptTerms: z.boolean().refine((val) => val === true, {
-    message: 'You must accept the terms and conditions',
-  }),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
-});
+const registerSchema = z
+  .object({
+    email: z.string().email('Invalid email address'),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string(),
+    firstName: z.string().min(2, 'First name must be at least 2 characters'),
+    lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+    username: z
+      .string()
+      .min(3, 'Username must be at least 3 characters')
+      .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'),
+    role: z.nativeEnum(UserRole, {
+      errorMap: () => ({ message: 'Please select a role' }),
+    }),
+    country: z.string().min(1, 'Please select a country'),
+    phone: z.string().optional(),
+    acceptTerms: z.boolean().refine((val) => val === true, {
+      message: 'You must accept the terms and conditions',
+    }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -70,11 +73,15 @@ export default function RegisterPage() {
       clearError();
       setSuccessMessage('');
 
-      const { confirmPassword: _confirmPassword, acceptTerms: _acceptTerms, ...registerData } = data;
+      const {
+        confirmPassword: _confirmPassword,
+        acceptTerms: _acceptTerms,
+        ...registerData
+      } = data;
 
       await registerUser(registerData);
       setSuccessMessage('Registration successful! Redirecting to dashboard...');
-      
+
       setTimeout(() => {
         router.push('/dashboard');
       }, 2000);
@@ -91,9 +98,7 @@ export default function RegisterPage() {
         <div className="bg-white rounded-lg shadow-2xl p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-dark mb-2">
-              Join Our Community
-            </h1>
+            <h1 className="text-4xl font-bold text-dark mb-2">Join Our Community</h1>
             <p className="text-dark-lighter text-sm">
               Create an account to start your African fashion journey
             </p>

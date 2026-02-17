@@ -44,8 +44,9 @@ export const mockFabrics: Fabric[] = [
   {
     id: 'f1',
     name: 'Royal Ankara Gold',
-    description: 'Premium quality Ankara fabric with intricate gold patterns. Perfect for formal wear and special occasions. 100% cotton, breathable and comfortable.',
-    pricePerMeter: 25.00,
+    description:
+      'Premium quality Ankara fabric with intricate gold patterns. Perfect for formal wear and special occasions. 100% cotton, breathable and comfortable.',
+    pricePerMeter: 25.0,
     stockQuantity: 150,
     images: [
       'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=800',
@@ -63,12 +64,11 @@ export const mockFabrics: Fabric[] = [
   {
     id: 'f2',
     name: 'Traditional Kente Cloth',
-    description: 'Authentic handwoven Kente cloth from Ghana. Rich colors and traditional patterns symbolizing royalty and prestige. Made by master weavers.',
-    pricePerMeter: 45.00,
+    description:
+      'Authentic handwoven Kente cloth from Ghana. Rich colors and traditional patterns symbolizing royalty and prestige. Made by master weavers.',
+    pricePerMeter: 45.0,
     stockQuantity: 80,
-    images: [
-      'https://images.unsplash.com/photo-1594394486896-e6b8b1b6d5b0?w=800',
-    ],
+    images: ['https://images.unsplash.com/photo-1594394486896-e6b8b1b6d5b0?w=800'],
     colors: ['Multi-color', 'Blue & Gold', 'Red & Green'],
     fabricType: 'Kente',
     seller: mockFabricSellers[1],
@@ -81,12 +81,11 @@ export const mockFabrics: Fabric[] = [
   {
     id: 'f3',
     name: 'Vibrant Kitenge Print',
-    description: 'Bold and colorful Kitenge fabric from East Africa. Ideal for dresses, skirts, and accessories. Easy care, machine washable.',
-    pricePerMeter: 18.00,
+    description:
+      'Bold and colorful Kitenge fabric from East Africa. Ideal for dresses, skirts, and accessories. Easy care, machine washable.',
+    pricePerMeter: 18.0,
     stockQuantity: 200,
-    images: [
-      'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=800',
-    ],
+    images: ['https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=800'],
     colors: ['Orange', 'Turquoise', 'Pink', 'Yellow'],
     fabricType: 'Kitenge',
     seller: mockFabricSellers[2],
@@ -99,12 +98,11 @@ export const mockFabrics: Fabric[] = [
   {
     id: 'f4',
     name: 'Mudcloth Natural Beige',
-    description: 'Authentic Malian Mudcloth (Bògòlanfini) in natural earth tones. Hand-dyed using traditional fermented mud technique. Unique piece of African art.',
-    pricePerMeter: 55.00,
+    description:
+      'Authentic Malian Mudcloth (Bògòlanfini) in natural earth tones. Hand-dyed using traditional fermented mud technique. Unique piece of African art.',
+    pricePerMeter: 55.0,
     stockQuantity: 40,
-    images: [
-      'https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=800',
-    ],
+    images: ['https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=800'],
     colors: ['Beige', 'Brown', 'Black'],
     fabricType: 'Mudcloth',
     seller: mockFabricSellers[0],
@@ -117,12 +115,11 @@ export const mockFabrics: Fabric[] = [
   {
     id: 'f5',
     name: 'Adire Indigo Batik',
-    description: 'Traditional Nigerian Adire fabric with stunning indigo dye patterns. Hand-tied resist dyeing creates unique designs. Perfect for statement pieces.',
-    pricePerMeter: 30.00,
+    description:
+      'Traditional Nigerian Adire fabric with stunning indigo dye patterns. Hand-tied resist dyeing creates unique designs. Perfect for statement pieces.',
+    pricePerMeter: 30.0,
     stockQuantity: 120,
-    images: [
-      'https://images.unsplash.com/photo-1581404767908-a5e7e0c80211?w=800',
-    ],
+    images: ['https://images.unsplash.com/photo-1581404767908-a5e7e0c80211?w=800'],
     colors: ['Indigo Blue', 'White'],
     fabricType: 'Adire',
     seller: mockFabricSellers[0],
@@ -135,12 +132,11 @@ export const mockFabrics: Fabric[] = [
   {
     id: 'f6',
     name: 'Dashiki Cotton Print',
-    description: 'Classic Dashiki print on premium cotton. Vibrant colors and traditional West African motifs. Versatile for shirts, dresses, and more.',
-    pricePerMeter: 22.00,
+    description:
+      'Classic Dashiki print on premium cotton. Vibrant colors and traditional West African motifs. Versatile for shirts, dresses, and more.',
+    pricePerMeter: 22.0,
     stockQuantity: 180,
-    images: [
-      'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=800',
-    ],
+    images: ['https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=800'],
     colors: ['Purple', 'Green', 'Orange', 'Blue'],
     fabricType: 'Dashiki',
     seller: mockFabricSellers[1],
@@ -153,12 +149,11 @@ export const mockFabrics: Fabric[] = [
   {
     id: 'f7',
     name: 'Silk Ankara Blend',
-    description: 'Luxurious blend of silk and cotton Ankara. Soft, elegant drape perfect for evening wear. Limited edition patterns.',
-    pricePerMeter: 65.00,
+    description:
+      'Luxurious blend of silk and cotton Ankara. Soft, elegant drape perfect for evening wear. Limited edition patterns.',
+    pricePerMeter: 65.0,
     stockQuantity: 60,
-    images: [
-      'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=800',
-    ],
+    images: ['https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=800'],
     colors: ['Emerald Green', 'Royal Blue', 'Deep Red'],
     fabricType: 'Silk',
     seller: mockFabricSellers[2],
@@ -171,12 +166,11 @@ export const mockFabrics: Fabric[] = [
   {
     id: 'f8',
     name: 'Linen Blend Natural',
-    description: 'Premium linen-cotton blend in neutral tones. Breathable and perfect for warm climates. Ideal base for embroidery or embellishments.',
-    pricePerMeter: 28.00,
+    description:
+      'Premium linen-cotton blend in neutral tones. Breathable and perfect for warm climates. Ideal base for embroidery or embellishments.',
+    pricePerMeter: 28.0,
     stockQuantity: 140,
-    images: [
-      'https://images.unsplash.com/photo-1566206091558-7f218b696731?w=800',
-    ],
+    images: ['https://images.unsplash.com/photo-1566206091558-7f218b696731?w=800'],
     colors: ['Cream', 'Natural', 'Light Beige'],
     fabricType: 'Linen',
     seller: mockFabricSellers[0],

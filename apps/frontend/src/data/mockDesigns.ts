@@ -6,8 +6,9 @@ export const mockDesigns: Design[] = [
   {
     id: 'd1',
     name: 'Elegant Ankara Evening Dress',
-    description: 'A stunning floor-length evening dress featuring vibrant Ankara prints with a modern silhouette. This piece combines traditional African textiles with contemporary design, perfect for special occasions. Includes a fitted bodice and flowing skirt with side pockets.',
-    price: 180.00,
+    description:
+      'A stunning floor-length evening dress featuring vibrant Ankara prints with a modern silhouette. This piece combines traditional African textiles with contemporary design, perfect for special occasions. Includes a fitted bodice and flowing skirt with side pockets.',
+    price: 180.0,
     images: [
       'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800',
       'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800',
@@ -26,11 +27,10 @@ export const mockDesigns: Design[] = [
   {
     id: 'd2',
     name: 'Kente Ceremonial Robe',
-    description: 'Traditional Kente robe with authentic patterns handed down through generations. This ceremonial piece features rich colors symbolizing wealth and royalty. Handcrafted details and impeccable finishing make it a true statement piece.',
-    price: 350.00,
-    images: [
-      'https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=800',
-    ],
+    description:
+      'Traditional Kente robe with authentic patterns handed down through generations. This ceremonial piece features rich colors symbolizing wealth and royalty. Handcrafted details and impeccable finishing make it a true statement piece.',
+    price: 350.0,
+    images: ['https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=800'],
     category: 'Traditional Wear',
     designer: mockDesigners[1],
     designerId: '2',
@@ -45,11 +45,10 @@ export const mockDesigns: Design[] = [
   {
     id: 'd3',
     name: 'Modern Kitenge Jumpsuit',
-    description: 'Contemporary jumpsuit design with bold Kitenge prints. Features a tailored fit, wide-leg silhouette, and adjustable waist tie. Perfect for both casual and semi-formal occasions. Comfort meets style in this versatile piece.',
-    price: 145.00,
-    images: [
-      'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800',
-    ],
+    description:
+      'Contemporary jumpsuit design with bold Kitenge prints. Features a tailored fit, wide-leg silhouette, and adjustable waist tie. Perfect for both casual and semi-formal occasions. Comfort meets style in this versatile piece.',
+    price: 145.0,
+    images: ['https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800'],
     category: 'Pants',
     designer: mockDesigners[2],
     designerId: '3',
@@ -64,11 +63,10 @@ export const mockDesigns: Design[] = [
   {
     id: 'd4',
     name: 'Luxury Caftan with Embroidery',
-    description: 'Exquisite Moroccan-inspired caftan with intricate hand embroidery. Crafted from premium fabrics with gold thread details. Flowing design provides ultimate comfort while maintaining an air of sophistication and elegance.',
-    price: 420.00,
-    images: [
-      'https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=800',
-    ],
+    description:
+      'Exquisite Moroccan-inspired caftan with intricate hand embroidery. Crafted from premium fabrics with gold thread details. Flowing design provides ultimate comfort while maintaining an air of sophistication and elegance.',
+    price: 420.0,
+    images: ['https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=800'],
     category: 'Traditional Wear',
     designer: mockDesigners[3],
     designerId: '4',
@@ -83,11 +81,10 @@ export const mockDesigns: Design[] = [
   {
     id: 'd5',
     name: 'Contemporary Ankara Blazer',
-    description: 'Tailored blazer featuring striking Ankara patterns. This piece seamlessly blends professional elegance with African heritage. Structured shoulders, notch lapel, and single-button closure. Fully lined for comfort.',
-    price: 195.00,
-    images: [
-      'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=800',
-    ],
+    description:
+      'Tailored blazer featuring striking Ankara patterns. This piece seamlessly blends professional elegance with African heritage. Structured shoulders, notch lapel, and single-button closure. Fully lined for comfort.',
+    price: 195.0,
+    images: ['https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=800'],
     category: 'Suits',
     designer: mockDesigners[4],
     designerId: '5',
@@ -102,11 +99,10 @@ export const mockDesigns: Design[] = [
   {
     id: 'd6',
     name: 'Dashiki Shirt Classic',
-    description: 'Classic Dashiki shirt with traditional neckline and vibrant prints. Comfortable, loose-fitting design perfect for warm weather. A timeless piece that celebrates West African culture with modern comfort.',
-    price: 75.00,
-    images: [
-      'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800',
-    ],
+    description:
+      'Classic Dashiki shirt with traditional neckline and vibrant prints. Comfortable, loose-fitting design perfect for warm weather. A timeless piece that celebrates West African culture with modern comfort.',
+    price: 75.0,
+    images: ['https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800'],
     category: 'Shirts',
     designer: mockDesigners[0],
     designerId: '1',
@@ -121,11 +117,10 @@ export const mockDesigns: Design[] = [
   {
     id: 'd7',
     name: 'Adire Wrap Skirt',
-    description: 'Beautiful wrap skirt featuring traditional Adire patterns in indigo. Adjustable fit with tie closure. Can be dressed up or down. The unique tie-dye patterns ensure each piece is one-of-a-kind.',
-    price: 95.00,
-    images: [
-      'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800',
-    ],
+    description:
+      'Beautiful wrap skirt featuring traditional Adire patterns in indigo. Adjustable fit with tie closure. Can be dressed up or down. The unique tie-dye patterns ensure each piece is one-of-a-kind.',
+    price: 95.0,
+    images: ['https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800'],
     category: 'Skirts',
     designer: mockDesigners[1],
     designerId: '2',
@@ -140,11 +135,10 @@ export const mockDesigns: Design[] = [
   {
     id: 'd8',
     name: 'Mudcloth Accent Vest',
-    description: 'Unique vest featuring authentic Mudcloth panels. Modern cut with traditional fabric creates a striking contrast. Perfect layering piece for any wardrobe. Unisex design suitable for all body types.',
-    price: 125.00,
-    images: [
-      'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=800',
-    ],
+    description:
+      'Unique vest featuring authentic Mudcloth panels. Modern cut with traditional fabric creates a striking contrast. Perfect layering piece for any wardrobe. Unisex design suitable for all body types.',
+    price: 125.0,
+    images: ['https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=800'],
     category: 'Accessories',
     designer: mockDesigners[2],
     designerId: '3',
@@ -159,11 +153,10 @@ export const mockDesigns: Design[] = [
   {
     id: 'd9',
     name: 'Royal Kente Two-Piece Set',
-    description: 'Coordinating top and skirt set in luxurious Kente cloth. The crop top features a modern cut while the high-waisted skirt maintains traditional elegance. Perfect for celebrations and special events.',
-    price: 280.00,
-    images: [
-      'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800',
-    ],
+    description:
+      'Coordinating top and skirt set in luxurious Kente cloth. The crop top features a modern cut while the high-waisted skirt maintains traditional elegance. Perfect for celebrations and special events.',
+    price: 280.0,
+    images: ['https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800'],
     category: 'Dresses',
     designer: mockDesigners[3],
     designerId: '4',
@@ -178,11 +171,10 @@ export const mockDesigns: Design[] = [
   {
     id: 'd10',
     name: 'Minimalist Linen Tunic',
-    description: 'Elegant tunic in natural linen blend. Clean lines and relaxed fit embody effortless style. Can be embellished with African accessories for personalization. Versatile piece for any occasion.',
-    price: 110.00,
-    images: [
-      'https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=800',
-    ],
+    description:
+      'Elegant tunic in natural linen blend. Clean lines and relaxed fit embody effortless style. Can be embellished with African accessories for personalization. Versatile piece for any occasion.',
+    price: 110.0,
+    images: ['https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=800'],
     category: 'Shirts',
     designer: mockDesigners[4],
     designerId: '5',

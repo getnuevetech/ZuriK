@@ -49,9 +49,7 @@ export default function Header() {
               <div className="w-10 h-10 bg-gradient-to-br from-[#D4AF37] to-[#C41E3A] rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-xl">AF</span>
               </div>
-              <span className="hidden sm:block text-xl font-bold text-[#1a1a1a]">
-                AfriStyle
-              </span>
+              <span className="hidden sm:block text-xl font-bold text-[#1a1a1a]">AfriStyle</span>
             </Link>
           </div>
 
@@ -97,7 +95,11 @@ export default function Header() {
           <div className="flex items-center space-x-4">
             {/* Cart Icon */}
             <Link href="/cart">
-              <Button variant="outline" size="sm" className="relative p-2 border-0 hover:bg-gray-100">
+              <Button
+                variant="outline"
+                size="sm"
+                className="relative p-2 border-0 hover:bg-gray-100"
+              >
                 <ShoppingCart className="w-6 h-6 text-[#1a1a1a]" />
                 <span className="absolute -top-1 -right-1 bg-[#C41E3A] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                   0
@@ -168,11 +170,7 @@ export default function Header() {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2 text-[#1a1a1a]"
             >
-              {mobileMenuOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>

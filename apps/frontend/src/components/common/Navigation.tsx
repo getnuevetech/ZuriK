@@ -2,7 +2,17 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { X, Home, ShoppingBag, Users, Info, LogIn, UserPlus, LayoutDashboard, LogOut } from 'lucide-react';
+import {
+  X,
+  Home,
+  ShoppingBag,
+  Users,
+  Info,
+  LogIn,
+  UserPlus,
+  LayoutDashboard,
+  LogOut,
+} from 'lucide-react';
 import { Button, Badge } from '@/components/ui';
 
 interface NavigationProps {

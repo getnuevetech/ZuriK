@@ -34,9 +34,7 @@ export default function DesignsPage() {
     // Apply fabric type filter
     if (filters.fabricType) {
       result = result.filter((design) =>
-        design.compatibleFabrics.some(
-          (fabric) => fabric.fabricType === filters.fabricType
-        )
+        design.compatibleFabrics.some((fabric) => fabric.fabricType === filters.fabricType)
       );
     }
 
@@ -54,7 +52,7 @@ export default function DesignsPage() {
     if (filters.sortBy) {
       result.sort((a, b) => {
         let comparison = 0;
-        
+
         switch (filters.sortBy) {
           case 'price':
             comparison = a.price - b.price;
@@ -109,9 +107,7 @@ export default function DesignsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Page Header */}
           <div className="mb-8">
-            <h1 className="text-4xl font-bold text-dark mb-2">
-              Explore Designs
-            </h1>
+            <h1 className="text-4xl font-bold text-dark mb-2">Explore Designs</h1>
             <p className="text-gray-600 text-lg">
               Discover unique African-inspired fashion designs from talented designers
             </p>
@@ -160,9 +156,7 @@ export default function DesignsPage() {
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
                       // Show first, last, current, and pages around current
                       const showPage =
-                        page === 1 ||
-                        page === totalPages ||
-                        Math.abs(page - currentPage) <= 1;
+                        page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1;
 
                       if (!showPage) {
                         // Show ellipsis for gaps
@@ -183,9 +177,7 @@ export default function DesignsPage() {
                           variant={currentPage === page ? 'primary' : 'outline'}
                           size="sm"
                           className={
-                            currentPage === page
-                              ? 'bg-gold text-dark hover:bg-gold-dark'
-                              : ''
+                            currentPage === page ? 'bg-gold text-dark hover:bg-gold-dark' : ''
                           }
                         >
                           {page}

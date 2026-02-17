@@ -52,12 +52,8 @@ export default function LoginPage() {
       <div className="max-w-md w-full space-y-8 bg-white rounded-lg shadow-2xl p-8">
         {/* Header */}
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-dark mb-2">
-            Welcome Back
-          </h1>
-          <p className="text-dark-lighter text-sm">
-            Sign in to your African Fashion account
-          </p>
+          <h1 className="text-4xl font-bold text-dark mb-2">Welcome Back</h1>
+          <p className="text-dark-lighter text-sm">Sign in to your African Fashion account</p>
         </div>
 
         {/* Error Message */}

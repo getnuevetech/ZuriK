@@ -13,8 +13,9 @@ const Badge: React.FC<BadgeProps> = ({
   children,
   className = '',
 }) => {
-  const baseStyles = 'inline-flex items-center justify-center rounded-full font-medium transition-colors';
-  
+  const baseStyles =
+    'inline-flex items-center justify-center rounded-full font-medium transition-colors';
+
   const variantStyles = {
     default: 'bg-cream-dark text-dark',
     gold: 'bg-gold text-dark',
@@ -23,13 +24,13 @@ const Badge: React.FC<BadgeProps> = ({
     warning: 'bg-yellow-500 text-dark',
     info: 'bg-blue-500 text-white',
   };
-  
+
   const sizeStyles = {
     sm: 'px-2 py-0.5 text-xs',
     md: 'px-3 py-1 text-sm',
     lg: 'px-4 py-1.5 text-base',
   };
-  
+
   return (
     <span className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}>
       {children}

@@ -18,7 +18,8 @@ const FeaturedDesigns: React.FC = () => {
             Featured Designs
           </h2>
           <p className="text-lg text-dark-lighter max-w-2xl mx-auto">
-            Discover our curated collection of stunning African fashion pieces from talented designers
+            Discover our curated collection of stunning African fashion pieces from talented
+            designers
           </p>
         </div>
 
@@ -40,21 +41,21 @@ const FeaturedDesigns: React.FC = () => {
                     </Badge>
                   </div>
                 </div>
-                
+
                 <div className="p-5">
                   <h3 className="font-display font-semibold text-xl text-dark mb-2 line-clamp-1">
                     {design.name}
                   </h3>
-                  
+
                   <p className="text-sm text-dark-lighter mb-3">
                     by {design.designer.firstName} {design.designer.lastName}
                   </p>
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-2xl font-bold text-accent">
                       {formatPrice(design.price)}
                     </span>
-                    
+
                     <div className="flex items-center gap-1 text-sm text-dark-lighter">
                       <span className="text-gold">⭐</span>
                       <span>{design.rating.toFixed(1)}</span>

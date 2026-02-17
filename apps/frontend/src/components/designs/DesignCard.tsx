@@ -27,9 +27,7 @@ export default function DesignCard({ design }: DesignCardProps) {
           {/* Hover Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-dark/80 via-dark/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <div className="absolute bottom-4 left-4 right-4">
-              <p className="text-white text-sm line-clamp-2">
-                {design.description}
-              </p>
+              <p className="text-white text-sm line-clamp-2">{design.description}</p>
             </div>
           </div>
           {/* Category Badge */}
@@ -60,19 +58,16 @@ export default function DesignCard({ design }: DesignCardProps) {
             </div>
             <div className="flex items-center gap-1">
               <Star className="w-4 h-4 fill-gold text-gold" />
-              <span className="text-sm font-medium text-dark">
-                {design.rating.toFixed(1)}
-              </span>
-              <span className="text-xs text-gray-500">
-                ({design.reviewCount})
-              </span>
+              <span className="text-sm font-medium text-dark">{design.rating.toFixed(1)}</span>
+              <span className="text-xs text-gray-500">({design.reviewCount})</span>
             </div>
           </div>
 
           {/* Price */}
           <div className="pt-3 border-t border-cream-dark">
             <p className="text-2xl font-bold text-dark">
-              {CURRENCY_SYMBOL}{design.price.toFixed(2)}
+              {CURRENCY_SYMBOL}
+              {design.price.toFixed(2)}
             </p>
           </div>
         </div>

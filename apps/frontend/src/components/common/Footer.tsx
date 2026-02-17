@@ -7,7 +7,9 @@ import { Button } from '@/components/ui';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
-  const [subscribeStatus, setSubscribeStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [subscribeStatus, setSubscribeStatus] = useState<'idle' | 'loading' | 'success' | 'error'>(
+    'idle'
+  );
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,8 +41,8 @@ export default function Footer() {
               <span className="text-xl font-bold text-[#D4AF37]">AfriStyle</span>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed">
-              Celebrating African creativity and heritage through contemporary fashion. 
-              Connect with talented designers and discover unique, authentic African designs.
+              Celebrating African creativity and heritage through contemporary fashion. Connect with
+              talented designers and discover unique, authentic African designs.
             </p>
             <div className="flex space-x-4">
               <a
@@ -110,10 +112,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/faq"
-                  className="text-gray-400 hover:text-[#D4AF37] transition-colors"
-                >
+                <Link href="/faq" className="text-gray-400 hover:text-[#D4AF37] transition-colors">
                   FAQ
                 </Link>
               </li>
@@ -195,9 +194,7 @@ export default function Footer() {
               </Button>
             </form>
             {subscribeStatus === 'success' && (
-              <p className="text-sm text-[#D4AF37] mt-2">
-                Thank you for subscribing!
-              </p>
+              <p className="text-sm text-[#D4AF37] mt-2">Thank you for subscribing!</p>
             )}
           </div>
         </div>

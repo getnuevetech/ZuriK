@@ -19,7 +19,8 @@ const testimonials: Testimonial[] = [
     country: 'United States',
     photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400',
     rating: 5,
-    review: 'I absolutely love the quality and authenticity of the designs! The connection to African culture through these beautiful pieces is incredible. My Ankara dress arrived perfectly tailored and the fabric quality exceeded my expectations.',
+    review:
+      'I absolutely love the quality and authenticity of the designs! The connection to African culture through these beautiful pieces is incredible. My Ankara dress arrived perfectly tailored and the fabric quality exceeded my expectations.',
   },
   {
     id: 't2',
@@ -27,7 +28,8 @@ const testimonials: Testimonial[] = [
     country: 'United Kingdom',
     photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
     rating: 5,
-    review: 'As someone interested in African fashion, this platform has been a game-changer. I can directly support talented designers and get unique pieces that tell a story. The customer service is outstanding!',
+    review:
+      'As someone interested in African fashion, this platform has been a game-changer. I can directly support talented designers and get unique pieces that tell a story. The customer service is outstanding!',
   },
   {
     id: 't3',
@@ -35,7 +37,8 @@ const testimonials: Testimonial[] = [
     country: 'Canada',
     photo: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400',
     rating: 5,
-    review: 'The variety of designs from different African countries is amazing! I&apos;ve purchased several pieces for special occasions and always receive compliments. The platform makes it easy to find exactly what I&apos;m looking for.',
+    review:
+      'The variety of designs from different African countries is amazing! I&apos;ve purchased several pieces for special occasions and always receive compliments. The platform makes it easy to find exactly what I&apos;m looking for.',
   },
   {
     id: 't4',
@@ -43,7 +46,8 @@ const testimonials: Testimonial[] = [
     country: 'Ghana',
     photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400',
     rating: 5,
-    review: 'Being able to connect with designers from my home country and across Africa is wonderful. The designs are modern yet traditional, and the quality is consistently excellent. Highly recommend this platform!',
+    review:
+      'Being able to connect with designers from my home country and across Africa is wonderful. The designs are modern yet traditional, and the quality is consistently excellent. Highly recommend this platform!',
   },
 ];
 
@@ -54,9 +58,7 @@ const TestimonialSection: React.FC = () => {
         {Array.from({ length: 5 }).map((_, index) => (
           <span
             key={index}
-            className={`text-xl ${
-              index < rating ? 'text-gold' : 'text-cream-dark'
-            }`}
+            className={`text-xl ${index < rating ? 'text-gold' : 'text-cream-dark'}`}
           >
             ⭐
           </span>
@@ -90,11 +92,9 @@ const TestimonialSection: React.FC = () => {
                     sizes="80px"
                   />
                 </div>
-                
-                <h3 className="font-semibold text-lg text-dark mb-1">
-                  {testimonial.name}
-                </h3>
-                
+
+                <h3 className="font-semibold text-lg text-dark mb-1">{testimonial.name}</h3>
+
                 <p className="text-sm text-dark-lighter mb-2">
                   {getCountryFlag(testimonial.country)} {testimonial.country}
                 </p>

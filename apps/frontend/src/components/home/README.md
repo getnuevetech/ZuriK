@@ -5,7 +5,9 @@ This directory contains the main home page components for the African Fashion eC
 ## Components
 
 ### Hero.tsx
+
 Hero banner section with:
+
 - Large heading "Discover African Fashion"
 - Subtitle about connecting with designers
 - Two CTA buttons (Explore Designs, Join as Designer)
@@ -13,14 +15,17 @@ Hero banner section with:
 - Decorative elements for visual appeal
 
 **Usage:**
+
 ```tsx
 import { Hero } from '@/components/home';
 
-<Hero />
+<Hero />;
 ```
 
 ### FeaturedDesigns.tsx
+
 Displays a grid of 6 featured designs:
+
 - Responsive grid layout (1 col mobile, 2 tablet, 3 desktop)
 - Each card shows:
   - Design image
@@ -33,14 +38,17 @@ Displays a grid of 6 featured designs:
 - Uses `mockDesigns` data
 
 **Usage:**
+
 ```tsx
 import { FeaturedDesigns } from '@/components/home';
 
-<FeaturedDesigns />
+<FeaturedDesigns />;
 ```
 
 ### DesignerSpotlight.tsx
+
 Showcases 3 featured designers:
+
 - Designer profile cards with:
   - Profile picture with gold border
   - Name and country flag badge
@@ -52,14 +60,17 @@ Showcases 3 featured designers:
 - Uses `mockDesigners` and `mockDesigns` data
 
 **Usage:**
+
 ```tsx
 import { DesignerSpotlight } from '@/components/home';
 
-<DesignerSpotlight />
+<DesignerSpotlight />;
 ```
 
 ### LocationHighlight.tsx
+
 Browse designs by African country:
+
 - Features top 6 African countries:
   - Nigeria, Kenya, Ghana, South Africa, Morocco, Ethiopia
 - Each card displays:
@@ -72,14 +83,17 @@ Browse designs by African country:
 - Uses `mockDesigns` and `mockDesigners` for counts
 
 **Usage:**
+
 ```tsx
 import { LocationHighlight } from '@/components/home';
 
-<LocationHighlight />
+<LocationHighlight />;
 ```
 
 ### TestimonialSection.tsx
+
 Customer testimonials and platform stats:
+
 - 4 customer testimonial cards with:
   - Customer photo
   - Name and country
@@ -92,10 +106,11 @@ Customer testimonials and platform stats:
 - Responsive grid layout
 
 **Usage:**
+
 ```tsx
 import { TestimonialSection } from '@/components/home';
 
-<TestimonialSection />
+<TestimonialSection />;
 ```
 
 ## Full Home Page Example
@@ -125,6 +140,7 @@ export default function HomePage() {
 ## Styling
 
 All components use:
+
 - **Tailwind CSS** for styling
 - **African color palette** (gold, accent, cream, dark)
 - **Responsive design** for mobile, tablet, and desktop

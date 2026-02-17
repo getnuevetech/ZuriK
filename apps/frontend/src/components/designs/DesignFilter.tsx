@@ -41,7 +41,7 @@ export default function DesignFilter({
     const newCategories = selectedCategories.includes(category)
       ? selectedCategories.filter((c) => c !== category)
       : [...selectedCategories, category];
-    
+
     setSelectedCategories(newCategories);
     onFilterChange({
       ...filters,
@@ -108,9 +108,7 @@ export default function DesignFilter({
       <div className={`space-y-6 ${isExpanded ? 'block' : 'hidden md:block'}`}>
         {/* Sort By */}
         <div>
-          <label className="block text-sm font-medium text-dark mb-2">
-            Sort By
-          </label>
+          <label className="block text-sm font-medium text-dark mb-2">Sort By</label>
           <Select
             value={getCurrentSortValue()}
             onChange={(e) => handleSortChange(e.target.value)}
@@ -121,9 +119,7 @@ export default function DesignFilter({
 
         {/* Price Range */}
         <div>
-          <label className="block text-sm font-medium text-dark mb-2">
-            Price Range
-          </label>
+          <label className="block text-sm font-medium text-dark mb-2">Price Range</label>
           <div className="flex items-center gap-2">
             <Input
               type="number"
@@ -149,9 +145,7 @@ export default function DesignFilter({
 
         {/* Country */}
         <div>
-          <label className="block text-sm font-medium text-dark mb-2">
-            Country
-          </label>
+          <label className="block text-sm font-medium text-dark mb-2">Country</label>
           <Select
             value={filters.country || 'all'}
             onChange={(e) => handleCountryChange(e.target.value)}
@@ -162,9 +156,7 @@ export default function DesignFilter({
 
         {/* Category Checkboxes */}
         <div>
-          <label className="block text-sm font-medium text-dark mb-3">
-            Category
-          </label>
+          <label className="block text-sm font-medium text-dark mb-3">Category</label>
           <div className="space-y-2 max-h-48 overflow-y-auto">
             {DESIGN_CATEGORIES.map((category) => (
               <label
@@ -185,9 +177,7 @@ export default function DesignFilter({
 
         {/* Fabric Type */}
         <div>
-          <label className="block text-sm font-medium text-dark mb-2">
-            Fabric Type
-          </label>
+          <label className="block text-sm font-medium text-dark mb-2">Fabric Type</label>
           <Select
             value={filters.fabricType || 'all'}
             onChange={(e) => handleFabricTypeChange(e.target.value)}
@@ -198,11 +188,7 @@ export default function DesignFilter({
 
         {/* Action Buttons */}
         <div className="pt-4 space-y-2 border-t border-cream-dark">
-          <Button
-            onClick={onClearFilters}
-            variant="outline"
-            className="w-full"
-          >
+          <Button onClick={onClearFilters} variant="outline" className="w-full">
             Clear Filters
           </Button>
         </div>

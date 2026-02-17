@@ -11,7 +11,7 @@ export const AFRICAN_COUNTRIES = [
   'Uganda',
   'Senegal',
   'Mali',
-  'Côte d\'Ivoire',
+  "Côte d'Ivoire",
   'Morocco',
   'Egypt',
   'Rwanda',
