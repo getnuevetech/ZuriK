@@ -1,22 +1,22 @@
 export default function Home() {
   return (
-    <div className="max-w-7xl mx-auto py-12">
-      <h2 className="text-4xl font-bold mb-4">Welcome to African Fashion</h2>
-      <p className="text-xl text-gray-600 mb-8">
-        Discover authentic African designs and fabrics
+    <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      <h2 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '1rem' }}>Welcome to African Fashion</h2>
+      <p style={{ fontSize: '1.25rem', color: '#666', marginBottom: '2rem' }}>
+        Discover authentic African designs and premium fabrics
       </p>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-2xl font-bold mb-2">Featured Products</h3>
-          <p>Browse our latest collection</p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+        <div style={{ backgroundColor: '#fff', padding: '1.5rem', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+          <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Featured Products</h3>
+          <p>Browse our latest collection of African designs</p>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-2xl font-bold mb-2">Premium Fabrics</h3>
-          <p>High-quality African textiles</p>
+        <div style={{ backgroundColor: '#fff', padding: '1.5rem', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+          <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Premium Fabrics</h3>
+          <p>High-quality authentic African textiles</p>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-2xl font-bold mb-2">Designer Collections</h3>
-          <p>From renowned African designers</p>
+        <div style={{ backgroundColor: '#fff', padding: '1.5rem', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+          <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Designers</h3>
+          <p>Collections from renowned African designers</p>
         </div>
       </div>
     </div>
