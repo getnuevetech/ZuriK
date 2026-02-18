@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+import "./globals.css";
+
+export const metadata: Metadata = {
+  title: "African Fashion",
+  description: "Premium African Fashion Ecommerce",
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -5,24 +13,24 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <title>African Fashion</title>
-      </head>
       <body>
-        <nav style={{ backgroundColor: '#000', color: '#fff', padding: '1rem' }}>
-          <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between' }}>
-            <h1>African Fashion</h1>
-            <div style={{ display: 'flex', gap: '2rem' }}>
-              <a href="/" style={{ color: '#fff', textDecoration: 'none' }}>Home</a>
-              <a href="/products" style={{ color: '#fff', textDecoration: 'none' }}>Products</a>
-              <a href="/fabrics" style={{ color: '#fff', textDecoration: 'none' }}>Fabrics</a>
-              <a href="/designers" style={{ color: '#fff', textDecoration: 'none' }}>Designers</a>
+        <nav className="bg-black text-white p-4">
+          <div className="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 className="text-2xl font-bold">African Fashion</h1>
+            <div className="space-x-6">
+              <a href="/" className="hover:text-gray-300">Home</a>
+              <a href="/products" className="hover:text-gray-300">Products</a>
+              <a href="/fabrics" className="hover:text-gray-300">Fabrics</a>
+              <a href="/designers" className="hover:text-gray-300">Designers</a>
             </div>
           </div>
         </nav>
-        <main style={{ minHeight: '100vh', backgroundColor: '#f9fafb', padding: '2rem' }}>
+        <main className="min-h-screen bg-gray-50">
           {children}
         </main>
+        <footer className="bg-black text-white p-8 text-center">
+          <p>&copy; 2026 African Fashion. All rights reserved.</p>
+        </footer>
       </body>
     </html>
   );
