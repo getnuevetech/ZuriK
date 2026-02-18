@@ -1,43 +1,17 @@
 {
-  "name": "african-fashion-backend",
+  "name": "african-fashion-ecommerce",
   "version": "1.0.0",
-  "description": "African Fashion eCommerce Backend",
-  "main": "dist/main.js",
+  "description": "African Fashion Ecommerce Platform",
+  "private": true,
   "scripts": {
-    "dev": "nest start --watch",
-    "start": "node dist/main.js",
-    "build": "nest build",
-    "migration:generate": "typeorm migration:generate",
-    "migration:run": "typeorm migration:run"
+    "dev": "concurrently \"cd frontend && npm run dev\" \"npm run dev:backend\"",
+    "build": "cd frontend && npm run build",
+    "start": "cd frontend && npm start",
+    "dev:backend": "node src/index.js"
   },
   "dependencies": {
-    "@nestjs/common": "^9.4.3",
-    "@nestjs/core": "^9.4.3",
-    "@nestjs/platform-express": "^9.4.3",
-    "@nestjs/jwt": "^10.2.0",
-    "@nestjs/passport": "^10.0.3",
-    "@nestjs/typeorm": "^9.0.1",
-    "@nestjs/config": "^2.3.4",
-    "passport": "^0.7.0",
-    "passport-google-oauth20": "^2.0.0",
-    "passport-jwt": "^4.0.1",
-    "typeorm": "^0.3.17",
+    "express": "^4.18.2",
     "pg": "^8.11.3",
-    "bcrypt": "^5.1.1",
-    "dotenv": "^16.3.1",
-    "class-validator": "^0.14.0",
-    "class-transformer": "^0.5.1",
-    "axios": "^1.6.2",
-    "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
-  },
-  "devDependencies": {
-    "@nestjs/cli": "^9.4.3",
-    "@nestjs/schematics": "^9.1.0",
-    "@types/node": "^20.10.0",
-    "typescript": "^5.3.2"
-  },
-  "engines": {
-    "node": "18.x"
+    "concurrently": "^8.2.2"
   }
 }
