@@ -21,8 +21,8 @@ export default function Products() {
   }, []);
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-      <h2 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '2rem' }}>Products</h2>
+    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '3rem 1rem' }}>
+      <h2 style={{ fontSize: '2.25rem', fontWeight: 'bold', marginBottom: '2rem' }}>Products</h2>
       {loading ? (
         <p>Loading products...</p>
       ) : products.length === 0 ? (
