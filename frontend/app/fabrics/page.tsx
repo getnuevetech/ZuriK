@@ -2,16 +2,16 @@
 
 import { useEffect, useState } from 'react';
 
-export default function Fabrics() {
-  const [fabrics, setFabrics] = useState([]);
+export default function Products() {
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-    fetch(`${apiUrl}/fabrics`)
+    fetch(`${apiUrl}/products`)
       .then(res => res.json())
       .then(data => {
-        setFabrics(data);
+        setProducts(data);
         setLoading(false);
       })
       .catch(err => {
@@ -21,18 +21,19 @@ export default function Fabrics() {
   }, []);
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-      <h2 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '2rem' }}>Fabrics</h2>
+    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '3rem 1rem' }}>
+      <h2 style={{ fontSize: '2.25rem', fontWeight: 'bold', marginBottom: '2rem' }}>Products</h2>
       {loading ? (
-        <p>Loading fabrics...</p>
-      ) : fabrics.length === 0 ? (
-        <p>No fabrics available yet.</p>
+        <p>Loading products...</p>
+      ) : products.length === 0 ? (
+        <p>No products available yet.</p>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
-          {fabrics.map((fabric: any) => (
-            <div key={fabric.id} style={{ backgroundColor: '#fff', padding: '1rem', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <h3 style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>{fabric.name}</h3>
-              <p style={{ color: '#666' }}>{fabric.description}</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1.5rem' }}>
+          {products.map((product: any) => (
+            <div key={product.id} style={{ backgroundColor: '#fff', padding: '1rem', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+              <h3 style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>{product.name}</h3>
+              <p style={{ color: '#666' }}>{product.description}</p>
+              <p style={{ fontSize: '1.25rem', fontWeight: 'bold', marginTop: '0.5rem' }}>${product.price}</p>
             </div>
           ))}
         </div>
