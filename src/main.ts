@@ -1,20 +1,12 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  
-  app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-    credentials: true,
-  });
+    // Initialize the app
+    const app = await App.create();
 
-  const port = process.env.PORT || 3001;
-  await app.listen(port);
-  console.log(`✅ Server running on port ${port}`);
+    // Seed the database before the app starts listening
+    await seedDatabase(); // Ensure you have a seedDatabase function implemented
+
+    // Make the app listen on the defined port
+    await app.listen();
 }
 
-bootstrap().catch(err => {
-  console.error('❌ Error:', err);
-  process.exit(1);
-});
+bootstrap();
