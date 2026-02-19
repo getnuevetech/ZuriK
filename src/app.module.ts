@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { SeedService } from './seed.service';
 import { Product } from './product.entity';
 import { Fabric } from './fabric.entity';
 import { Designer } from './designer.entity';
@@ -23,6 +24,6 @@ import { Designer } from './designer.entity';
     TypeOrmModule.forFeature([Product, Fabric, Designer]),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, SeedService],
 })
 export class AppModule {}
