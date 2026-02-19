@@ -5,11 +5,20 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { User, UserRole } from '../user/user.entity';
 
 export class UpdateUserDto {
+  @IsOptional()
+  @IsString()
   fullName?: string;
+
+  @IsOptional()
+  @IsString()
   country?: string;
+
+  @IsOptional()
+  @IsEnum(UserRole)
   role?: UserRole;
 }
 
