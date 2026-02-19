@@ -1,46 +1,64 @@
-import { Database } from 'some-database-library';
+import { Client } from 'pg';
 
-class DatabaseService {
-  private db: Database;
+const client = new Client({
+  user: 'your-username',
+  host: 'localhost',
+  database: 'your-database',
+  password: 'your-password',
+  port: 5432,
+});
 
-  constructor() {
-    this.db = new Database();
-  }
+async function createTables() {
+  await client.connect();
 
-  public async createTables(): Promise<void> {
-    const createTableQuery = `
-      CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(100) NOT NULL,
-        email VARCHAR(100) UNIQUE NOT NULL
-      );
+  const createUsersTable = `
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(100) NOT NULL,
+      email VARCHAR(100) UNIQUE NOT NULL,
+      password VARCHAR(255) NOT NULL
+    )
+  `;
 
-      CREATE TABLE IF NOT EXISTS products (
-        id SERIAL PRIMARY KEY,
-        title VARCHAR(100) NOT NULL,
-        description TEXT,
-        price DECIMAL(10, 2) NOT NULL
-      );
-    `;
-    await this.db.query(createTableQuery);
-  }
+  const createProductsTable = `
+    CREATE TABLE IF NOT EXISTS products (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(100) NOT NULL,
+      price NUMERIC(10, 2) NOT NULL,
+      description TEXT,
+      imageUrl VARCHAR(255)
+    )
+  `;
 
-  public async seedData(): Promise<void> {
-    const seedUsersQuery = `
-      INSERT INTO users (name, email) VALUES
-      ('Alice', 'alice@example.com'),
-      ('Bob', 'bob@example.com');
-    `;
-
-    const seedProductsQuery = `
-      INSERT INTO products (title, description, price) VALUES
-      ('Product 1', 'Description for product 1', 29.99),
-      ('Product 2', 'Description for product 2', 49.99);
-    `;
-
-    await this.db.query(seedUsersQuery);
-    await this.db.query(seedProductsQuery);
-  }
+  await client.query(createUsersTable);
+  await client.query(createProductsTable);
+  console.log('Tables created successfully');
 }
 
-export default DatabaseService;
+async function seedData() {
+  const seedUsers = `
+    INSERT INTO users (name, email, password) VALUES 
+    ('John Doe', 'john@example.com', 'password123'),
+    ('Jane Smith', 'jane@example.com', 'password456')
+    ON CONFLICT (email) DO NOTHING;
+  `;
+
+  const seedProducts = `
+    INSERT INTO products (name, price, description, imageUrl) VALUES 
+    ('T-shirt', 19.99, 'Comfortable cotton t-shirt', 'https://example.com/tshirt.jpg'),
+    ('Jeans', 39.99, 'Stylish blue jeans', 'https://example.com/jeans.jpg')
+    ON CONFLICT (name) DO NOTHING;
+  `;
+
+  await client.query(seedUsers);
+  await client.query(seedProducts);
+  console.log('Seed data inserted successfully');
+}
+
+async function main() {
+  await createTables();
+  await seedData();
+  await client.end();
+}
+
+main().catch(err => console.error(err));
