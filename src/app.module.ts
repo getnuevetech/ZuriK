@@ -3,6 +3,9 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { Product } from './product.entity';
+import { Fabric } from './fabric.entity';
+import { Designer } from './designer.entity';
 
 @Module({
   imports: [
@@ -13,10 +16,11 @@ import { AppService } from './app.service';
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
-      entities: ['dist/**/*.entity.js'],
+      entities: [Product, Fabric, Designer],
       synchronize: true,
       logging: false,
     }),
+    TypeOrmModule.forFeature([Product, Fabric, Designer]),
   ],
   controllers: [AppController],
   providers: [AppService],
