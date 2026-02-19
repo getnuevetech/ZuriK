@@ -1,18 +1,21 @@
-FROM node:20
+# Updated Dockerfile to build only the NestJS backend
 
-RUN apt-get update && apt-get install -y libatomic1 && rm -rf /var/lib/apt/lists/*
+FROM node:14
 
-WORKDIR /app
+# Set the working directory
+WORKDIR /usr/src/app
 
+# Copy package.json and package-lock.json
 COPY package*.json ./
+
+# Install dependencies
 RUN npm install
 
-COPY . .
-RUN npm run build
+# Copy source files
+COPY ./backend ./backend
 
-ENV NODE_ENV=production
-ENV PORT=8080
+# Build the NestJS application
+RUN npm run build --prefix ./backend
 
-EXPOSE 8080
-
-CMD ["npm", "start"]
+# Start the application
+CMD [ "node", "./backend/dist/main.js" ]
