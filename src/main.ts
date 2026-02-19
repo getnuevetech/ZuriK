@@ -1,12 +1,16 @@
+import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
+import { AppModule } from './app.module';
+
 async function bootstrap() {
-    // Initialize the app
-    const app = await App.create();
+  const app = await NestFactory.create(AppModule);
 
-    // Seed the database before the app starts listening
-    await seedDatabase(); // Ensure you have a seedDatabase function implemented
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  app.enableCors();
 
-    // Make the app listen on the defined port
-    await app.listen();
+  const port = process.env.PORT || 3001;
+  await app.listen(port);
+  console.log(`African Fashion API running on port ${port}`);
 }
 
 bootstrap();
