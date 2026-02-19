@@ -1,64 +1,40 @@
-import { Client } from 'pg';
+// src/database.service.ts
 
-const client = new Client({
-  user: 'your-username',
-  host: 'localhost',
-  database: 'your-database',
-  password: 'your-password',
-  port: 5432,
+import { DataSource } from 'typeorm';
+import { User } from './entities/User';
+import { Product } from './entities/Product';
+
+const AppDataSource = new DataSource({
+    type: 'postgres',
+    host: 'localhost',
+    port: 5432,
+    username: 'your_username',
+    password: 'your_password',
+    database: 'your_database',
+    entities: [User, Product],
+    synchronize: true,
 });
 
-async function createTables() {
-  await client.connect();
+const seedDatabase = async () => {
+    await AppDataSource.initialize();
+    console.log('Database initialized');
 
-  const createUsersTable = `
-    CREATE TABLE IF NOT EXISTS users (
-      id SERIAL PRIMARY KEY,
-      name VARCHAR(100) NOT NULL,
-      email VARCHAR(100) UNIQUE NOT NULL,
-      password VARCHAR(255) NOT NULL
-    )
-  `;
+    const userRepository = AppDataSource.getRepository(User);
+    const productRepository = AppDataSource.getRepository(Product);
 
-  const createProductsTable = `
-    CREATE TABLE IF NOT EXISTS products (
-      id SERIAL PRIMARY KEY,
-      name VARCHAR(100) NOT NULL,
-      price NUMERIC(10, 2) NOT NULL,
-      description TEXT,
-      imageUrl VARCHAR(255)
-    )
-  `;
+    // Seed Users
+    const user1 = new User();
+    user1.name = 'John Doe';
+    user1.email = 'john.doe@example.com';
+    await userRepository.save(user1);
 
-  await client.query(createUsersTable);
-  await client.query(createProductsTable);
-  console.log('Tables created successfully');
-}
+    // Seed Products
+    const product1 = new Product();
+    product1.name = 'African Shirt';
+    product1.price = 20.99;
+    await productRepository.save(product1);
 
-async function seedData() {
-  const seedUsers = `
-    INSERT INTO users (name, email, password) VALUES 
-    ('John Doe', 'john@example.com', 'password123'),
-    ('Jane Smith', 'jane@example.com', 'password456')
-    ON CONFLICT (email) DO NOTHING;
-  `;
+    console.log('Database seeded');
+};
 
-  const seedProducts = `
-    INSERT INTO products (name, price, description, imageUrl) VALUES 
-    ('T-shirt', 19.99, 'Comfortable cotton t-shirt', 'https://example.com/tshirt.jpg'),
-    ('Jeans', 39.99, 'Stylish blue jeans', 'https://example.com/jeans.jpg')
-    ON CONFLICT (name) DO NOTHING;
-  `;
-
-  await client.query(seedUsers);
-  await client.query(seedProducts);
-  console.log('Seed data inserted successfully');
-}
-
-async function main() {
-  await createTables();
-  await seedData();
-  await client.end();
-}
-
-main().catch(err => console.error(err));
+seedDatabase().catch(error => console.log(error));
