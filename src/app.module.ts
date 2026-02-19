@@ -19,7 +19,7 @@ import { Designer } from './designer.entity';
       url: process.env.DATABASE_URL,
       entities: [Product, Fabric, Designer],
       synchronize: true,
-      logging: false,
+      logging: ['query', 'error'],
       ssl: true,
       extra: {
         ssl: {
@@ -32,4 +32,10 @@ import { Designer } from './designer.entity';
   controllers: [AppController],
   providers: [AppService, SeedService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor() {
+    console.log('🔌 AppModule initialized');
+    console.log('📦 Entities: Product, Fabric, Designer');
+    console.log('🌱 SeedService should run on startup');
+  }
+}
