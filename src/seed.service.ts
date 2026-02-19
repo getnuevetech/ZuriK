@@ -1,56 +1,69 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Product } from './product.entity';
-import { Fabric } from './fabric.entity';
-import { Designer } from './designer.entity';
+import { Seed } from './seed.entity';
+import { Logger } from '@nestjs/common';
 
 @Injectable()
-export class SeedService implements OnModuleInit {
-  constructor(
-    @InjectRepository(Product) private productRepo: Repository<Product>,
-    @InjectRepository(Fabric) private fabricRepo: Repository<Fabric>,
-    @InjectRepository(Designer) private designerRepo: Repository<Designer>,
-  ) {}
+export class SeedService {
+    private readonly logger = new Logger(SeedService.name);
 
-  async onModuleInit() {
-    await this.seed();
-  }
+    constructor(
+        @InjectRepository(Seed)
+        private readonly seedRepository: Repository<Seed>,
+    ) {}
 
-  async seed() {
-    const productCount = await this.productRepo.count();
-    
-    if (productCount === 0) {
-      console.log('🌱 Seeding products...');
-      await this.productRepo.insert([
-        { name: 'Ankara Fabric Bundle', description: 'Premium quality Ankara fabric', price: 45.99, active: true },
-        { name: 'Kente Cloth', description: 'Traditional Kente weaving', price: 89.99, active: true },
-        { name: 'Adire Indigo Dye', description: 'Authentic Adire indigo fabric', price: 52.50, active: true },
-        { name: 'Bogolan Mud Cloth', description: 'Traditional Bogolan pattern', price: 67.99, active: true },
-      ]);
-      console.log('✅ Products seeded!');
+    async createSeed(seedData: Partial<Seed>): Promise<Seed> {
+        try {
+            const seed = await this.seedRepository.create(seedData);
+            return await this.seedRepository.save(seed);
+        } catch (error) {
+            this.logger.error('Error creating seed:', error);
+            throw new Error('Could not create seed. Please try again later.');
+        }
     }
 
-    const fabricCount = await this.fabricRepo.count();
-    if (fabricCount === 0) {
-      console.log('🌱 Seeding fabrics...');
-      await this.fabricRepo.insert([
-        { name: '100% Cotton Ankara', type: 'Ankara', width: '45 inches', price: 12.99, origin: 'Ghana' },
-        { name: 'Silk Blend Kente', type: 'Kente', width: '36 inches', price: 25.50, origin: 'Ghana' },
-        { name: 'Pure Adire Cotton', type: 'Adire', width: '45 inches', price: 15.99, origin: 'Nigeria' },
-      ]);
-      console.log('✅ Fabrics seeded!');
+    async findAllSeeds(): Promise<Seed[]> {
+        try {
+            return await this.seedRepository.find();
+        } catch (error) {
+            this.logger.error('Error finding seeds:', error);
+            throw new Error('Could not retrieve seeds. Please try again later.');
+        }
     }
 
-    const designerCount = await this.designerRepo.count();
-    if (designerCount === 0) {
-      console.log('🌱 Seeding designers...');
-      await this.designerRepo.insert([
-        { name: 'Stella Jean', country: 'Haiti/Italy', specialty: 'Contemporary African Fashion', bio: 'Stella Jean brings African aesthetics to modern design' },
-        { name: 'Tunde Ajakaiye', country: 'Nigeria', specialty: 'Traditional & Contemporary', bio: 'Master of Ankara and luxury African wear' },
-        { name: 'Ozwald Boateng', country: 'Ghana', specialty: 'Luxury Tailoring', bio: 'High-end bespoke African fashion' },
-      ]);
-      console.log('✅ Designers seeded!');
+    async findSeedById(id: number): Promise<Seed> {
+        try {
+            const seed = await this.seedRepository.findOne(id);
+            if (!seed) {
+                this.logger.warn(`Seed with id ${id} not found.`);
+                throw new Error(`Seed with id ${id} not found.`);
+            }
+            return seed;
+        } catch (error) {
+            this.logger.error('Error finding seed by ID:', error);
+            throw new Error('Could not retrieve seed. Please try again later.');
+        }
     }
-  }
+
+    async updateSeed(id: number, seedData: Partial<Seed>): Promise<Seed> {
+        try {
+            await this.findSeedById(id); // check if the seed exists
+            await this.seedRepository.update(id, seedData);
+            return this.findSeedById(id);
+        } catch (error) {
+            this.logger.error('Error updating seed:', error);
+            throw new Error('Could not update seed. Please try again later.');
+        }
+    }
+
+    async deleteSeed(id: number): Promise<void> {
+        try {
+            const seed = await this.findSeedById(id);
+            await this.seedRepository.delete(seed);
+        } catch (error) {
+            this.logger.error('Error deleting seed:', error);
+            throw new Error('Could not delete seed. Please try again later.');
+        }
+    }
 }
