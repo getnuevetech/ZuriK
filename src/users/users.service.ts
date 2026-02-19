@@ -1,0 +1,38 @@
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User, UserRole } from '../user/user.entity';
+import { UpdateUserDto } from './dto/update-user.dto';
+
+@Injectable()
+export class UsersService {
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+  ) {}
+
+  async findById(id: string): Promise<Partial<User>> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const { passwordHash, refreshToken, ...safe } = user;
+    return safe;
+  }
+
+  async update(id: string, dto: UpdateUserDto, requestingUser: User): Promise<Partial<User>> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    // Only admins can change roles
+    const { role, ...safeDto } = dto;
+    if (role !== undefined && requestingUser.role !== UserRole.ADMIN) {
+      throw new ForbiddenException('Only admins can change user roles');
+    }
+    Object.assign(user, role !== undefined ? dto : safeDto);
+    const saved = await this.userRepository.save(user);
+    const { passwordHash, refreshToken, ...safe } = saved;
+    return safe;
+  }
+}
