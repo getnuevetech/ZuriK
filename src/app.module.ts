@@ -20,6 +20,12 @@ import { Designer } from './designer.entity';
       entities: [Product, Fabric, Designer],
       synchronize: true,
       logging: false,
+      ssl: true,
+      extra: {
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      },
     }),
     TypeOrmModule.forFeature([Product, Fabric, Designer]),
   ],
