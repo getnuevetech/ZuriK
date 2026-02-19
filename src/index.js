@@ -1,41 +1,42 @@
-// src/index.js
+const express = require('express');
+const { Sequelize } = require('sequelize');
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-// Initialize logging
-const logger = (message) => console.log(`[LOG] ${new Date().toISOString()}: ${message}`);
+// Initialize Sequelize
+const sequelize = new Sequelize('sqlite::memory:'); // Adjust to your preferred database
 
+// Define your models
+const Item = sequelize.define('Item', {
+    name: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    description: {
+        type: Sequelize.TEXT,
+        allowNull: true
+    }
+});
+
+// Create tables and seed data on startup
 const initializeDatabase = async () => {
-    logger('Database initialization started.');
-    try {
-        // Database connection logic here
-        logger('Attempting to connect to the database...');
-        await connectToDatabase(); // Placeholder for actual connection function
-        logger('Database connected successfully.');
-    } catch (err) {
-        logger(`Database connection failed: ${err.message}`);
-        throw err;
-    }
+    await sequelize.sync({ force: true }); // Creates the tables
+    console.log('Database & tables created!');
 
-    logger('Database initialization completed. Seeding data now...');
+    // Seed data
+    await Item.bulkCreate([
+        { name: 'Dress', description: 'A beautiful dress' },
+        { name: 'Hat', description: 'Stylish hat' },
+        { name: 'Bag', description: 'Trendy bag' }
+    ]);
+    console.log('Sample data seeded!');
 };
 
-const seedDatabase = async () => {
-    logger('Database seeding started.');
-    try {
-        // Data seeding logic here
-        logger('Seeding products...');
-        const result = await insertProducts(); // Placeholder for actual insert function
-        logger(`Products inserted successfully: ${result.insertedCount} products.`);
-    } catch (err) {
-        logger(`Error during database seeding: ${err.message}`);
-        throw err;
-    }
-    logger('Database seeding completed.');
-};
+app.get('/', (req, res) => {
+    res.send('Welcome to the African Fashion E-commerce API');
+});
 
-const startApp = async () => {
-    await initializeDatabase();
-    await seedDatabase();
-    logger('Application started successfully.');
-};
-
-startApp();
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+    initializeDatabase();
+});
