@@ -29,7 +29,12 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    Object.assign(user, dto);
+    // Only admins can change roles
+    const { role, ...safeDto } = dto;
+    if (role !== undefined && requestingUser.role !== UserRole.ADMIN) {
+      throw new ForbiddenException('Only admins can change user roles');
+    }
+    Object.assign(user, role !== undefined ? dto : safeDto);
     const saved = await this.userRepository.save(user);
     const { passwordHash, refreshToken, ...safe } = saved;
     return safe;
