@@ -8,14 +8,16 @@ import { User, UserRole } from '../user/user.entity';
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
+  private checkSelfOrAdmin(requestingUser: User, targetId: string) {
+    if (requestingUser.id !== targetId && requestingUser.role !== UserRole.ADMIN) {
+      throw new ForbiddenException('Access denied');
+    }
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getUser(@Param('id') id: string, @Request() req) {
-    const requestingUser: User = req.user;
-    // Only allow self or admin
-    if (requestingUser.id !== id && requestingUser.role !== UserRole.ADMIN) {
-      throw new ForbiddenException('Access denied');
-    }
+    this.checkSelfOrAdmin(req.user, id);
     return this.usersService.findById(id);
   }
 
@@ -26,6 +28,7 @@ export class UsersController {
     @Body() dto: UpdateUserDto,
     @Request() req,
   ) {
+    this.checkSelfOrAdmin(req.user, id);
     return this.usersService.update(id, dto, req.user);
   }
 }

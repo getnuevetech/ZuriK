@@ -21,10 +21,6 @@ export class UsersService {
   }
 
   async update(id: string, dto: UpdateUserDto, requestingUser: User): Promise<Partial<User>> {
-    // Users can only update themselves, admins can update anyone
-    if (requestingUser.id !== id && requestingUser.role !== UserRole.ADMIN) {
-      throw new ForbiddenException('You can only update your own profile');
-    }
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException('User not found');
