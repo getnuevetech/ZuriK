@@ -1,23 +1,17 @@
-import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
-import { SeedService } from './seed.service';
+import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { DatabaseService } from './database.service';
 
 @Injectable()
-export class AppService implements OnModuleInit {
-  private readonly logger = new Logger(AppService.name);
+export class AppService implements OnApplicationBootstrap {
+  constructor(private readonly databaseService: DatabaseService) {}
 
-  constructor(private readonly seedService: SeedService) {}
-
-  async onModuleInit() {
-    this.logger.log('🚀 AppService.onModuleInit() - Starting database seeding...');
+  async onApplicationBootstrap() {
+    console.log('Application is bootstrapping, starting database seed.');
     try {
-      await this.seedService.seed();
-      this.logger.log('✅ Database seeding completed successfully!');
+      await this.databaseService.seedDatabase();
+      console.log('Database seeding completed successfully.');
     } catch (error) {
-      this.logger.error('❌ Error during database seeding:', error);
+      console.error('Error during database seeding:', error);
     }
-  }
-
-  getHello(): string {
-    return 'African Fashion API';
   }
 }
