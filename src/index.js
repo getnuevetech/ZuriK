@@ -1,42 +1,49 @@
 const express = require('express');
-const { Sequelize } = require('sequelize');
+const { Pool } = require('pg');
 const app = express();
+
+// Database connection
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
+
+// Get all products
+app.get('/products', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM products;');
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Get all fabrics
+app.get('/fabrics', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM fabrics;');
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error('Error fetching fabrics:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Get all designers
+app.get('/designers', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM designers;');
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error('Error fetching designers:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
-
-// Initialize Sequelize
-const sequelize = new Sequelize('sqlite::memory:'); // Adjust to your preferred database
-
-// Define your models
-const Item = sequelize.define('Item', {
-    name: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    description: {
-        type: Sequelize.TEXT,
-        allowNull: true
-    }
-});
-
-// Create tables and seed data on startup
-const initializeDatabase = async () => {
-    await sequelize.sync({ force: true }); // Creates the tables
-    console.log('Database & tables created!');
-
-    // Seed data
-    await Item.bulkCreate([
-        { name: 'Dress', description: 'A beautiful dress' },
-        { name: 'Hat', description: 'Stylish hat' },
-        { name: 'Bag', description: 'Trendy bag' }
-    ]);
-    console.log('Sample data seeded!');
-};
-
-app.get('/', (req, res) => {
-    res.send('Welcome to the African Fashion E-commerce API');
-});
-
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-    initializeDatabase();
+  console.log(`Server is running on port ${PORT}`);
 });
