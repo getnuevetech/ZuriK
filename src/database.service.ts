@@ -1,40 +1,56 @@
-// src/database.service.ts
+import { Sequelize } from 'sequelize';
+import { DataTypes } from 'sequelize';
 
-import { DataSource } from 'typeorm';
-import { User } from './entities/User';
-import { Product } from './entities/Product';
-
-const AppDataSource = new DataSource({
-    type: 'postgres',
-    host: 'localhost',
-    port: 5432,
-    username: 'your_username',
-    password: 'your_password',
-    database: 'your_database',
-    entities: [User, Product],
-    synchronize: true,
+const sequelize = new Sequelize('database', 'username', 'password', {
+  host: 'localhost',
+  dialect: 'mysql'
 });
 
-const seedDatabase = async () => {
-    await AppDataSource.initialize();
-    console.log('Database initialized');
+const User = sequelize.define('User', {
+  // Define attributes
+  username: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  password: {
+    type: DataTypes.STRING,
+    allowNull: false
+  }
+});
 
-    const userRepository = AppDataSource.getRepository(User);
-    const productRepository = AppDataSource.getRepository(Product);
+const Product = sequelize.define('Product', {
+  // Define attributes
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  price: {
+    type: DataTypes.FLOAT,
+    allowNull: false
+  }
+});
 
-    // Seed Users
-    const user1 = new User();
-    user1.name = 'John Doe';
-    user1.email = 'john.doe@example.com';
-    await userRepository.save(user1);
+const initDb = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log('Connection has been established successfully.');
+    await sequelize.sync({ force: true }); // This creates tables
 
-    // Seed Products
-    const product1 = new Product();
-    product1.name = 'African Shirt';
-    product1.price = 20.99;
-    await productRepository.save(product1);
+    // Seed data
+    await User.bulkCreate([
+      { username: 'user1', password: 'pass1' },
+      { username: 'user2', password: 'pass2' }
+    ]);
 
-    console.log('Database seeded');
+    await Product.bulkCreate([
+      { name: 'Product 1', price: 10.99 },
+      { name: 'Product 2', price: 22.99 }
+    ]);
+
+    console.log('Database initialized and data seeded successfully.');
+  } catch (error) {
+    console.error('Unable to connect to the database:', error);
+  }
 };
 
-seedDatabase().catch(error => console.log(error));
+initDb();
