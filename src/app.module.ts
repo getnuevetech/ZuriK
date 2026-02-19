@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { SeedService } from './seed.service';
-import { Product } from './product.entity';
-import { Fabric } from './fabric.entity';
-import { Designer } from './designer.entity';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { HealthModule } from './health/health.module';
+import { User } from './user/user.entity';
 
 @Module({
   imports: [
@@ -14,28 +12,22 @@ import { Designer } from './designer.entity';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      url: process.env.DATABASE_URL,
-      entities: [Product, Fabric, Designer],
-      synchronize: true,
-      logging: ['query', 'error'],
-      ssl: true,
-      extra: {
-        ssl: {
-          rejectUnauthorized: false,
-        },
-      },
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        url: configService.get<string>('DATABASE_URL'),
+        entities: [User],
+        synchronize: configService.get<string>('NODE_ENV') !== 'production',
+        ssl: configService.get<string>('NODE_ENV') === 'production'
+          ? { rejectUnauthorized: false }
+          : false,
+      }),
     }),
-    TypeOrmModule.forFeature([Product, Fabric, Designer]),
+    AuthModule,
+    UsersModule,
+    HealthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, SeedService],
 })
-export class AppModule {
-  constructor() {
-    console.log('🔌 AppModule initialized');
-    console.log('📦 Entities: Product, Fabric, Designer');
-    console.log('🌱 SeedService should run on startup');
-  }
-}
+export class AppModule {}

@@ -1,12 +1,24 @@
+import 'reflect-metadata';
+import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
+import { AppModule } from './app.module';
+
 async function bootstrap() {
-    // Initialize the app
-    const app = await App.create();
+  const app = await NestFactory.create(AppModule);
 
-    // Seed the database before the app starts listening
-    await seedDatabase(); // Ensure you have a seedDatabase function implemented
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
-    // Make the app listen on the defined port
-    await app.listen();
+  app.enableCors();
+
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
+  console.log(`Application running on port ${port}`);
 }
 
 bootstrap();

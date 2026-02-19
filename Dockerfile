@@ -1,18 +1,27 @@
-FROM node:20
-
-RUN apt-get update && apt-get install -y libatomic1 && rm -rf /var/lib/apt/lists/*
+# Build stage
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN npm ci --only=production=false
 
 COPY . .
 RUN npm run build
 
+# Production stage
+FROM node:18-alpine AS production
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci --only=production
+
+COPY --from=builder /app/dist ./dist
+
 ENV NODE_ENV=production
-ENV PORT=8080
+ENV PORT=3000
 
-EXPOSE 8080
+EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["node", "dist/main"]
