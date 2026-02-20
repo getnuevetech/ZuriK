@@ -57,7 +57,6 @@ export class ReviewsService {
     });
 
     const saved = await this.reviewRepo.save(review) as Review;
-    await this.recalculateProductRatings(productId);
     return saved;
   }
 
@@ -145,7 +144,6 @@ export class ReviewsService {
     Object.assign(review, dto);
     review.status = ReviewStatus.PENDING;
     const saved = await this.reviewRepo.save(review);
-    await this.recalculateProductRatings(review.productId);
     return saved;
   }
 
