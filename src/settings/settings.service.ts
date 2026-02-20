@@ -1,7 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PlatformSettings } from './entities/platform-settings.entity';
+import { ThemeSettings, ThemeName } from './entities/theme-settings.entity';
+import { THEME_PRESETS } from './theme-presets';
 import { CreateSettingsDto } from './dto/create-settings.dto';
 
 @Injectable()
@@ -9,6 +11,8 @@ export class SettingsService {
   constructor(
     @InjectRepository(PlatformSettings)
     private readonly settingsRepo: Repository<PlatformSettings>,
+    @InjectRepository(ThemeSettings)
+    private readonly themeRepo: Repository<ThemeSettings>,
   ) {}
 
   async create(dto: CreateSettingsDto): Promise<PlatformSettings> {
@@ -47,5 +51,34 @@ export class SettingsService {
       platformFee: fee,
       total: designPrice + fabricPrice + fee,
     };
+  }
+
+  async getThemeSettings(): Promise<{ name: string; colors: Record<string, string> }> {
+    let theme = await this.themeRepo.findOne({ where: {} });
+    if (!theme) {
+      theme = this.themeRepo.create({ activeTheme: ThemeName.BOLD_VIBRANT_AFRICAN });
+      theme = await this.themeRepo.save(theme);
+    }
+    const preset = THEME_PRESETS[theme.activeTheme];
+    return { name: preset.name, colors: preset.colors };
+  }
+
+  async updateTheme(themeName: string): Promise<{ name: string; colors: Record<string, string> }> {
+    if (!Object.values(ThemeName).includes(themeName as ThemeName)) {
+      throw new BadRequestException(`Invalid theme: ${themeName}`);
+    }
+    let theme = await this.themeRepo.findOne({ where: {} });
+    if (!theme) {
+      theme = this.themeRepo.create({ activeTheme: themeName as ThemeName });
+    } else {
+      theme.activeTheme = themeName as ThemeName;
+    }
+    await this.themeRepo.save(theme);
+    const preset = THEME_PRESETS[themeName as ThemeName];
+    return { name: preset.name, colors: preset.colors };
+  }
+
+  getThemePresets(): Record<string, { name: string; description: string; colors: Record<string, string> }> {
+    return THEME_PRESETS;
   }
 }

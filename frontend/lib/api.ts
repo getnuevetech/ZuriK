@@ -350,6 +350,45 @@ export const notificationsApi = {  list: (params?: { page?: number; limit?: numb
     api.delete(`/notifications/${id}`).then((r) => r.data),
 };
 
+// --- Homepage Admin API ---
+export const homepageAdminApi = {
+  // Theme
+  getTheme: () => api.get('/settings/theme'),
+  getThemePresets: () => api.get('/settings/theme/presets'),
+  updateTheme: (theme: string) => api.patch('/settings/theme', { activeTheme: theme }),
+
+  // Featured
+  getFeaturedSections: () => api.get('/admin/featured'),
+  createFeaturedSection: (data: Record<string, unknown>) => api.post('/admin/featured', data),
+  updateFeaturedSection: (id: string, data: Record<string, unknown>) => api.patch(`/admin/featured/${id}`, data),
+  deleteFeaturedSection: (id: string) => api.delete(`/admin/featured/${id}`),
+  reorderFeaturedSections: (ids: string[]) => api.post('/admin/featured/reorder', { orderedIds: ids }),
+  previewFeaturedProducts: (id: string) => api.get(`/admin/featured/${id}/products`),
+
+  // Countries
+  getCountryHeroes: () => api.get('/admin/homepage/countries'),
+  createCountryHero: (data: Record<string, unknown>) => api.post('/admin/homepage/countries', data),
+  updateCountryHero: (id: string, data: Record<string, unknown>) => api.patch(`/admin/homepage/countries/${id}`, data),
+  deleteCountryHero: (id: string) => api.delete(`/admin/homepage/countries/${id}`),
+  addCountryHeroImage: (id: string, data: Record<string, unknown>) => api.post(`/admin/homepage/countries/${id}/images`, data),
+  removeCountryHeroImage: (id: string, index: number) => api.delete(`/admin/homepage/countries/${id}/images/${index}`),
+  reorderCountries: (ids: string[]) => api.post('/admin/homepage/countries/reorder', { orderedIds: ids }),
+
+  // Collections
+  getCollections: () => api.get('/admin/homepage/collections'),
+  createCollection: (data: Record<string, unknown>) => api.post('/admin/homepage/collections', data),
+  updateCollection: (id: string, data: Record<string, unknown>) => api.patch(`/admin/homepage/collections/${id}`, data),
+  deleteCollection: (id: string) => api.delete(`/admin/homepage/collections/${id}`),
+  reorderCollections: (ids: string[]) => api.post('/admin/homepage/collections/reorder', { orderedIds: ids }),
+
+  // Layout
+  getLayout: () => api.get('/homepage/layout'),
+  updateLayout: (sections: Record<string, unknown>[]) => api.patch('/admin/homepage/layout', { sections }),
+
+  // Combined homepage data
+  getHomepageData: () => api.get('/homepage'),
+};
+
 // --- Admin API ---
 export const adminApi = {
   // Analytics

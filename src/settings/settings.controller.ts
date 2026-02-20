@@ -35,3 +35,30 @@ export class SettingsController {
     return this.settingsService.update(id, dto);
   }
 }
+
+@ApiTags('Theme')
+@Controller('settings/theme')
+export class ThemeController {
+  constructor(private readonly settingsService: SettingsService) {}
+
+  @Get()
+  getTheme() {
+    return this.settingsService.getThemeSettings();
+  }
+
+  @Get('presets')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  getPresets() {
+    return this.settingsService.getThemePresets();
+  }
+
+  @Patch()
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  updateTheme(@Body('activeTheme') activeTheme: string) {
+    return this.settingsService.updateTheme(activeTheme);
+  }
+}

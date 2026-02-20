@@ -1,0 +1,55 @@
+export const THEME_PRESETS = {
+  BOLD_VIBRANT_AFRICAN: {
+    name: 'Bold & Vibrant African',
+    description: 'Gold, Terracotta, Emerald — rich & cultural',
+    colors: {
+      primary: '#D4A017',
+      secondary: '#C84B31',
+      accent: '#2D6A4F',
+      dark: '#1A1A2E',
+      lightBg: '#FFF8F0',
+      text: '#2D2D2D',
+      textLight: '#6B6B6B',
+      buttonText: '#FFFFFF',
+      success: '#2D6A4F',
+      warning: '#D4A017',
+      error: '#C84B31',
+    },
+  },
+  WARM_EARTHY_LUXE: {
+    name: 'Warm & Earthy Luxe',
+    description: 'Burnt Orange, Burgundy, Kente Gold — luxury & warmth',
+    colors: {
+      primary: '#E07A2F',
+      secondary: '#800020',
+      accent: '#FFB800',
+      dark: '#2C1810',
+      lightBg: '#FAF3E8',
+      text: '#3D2B1F',
+      textLight: '#7A6455',
+      buttonText: '#FFFFFF',
+      success: '#2D6A4F',
+      warning: '#FFB800',
+      error: '#800020',
+    },
+  },
+  MODERN_PUNCHY: {
+    name: 'Modern & Punchy',
+    description: 'Ankara Blue, Sunset Orange, Yellow — clean & contemporary',
+    colors: {
+      primary: '#1B4965',
+      secondary: '#FF6B35',
+      accent: '#FFC233',
+      dark: '#0D1B2A',
+      lightBg: '#FEFCF8',
+      text: '#1E1E1E',
+      textLight: '#5A5A5A',
+      buttonText: '#FFFFFF',
+      success: '#2D6A4F',
+      warning: '#FFC233',
+      error: '#FF6B35',
+    },
+  },
+};
+
+export type ThemeName = keyof typeof THEME_PRESETS;
