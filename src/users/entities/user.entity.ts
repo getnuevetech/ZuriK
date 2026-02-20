@@ -34,6 +34,27 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
+  @Column({ nullable: true })
+  phone: string;
+
+  @Column({ nullable: true })
+  addressLine1: string;
+
+  @Column({ nullable: true })
+  addressLine2: string;
+
+  @Column({ nullable: true })
+  city: string;
+
+  @Column({ nullable: true })
+  state: string;
+
+  @Column({ nullable: true })
+  country: string;
+
+  @Column({ nullable: true })
+  postalCode: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

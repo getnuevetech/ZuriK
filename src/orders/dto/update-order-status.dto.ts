@@ -11,5 +11,5 @@ export class UpdateOrderStatusDto {
 
   @IsOptional()
   @IsString()
-  rejectionReason?: string;
+  qaComments?: string;
 }

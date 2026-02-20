@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 
 @Entity('fabrics')
@@ -9,45 +9,37 @@ export class Fabric {
   @Column()
   name: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'text' })
   description: string;
 
-  @Column({ type: 'simple-array', nullable: true })
+  @Column('simple-array', { nullable: true })
   images: string[];
 
   @Column({ nullable: true })
   type: string;
 
-  @Column({ type: 'simple-array', nullable: true })
+  @Column('simple-array', { nullable: true })
   colors: string[];
 
-  @Column({ type: 'simple-array', nullable: true })
+  @Column('simple-array', { nullable: true })
   patterns: string[];
 
   @Column({ nullable: true })
   material: string;
 
-  @Column({ nullable: true })
-  width: string;
+  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
+  width: number;
 
-  @Column({ nullable: true })
+  @Column()
   country: string;
 
-  @Column({ nullable: true })
-  origin: string;
-
-  @Column('decimal', { precision: 10, scale: 2, nullable: true })
+  @Column('decimal', { precision: 10, scale: 2 })
   sellerPrice: number;
 
   @Column('decimal', { precision: 10, scale: 2 })
   customerPrice: number;
 
-  // Keep backward compatibility
-  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
-  price: number;
-
-  @ManyToOne(() => User, { nullable: true, eager: false })
-  @JoinColumn()
+  @ManyToOne(() => User, { eager: true })
   seller: User;
 
   @Column({ default: 0 })
@@ -55,9 +47,6 @@ export class Fabric {
 
   @Column({ default: true })
   isActive: boolean;
-
-  @Column({ nullable: true })
-  image: string;
 
   @CreateDateColumn()
   createdAt: Date;

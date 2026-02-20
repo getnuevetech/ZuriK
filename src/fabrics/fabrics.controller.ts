@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Param, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards, Request } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -34,5 +34,12 @@ export class FabricsController {
   @Roles(UserRole.FABRIC_SELLER, UserRole.ADMIN)
   update(@Param('id') id: string, @Request() req: RequestWithUser, @Body() dto: UpdateFabricDto) {
     return this.fabricsService.update(id, req.user.id, req.user.role, dto);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.FABRIC_SELLER, UserRole.ADMIN)
+  remove(@Param('id') id: string, @Request() req: RequestWithUser) {
+    return this.fabricsService.remove(id, req.user.id, req.user.role);
   }
 }

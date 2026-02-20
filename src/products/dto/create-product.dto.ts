@@ -4,9 +4,8 @@ export class CreateProductDto {
   @IsString()
   name: string;
 
-  @IsOptional()
   @IsString()
-  description?: string;
+  description: string;
 
   @IsOptional()
   @IsArray()
@@ -20,14 +19,12 @@ export class CreateProductDto {
   @IsArray()
   tags?: string[];
 
-  @IsOptional()
   @IsString()
-  country?: string;
+  country: string;
 
-  @IsOptional()
   @IsNumber()
   @Min(0)
-  designerPrice?: number;
+  designerPrice: number;
 
   @IsNumber()
   @Min(0)

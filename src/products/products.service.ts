@@ -17,7 +17,6 @@ export class ProductsService {
     const product = this.productRepo.create({
       ...dto,
       designer: { id: designerId },
-      price: dto.customerPrice,
     });
     return this.productRepo.save(product);
   }
@@ -52,7 +51,6 @@ export class ProductsService {
       throw new ForbiddenException('You can only update your own products');
     }
     Object.assign(product, dto);
-    if (dto.customerPrice) product.price = dto.customerPrice;
     return this.productRepo.save(product);
   }
 
@@ -68,7 +66,6 @@ export class ProductsService {
       throw new ForbiddenException('You can only deactivate your own products');
     }
     product.isActive = false;
-    product.active = false;
     await this.productRepo.save(product);
   }
 }

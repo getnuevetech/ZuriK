@@ -2,40 +2,43 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
-  Logger,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Order, OrderStatus } from './entities/order.entity';
+import { Repository, In } from 'typeorm';
+import { Order, OrderType, OrderStatus } from './entities/order.entity';
+import { FabricSellerOrder } from './entities/fabric-seller-order.entity';
+import { DesignerOrder } from './entities/designer-order.entity';
 import { UserRole, User } from '../users/entities/user.entity';
 import { Product } from '../products/entities/product.entity';
 import { Fabric } from '../fabrics/entities/fabric.entity';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { CalculateOrderDto } from './dto/calculate-order.dto';
+import { Measurement } from '../measurements/entities/measurement.entity';
+import { CreateCustomDesignOrderDto } from './dto/create-custom-design-order.dto';
+import { CreateReadyToWearOrderDto } from './dto/create-ready-to-wear-order.dto';
+import { CreateFabricOnlyOrderDto } from './dto/create-fabric-only-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
-import { NotificationsService } from '../notifications/notifications.service';
-import { SettingsService } from '../settings/settings.service';
-import { TaxesService } from '../taxes/taxes.service';
+import { UpdateSubOrderStatusDto, UpdateDesignerSubOrderStatusDto } from './dto/update-sub-order-status.dto';
+import { UpdateSubOrderTrackingDto } from './dto/update-sub-order-tracking.dto';
 
-// Designer/seller payout ratio
-const PAYOUT_RATIO = 0.9;
+const PLATFORM_FEE_RATE = 0.10;
 
 @Injectable()
 export class OrdersService {
-  private readonly logger = new Logger(OrdersService.name);
-
   constructor(
     @InjectRepository(Order)
     private readonly orderRepo: Repository<Order>,
+    @InjectRepository(FabricSellerOrder)
+    private readonly fabricSellerOrderRepo: Repository<FabricSellerOrder>,
+    @InjectRepository(DesignerOrder)
+    private readonly designerOrderRepo: Repository<DesignerOrder>,
     @InjectRepository(Product)
     private readonly productRepo: Repository<Product>,
     @InjectRepository(Fabric)
     private readonly fabricRepo: Repository<Fabric>,
+    @InjectRepository(Measurement)
+    private readonly measurementRepo: Repository<Measurement>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
-    private readonly notificationsService: NotificationsService,
-    private readonly settingsService: SettingsService,
-    private readonly taxesService: TaxesService,
   ) {}
 
   private generateOrderNumber(): string {
@@ -45,230 +48,305 @@ export class OrdersService {
     return `ORD-${datePart}-${uniquePart}`;
   }
 
-  async calculateOrder(dto: CalculateOrderDto): Promise<object> {
-    const product = await this.productRepo.findOne({ where: { id: dto.designId } });
-    const fabric = await this.fabricRepo.findOne({ where: { id: dto.fabricId } });
-
-    if (!product) throw new NotFoundException(`Design ${dto.designId} not found`);
-    if (!fabric) throw new NotFoundException(`Fabric ${dto.fabricId} not found`);
-
-    const designPrice = Number(product.customerPrice || product.price || 0);
-    const fabricPrice = Number(fabric.customerPrice || fabric.price || 0);
-    const subtotal = designPrice + fabricPrice;
-
-    const settings = await this.settingsService.findActive();
-    const platformFee = settings ? this.settingsService.calculateFee(designPrice, fabricPrice, settings) : 0;
-
-    const country = dto.country || 'Nigeria';
-    const taxPreview = await this.taxesService.previewTax(subtotal + platformFee, country) as any;
-    const taxAmount = taxPreview.taxAmount || 0;
-    const taxRate = taxPreview.totalTaxRate || 0;
-
-    const shippingCost = 0;
-    const totalAmount = subtotal + platformFee + taxAmount + shippingCost;
-    const designerPayout = designPrice * PAYOUT_RATIO;
-    const fabricSellerPayout = fabricPrice * PAYOUT_RATIO;
-    const platformRevenue = platformFee + (designPrice * (1 - PAYOUT_RATIO)) + (fabricPrice * (1 - PAYOUT_RATIO));
-
+  private getQaAddress(qaUser?: User): { name: string; address: string; city: string; country: string } {
     return {
-      designPrice,
-      fabricPrice,
-      subtotal,
-      platformFee,
-      taxAmount,
-      taxRate,
-      shippingCost,
-      totalAmount,
-      designerPayout,
-      fabricSellerPayout,
-      platformRevenue,
+      name: qaUser ? `${qaUser.firstName || ''} ${qaUser.lastName || ''}`.trim() || 'QA Team' : 'QA Team',
+      address: qaUser?.addressLine1 || 'QA Facility Address',
+      city: qaUser?.city || 'Lagos',
+      country: qaUser?.country || 'Nigeria',
     };
   }
 
-  async createOrder(customerId: string, dto: CreateOrderDto): Promise<Order> {
-    const product = await this.productRepo.findOne({
-      where: { id: dto.designId },
+  async createCustomDesignOrder(customerId: string, dto: CreateCustomDesignOrderDto): Promise<Order> {
+    const design = await this.productRepo.findOne({
+      where: { id: dto.designId, isActive: true },
       relations: ['designer'],
     });
-    if (!product) throw new NotFoundException(`Design ${dto.designId} not found`);
+    if (!design) throw new NotFoundException(`Design ${dto.designId} not found or inactive`);
 
     const fabric = await this.fabricRepo.findOne({
-      where: { id: dto.fabricId },
+      where: { id: dto.fabricId, isActive: true },
       relations: ['seller'],
     });
-    if (!fabric) throw new NotFoundException(`Fabric ${dto.fabricId} not found`);
+    if (!fabric) throw new NotFoundException(`Fabric ${dto.fabricId} not found or inactive`);
 
-    const designPrice = Number(product.customerPrice || product.price || 0);
-    const fabricPrice = Number(fabric.customerPrice || fabric.price || 0);
-    const subtotal = designPrice + fabricPrice;
+    if (fabric.stock <= 0) throw new BadRequestException('Fabric is out of stock');
 
-    const settings = await this.settingsService.findActive();
-    const platformFee = settings ? this.settingsService.calculateFee(designPrice, fabricPrice, settings) : 0;
-
-    const country = dto.country || 'Nigeria';
-    const taxPreview = await this.taxesService.previewTax(subtotal + platformFee, country) as any;
-    const taxAmount = taxPreview.taxAmount || 0;
-    const taxRate = taxPreview.totalTaxRate || 0;
-
-    const shippingCost = 0;
-    const totalAmount = subtotal + platformFee + taxAmount + shippingCost;
-    const designerPayout = designPrice * PAYOUT_RATIO;
-    const fabricSellerPayout = fabricPrice * PAYOUT_RATIO;
-    const platformRevenue = platformFee + (designPrice * (1 - PAYOUT_RATIO)) + (fabricPrice * (1 - PAYOUT_RATIO));
-
-    // Find available QA
-    const qaUser = await this.userRepo.findOne({
-      where: { role: UserRole.QA, isActive: true },
-    });
-
-    const order = await this.orderRepo.save(this.orderRepo.create({
-      orderNumber: this.generateOrderNumber(),
-      customer: { id: customerId },
-      design: { id: dto.designId },
-      fabric: { id: dto.fabricId },
-      measurement: dto.measurementId ? { id: dto.measurementId } : undefined,
-      qaAssignee: qaUser || undefined,
-      designPrice,
-      fabricPrice,
-      subtotal,
-      platformFee,
-      taxAmount,
-      taxRate,
-      shippingCost,
-      totalAmount,
-      totalPrice: totalAmount,
-      designerPayout,
-      fabricSellerPayout,
-      platformRevenue,
-      designerEarnings: designerPayout,
-      fabricSellerEarnings: fabricSellerPayout,
-      shippingAddress: dto.shippingAddress,
-      qaAddress: qaUser ? {
-        facilityName: undefined,
-        addressLine1: undefined,
-        city: undefined,
-        state: undefined,
-        country: undefined,
-        postalCode: undefined,
-      } : undefined,
-      customerNotes: dto.customerNotes,
-      status: OrderStatus.PENDING_PAYMENT,
-    }));
-
-    // Send notifications (non-critical)
-    const customer = await this.userRepo.findOne({ where: { id: customerId } });
-
-    try {
-      if (customer) await this.notificationsService.sendOrderConfirmation(order, customer);
-      if (product.designer) await this.notificationsService.notifyDesigner(order, product.designer);
-      if (fabric.seller) await this.notificationsService.notifyFabricSeller(order, fabric.seller);
-      if (qaUser) await this.notificationsService.notifyQA(order, qaUser);
-    } catch (e) {
-      this.logger.warn(`Failed to send order notifications for ${order.orderNumber}: ${e.message}`);
+    if (fabric.country !== design.country) {
+      throw new BadRequestException(
+        `Fabric country (${fabric.country}) must match design country (${design.country}) for custom orders`,
+      );
     }
+
+    const measurement = await this.measurementRepo.save(
+      this.measurementRepo.create({
+        customer: { id: customerId },
+        chest: dto.chest,
+        waist: dto.waist,
+        hips: dto.hips,
+        shoulder: dto.shoulder,
+        sleeveLength: dto.sleeveLength,
+        length: dto.length,
+        unit: dto.unit || 'CM',
+        notes: dto.measurementNotes,
+      }),
+    );
+
+    const designPrice = Number(design.customerPrice);
+    const fabricPrice = Number(fabric.customerPrice);
+    const totalPrice = designPrice + fabricPrice;
+    const platformFee = totalPrice * PLATFORM_FEE_RATE;
+    const designerEarnings = designPrice * (1 - PLATFORM_FEE_RATE);
+    const fabricSellerEarnings = fabricPrice * (1 - PLATFORM_FEE_RATE);
+
+    const order = await this.orderRepo.save(
+      this.orderRepo.create({
+        orderNumber: this.generateOrderNumber(),
+        orderType: OrderType.CUSTOM_DESIGN,
+        status: OrderStatus.PENDING_PAYMENT,
+        customer: { id: customerId },
+        design: { id: dto.designId },
+        fabric: { id: dto.fabricId },
+        measurement: { id: measurement.id },
+        designPrice,
+        fabricPrice,
+        totalPrice,
+        designerEarnings,
+        fabricSellerEarnings,
+        platformFee,
+        customerNotes: dto.customerNotes,
+        quantity: 1,
+      }),
+    );
+
+    // Get designer address for fabric shipment
+    const designer = design.designer;
+    const qaUser = await this.userRepo.findOne({ where: { role: UserRole.QA, isActive: true } });
+
+    // Create FabricSellerOrder — ship fabric to designer (NOT customer)
+    await this.fabricSellerOrderRepo.save(
+      this.fabricSellerOrderRepo.create({
+        order: { id: order.id },
+        fabricSeller: { id: fabric.seller.id },
+        fabric: { id: dto.fabricId },
+        earnings: fabricSellerEarnings,
+        shipToName: designer ? `${designer.firstName || ''} ${designer.lastName || ''}`.trim() : 'Designer',
+        shipToAddress: designer?.addressLine1 || '',
+        shipToCity: designer?.city || '',
+        shipToCountry: designer?.country || design.country,
+        status: 'pending',
+      }),
+    );
+
+    // Create DesignerOrder — ship finished product to QA
+    const qaAddr = this.getQaAddress(qaUser || undefined);
+    await this.designerOrderRepo.save(
+      this.designerOrderRepo.create({
+        order: { id: order.id },
+        designer: { id: designer.id },
+        design: { id: dto.designId },
+        measurement: { id: measurement.id },
+        earnings: designerEarnings,
+        shipToName: qaAddr.name,
+        shipToAddress: qaAddr.address,
+        shipToCity: qaAddr.city,
+        shipToCountry: qaAddr.country,
+        status: 'awaiting_fabric',
+      }),
+    );
+
+    // Decrement fabric stock
+    fabric.stock = fabric.stock - 1;
+    await this.fabricRepo.save(fabric);
 
     return order;
   }
 
-  async getOrdersForUser(userId: string, userRole: UserRole): Promise<Partial<Order>[]> {
-    const relations = ['customer', 'design', 'design.designer', 'fabric', 'fabric.seller', 'measurement', 'qaAssignee'];
+  async createReadyToWearOrder(customerId: string, dto: CreateReadyToWearOrderDto): Promise<Order> {
+    const design = await this.productRepo.findOne({
+      where: { id: dto.designId, isActive: true },
+      relations: ['designer'],
+    });
+    if (!design) throw new NotFoundException(`Design ${dto.designId} not found or inactive`);
 
+    const quantity = dto.quantity || 1;
+    const designPrice = Number(design.customerPrice) * quantity;
+    const totalPrice = designPrice;
+    const platformFee = totalPrice * PLATFORM_FEE_RATE;
+    const designerEarnings = designPrice * (1 - PLATFORM_FEE_RATE);
+
+    const order = await this.orderRepo.save(
+      this.orderRepo.create({
+        orderNumber: this.generateOrderNumber(),
+        orderType: OrderType.READY_TO_WEAR,
+        status: OrderStatus.PENDING_PAYMENT,
+        customer: { id: customerId },
+        design: { id: dto.designId },
+        designPrice,
+        totalPrice,
+        designerEarnings,
+        platformFee,
+        customerNotes: dto.customerNotes,
+        quantity,
+      }),
+    );
+
+    const qaUser = await this.userRepo.findOne({ where: { role: UserRole.QA, isActive: true } });
+    const qaAddr = this.getQaAddress(qaUser || undefined);
+
+    await this.designerOrderRepo.save(
+      this.designerOrderRepo.create({
+        order: { id: order.id },
+        designer: { id: design.designer.id },
+        design: { id: dto.designId },
+        earnings: designerEarnings,
+        shipToName: qaAddr.name,
+        shipToAddress: qaAddr.address,
+        shipToCity: qaAddr.city,
+        shipToCountry: qaAddr.country,
+        status: 'in_production',
+      }),
+    );
+
+    return order;
+  }
+
+  async createFabricOnlyOrder(customerId: string, dto: CreateFabricOnlyOrderDto): Promise<Order> {
+    const fabric = await this.fabricRepo.findOne({
+      where: { id: dto.fabricId, isActive: true },
+      relations: ['seller'],
+    });
+    if (!fabric) throw new NotFoundException(`Fabric ${dto.fabricId} not found or inactive`);
+    if (fabric.stock <= 0) throw new BadRequestException('Fabric is out of stock');
+
+    const quantity = dto.quantity || 1;
+    const fabricPrice = Number(fabric.customerPrice) * quantity;
+    const totalPrice = fabricPrice;
+    const platformFee = totalPrice * PLATFORM_FEE_RATE;
+    const fabricSellerEarnings = fabricPrice * (1 - PLATFORM_FEE_RATE);
+
+    const order = await this.orderRepo.save(
+      this.orderRepo.create({
+        orderNumber: this.generateOrderNumber(),
+        orderType: OrderType.FABRIC_ONLY,
+        status: OrderStatus.PENDING_PAYMENT,
+        customer: { id: customerId },
+        fabric: { id: dto.fabricId },
+        fabricPrice,
+        totalPrice,
+        fabricSellerEarnings,
+        platformFee,
+        customerNotes: dto.customerNotes,
+        quantity,
+      }),
+    );
+
+    const qaUser = await this.userRepo.findOne({ where: { role: UserRole.QA, isActive: true } });
+    const qaAddr = this.getQaAddress(qaUser || undefined);
+
+    await this.fabricSellerOrderRepo.save(
+      this.fabricSellerOrderRepo.create({
+        order: { id: order.id },
+        fabricSeller: { id: fabric.seller.id },
+        fabric: { id: dto.fabricId },
+        earnings: fabricSellerEarnings,
+        shipToName: qaAddr.name,
+        shipToAddress: qaAddr.address,
+        shipToCity: qaAddr.city,
+        shipToCountry: qaAddr.country,
+        status: 'pending',
+      }),
+    );
+
+    fabric.stock = fabric.stock - quantity;
+    await this.fabricRepo.save(fabric);
+
+    return order;
+  }
+
+  async getOrdersForUser(userId: string, userRole: UserRole): Promise<any[]> {
     switch (userRole) {
-      case UserRole.CUSTOMER:
-        return this.orderRepo.find({
+      case UserRole.CUSTOMER: {
+        const orders = await this.orderRepo.find({
           where: { customer: { id: userId } },
-          relations,
-        }).then(orders => orders.map(o => this.filterOrderByRole(o, userRole)));
+          relations: ['design', 'fabric', 'measurement'],
+        });
+        return orders.map(o => this.filterOrderForCustomer(o));
+      }
 
-      case UserRole.DESIGNER:
-        return this.orderRepo.find({ relations })
-          .then(orders => orders.filter(o => o.design?.designer?.id === userId))
-          .then(orders => orders.map(o => this.filterOrderByRole(o, userRole)));
+      case UserRole.DESIGNER: {
+        const designerOrders = await this.designerOrderRepo.find({
+          where: { designer: { id: userId } },
+          relations: ['order', 'design', 'measurement'],
+        });
+        return designerOrders;
+      }
 
-      case UserRole.FABRIC_SELLER:
-        return this.orderRepo.find({ relations })
-          .then(orders => orders.filter(o => o.fabric?.seller?.id === userId))
-          .then(orders => orders.map(o => this.filterOrderByRole(o, userRole)));
+      case UserRole.FABRIC_SELLER: {
+        const fabricSellerOrders = await this.fabricSellerOrderRepo.find({
+          where: { fabricSeller: { id: userId } },
+          relations: ['order', 'fabric'],
+        });
+        return fabricSellerOrders;
+      }
 
-      case UserRole.QA:
+      case UserRole.QA: {
+        const qaStatuses = [
+          OrderStatus.SHIPPED_TO_QA,
+          OrderStatus.QA_INSPECTION,
+          OrderStatus.QA_APPROVED,
+          OrderStatus.QA_REJECTED,
+        ];
+        const orders = await this.orderRepo.find({
+          where: { status: In(qaStatuses) },
+          relations: ['design', 'fabric', 'customer'],
+        });
+        return orders.map(o => this.filterOrderForQa(o));
+      }
+
+      case UserRole.ADMIN: {
         return this.orderRepo.find({
-          where: { qaAssignee: { id: userId } },
-          relations,
-        }).then(orders => orders.map(o => this.filterOrderByRole(o, userRole)));
-
-      case UserRole.ADMIN:
-        return this.orderRepo.find({ relations });
+          relations: ['customer', 'design', 'fabric', 'measurement'],
+        });
+      }
 
       default:
         throw new ForbiddenException('Invalid role');
     }
   }
 
-  async getOrderById(orderId: string, userId: string, userRole: UserRole): Promise<Partial<Order>> {
+  async getOrderById(orderId: string, userId: string, userRole: UserRole): Promise<any> {
     const order = await this.orderRepo.findOne({
       where: { id: orderId },
-      relations: ['customer', 'design', 'design.designer', 'fabric', 'fabric.seller', 'measurement', 'qaAssignee'],
+      relations: ['customer', 'design', 'fabric', 'measurement'],
     });
-
     if (!order) throw new NotFoundException(`Order ${orderId} not found`);
 
-    if (userRole === UserRole.CUSTOMER && order.customer?.id !== userId) {
-      throw new ForbiddenException('Access denied');
-    }
-
-    return this.filterOrderByRole(order, userRole);
-  }
-
-  private filterOrderByRole(order: Order, role: UserRole): Partial<Order> {
-    switch (role) {
+    switch (userRole) {
       case UserRole.CUSTOMER:
-        return {
-          id: order.id,
-          orderNumber: order.orderNumber,
-          design: order.design,
-          fabric: order.fabric,
-          designPrice: order.designPrice,
-          fabricPrice: order.fabricPrice,
-          subtotal: order.subtotal,
-          taxAmount: order.taxAmount,
-          shippingCost: order.shippingCost,
-          totalAmount: order.totalAmount,
-          shippingAddress: order.shippingAddress,
-          status: order.status,
-          trackingNumber: order.trackingNumber,
-          customerNotes: order.customerNotes,
-          createdAt: order.createdAt,
-          updatedAt: order.updatedAt,
-        };
+        if (order.customer?.id !== userId) throw new ForbiddenException('Access denied');
+        return this.filterOrderForCustomer(order);
 
-      case UserRole.DESIGNER:
-        return {
-          id: order.id,
-          orderNumber: order.orderNumber,
-          design: order.design,
-          designPrice: order.designPrice,
-          designerPayout: order.designerPayout,
-          measurement: order.measurement,
-          qaAddress: order.qaAddress,
-          status: order.status,
-          createdAt: order.createdAt,
-        };
+      case UserRole.DESIGNER: {
+        const designerOrder = await this.designerOrderRepo.findOne({
+          where: { order: { id: orderId }, designer: { id: userId } },
+          relations: ['order', 'design', 'measurement'],
+        });
+        if (!designerOrder) throw new ForbiddenException('Access denied');
+        return designerOrder;
+      }
 
-      case UserRole.FABRIC_SELLER:
-        return {
-          id: order.id,
-          orderNumber: order.orderNumber,
-          fabric: order.fabric,
-          fabricPrice: order.fabricPrice,
-          fabricSellerPayout: order.fabricSellerPayout,
-          measurement: order.measurement,
-          qaAddress: order.qaAddress,
-          status: order.status,
-          createdAt: order.createdAt,
-        };
+      case UserRole.FABRIC_SELLER: {
+        const fso = await this.fabricSellerOrderRepo.findOne({
+          where: { order: { id: orderId }, fabricSeller: { id: userId } },
+          relations: ['order', 'fabric'],
+        });
+        if (!fso) throw new ForbiddenException('Access denied');
+        return fso;
+      }
 
       case UserRole.QA:
-        return order;
+        return this.filterOrderForQa(order);
 
       case UserRole.ADMIN:
         return order;
@@ -278,108 +356,138 @@ export class OrdersService {
     }
   }
 
+  private filterOrderForCustomer(order: Order): object {
+    return {
+      id: order.id,
+      orderNumber: order.orderNumber,
+      orderType: order.orderType,
+      status: order.status,
+      design: order.design,
+      fabric: order.fabric,
+      designPrice: order.designPrice,
+      fabricPrice: order.fabricPrice,
+      totalPrice: order.totalPrice,
+      customerNotes: order.customerNotes,
+      quantity: order.quantity,
+      createdAt: order.createdAt,
+      updatedAt: order.updatedAt,
+    };
+  }
+
+  private filterOrderForQa(order: Order & { customer?: User }): object {
+    const isApproved = order.status === OrderStatus.QA_APPROVED;
+    return {
+      id: order.id,
+      orderNumber: order.orderNumber,
+      orderType: order.orderType,
+      status: order.status,
+      design: order.design,
+      fabric: order.fabric,
+      measurement: order.measurement,
+      qaComments: order.qaComments,
+      quantity: order.quantity,
+      // Customer address revealed ONLY after qa_approved
+      customerAddress: isApproved ? {
+        addressLine1: order.customer?.addressLine1,
+        city: order.customer?.city,
+        country: order.customer?.country,
+        postalCode: order.customer?.postalCode,
+      } : undefined,
+      createdAt: order.createdAt,
+      updatedAt: order.updatedAt,
+    };
+  }
+
   async updateOrderStatus(orderId: string, userId: string, userRole: UserRole, dto: UpdateOrderStatusDto): Promise<Order> {
     const order = await this.orderRepo.findOne({
       where: { id: orderId },
-      relations: ['customer', 'design', 'design.designer', 'fabric', 'fabric.seller', 'qaAssignee'],
+      relations: ['customer'],
     });
     if (!order) throw new NotFoundException(`Order ${orderId} not found`);
 
     const { status } = dto;
-    const adminOnlyStatuses = ['CONFIRMED', 'CANCELLED', 'PAID', 'AWAITING_MATERIALS'];
+    const adminOnly = [OrderStatus.PAID, OrderStatus.AWAITING_MATERIALS, OrderStatus.DELIVERED, OrderStatus.CANCELLED];
+    const designerAllowed = [OrderStatus.IN_PRODUCTION, OrderStatus.SHIPPED_TO_QA];
+    const qaAllowed = [OrderStatus.QA_INSPECTION, OrderStatus.QA_APPROVED, OrderStatus.QA_REJECTED, OrderStatus.SHIPPED_TO_CUSTOMER];
 
-    if (adminOnlyStatuses.includes(status) && userRole !== UserRole.ADMIN) {
+    if (adminOnly.includes(status) && userRole !== UserRole.ADMIN) {
       throw new ForbiddenException('Only admins can set this status');
     }
-
-    if (status === 'IN_PRODUCTION' && userRole !== UserRole.DESIGNER && userRole !== UserRole.ADMIN) {
-      throw new ForbiddenException('Only designers can mark orders as in production');
+    if (designerAllowed.includes(status) && userRole !== UserRole.DESIGNER && userRole !== UserRole.ADMIN) {
+      throw new ForbiddenException('Only designers can set this status');
     }
-
-    if ((status === 'SHIPPED' || status === 'SHIPPED_TO_QA') &&
-        userRole !== UserRole.FABRIC_SELLER && userRole !== UserRole.ADMIN) {
-      throw new ForbiddenException('Only fabric sellers or admins can mark orders as shipped');
+    if (qaAllowed.includes(status) && userRole !== UserRole.QA && userRole !== UserRole.ADMIN) {
+      throw new ForbiddenException('Only QA users can set this status');
     }
-
-    if ((status === 'QA_INSPECTION' || status === 'QA_APPROVED' || status === 'QA_REJECTED') &&
-        userRole !== UserRole.QA && userRole !== UserRole.ADMIN) {
-      throw new ForbiddenException('Only QA users can update QA status');
+    if (status === OrderStatus.SHIPPED_TO_CUSTOMER && order.status !== OrderStatus.QA_APPROVED && userRole !== UserRole.ADMIN) {
+      throw new ForbiddenException('Can only ship to customer after QA approval');
     }
 
     order.status = status;
-    if (dto.trackingNumber) order.trackingNumber = dto.trackingNumber;
-    if (dto.rejectionReason) order.rejectionReason = dto.rejectionReason;
+    if (dto.trackingNumber) order.qaToCustomerTracking = dto.trackingNumber;
+    if (dto.qaComments) order.qaComments = dto.qaComments;
 
-    // Set timestamps
-    if (status === 'QA_APPROVED') order.qaApprovedAt = new Date();
-    if (status === 'QA_REJECTED') order.qaRejectedAt = new Date();
-    if (status === 'SHIPPED' || status === 'SHIPPED_TO_CUSTOMER') order.shippedAt = new Date();
-    if (status === 'DELIVERED') order.deliveredAt = new Date();
-
-    const savedOrder = await this.orderRepo.save(order);
-
-    // Send notifications (non-critical)
-    try {
-      if (status === 'SHIPPED' || status === 'SHIPPED_TO_CUSTOMER') {
-        if (order.customer) {
-          await this.notificationsService.sendShippingNotification(savedOrder, order.customer, dto.trackingNumber || '');
-        }
-      }
-      if (status === 'DELIVERED' && order.customer) {
-        await this.notificationsService.sendDeliveryConfirmation(savedOrder, order.customer);
-      }
-    } catch (e) {
-      this.logger.warn(`Failed to send status update notifications for ${orderId}: ${e.message}`);
-    }
-
-    return savedOrder;
+    return this.orderRepo.save(order);
   }
 
-  async approveOrder(orderId: string, qaUserId: string): Promise<Order> {
-    const order = await this.orderRepo.findOne({
-      where: { id: orderId },
-      relations: ['customer', 'qaAssignee'],
+  async updateDesignerSubOrderStatus(subOrderId: string, designerId: string, dto: UpdateDesignerSubOrderStatusDto): Promise<DesignerOrder> {
+    const subOrder = await this.designerOrderRepo.findOne({
+      where: { id: subOrderId },
+      relations: ['designer'],
     });
-    if (!order) throw new NotFoundException(`Order ${orderId} not found`);
+    if (!subOrder) throw new NotFoundException(`Designer order ${subOrderId} not found`);
+    if (subOrder.designer.id !== designerId) throw new ForbiddenException('Access denied');
 
-    order.status = OrderStatus.QA_APPROVED;
-    order.qaApprovedAt = new Date();
-    const savedOrder = await this.orderRepo.save(order);
-
-    try {
-      if (order.customer) {
-        await this.notificationsService.sendQAApproval(savedOrder, order.customer);
-      }
-    } catch (e) {
-      this.logger.warn(`Failed to send QA approval notification for ${orderId}: ${e.message}`);
-    }
-
-    return savedOrder;
+    subOrder.status = dto.status;
+    return this.designerOrderRepo.save(subOrder);
   }
 
-  async rejectOrder(orderId: string, qaUserId: string, reason: string): Promise<Order> {
-    const order = await this.orderRepo.findOne({
-      where: { id: orderId },
-      relations: ['customer', 'design', 'design.designer', 'fabric', 'fabric.seller', 'qaAssignee'],
+  async updateDesignerSubOrderTracking(subOrderId: string, designerId: string, dto: UpdateSubOrderTrackingDto): Promise<DesignerOrder> {
+    const subOrder = await this.designerOrderRepo.findOne({
+      where: { id: subOrderId },
+      relations: ['designer', 'order'],
     });
-    if (!order) throw new NotFoundException(`Order ${orderId} not found`);
+    if (!subOrder) throw new NotFoundException(`Designer order ${subOrderId} not found`);
+    if (subOrder.designer.id !== designerId) throw new ForbiddenException('Access denied');
 
-    order.status = OrderStatus.QA_REJECTED;
-    order.rejectionReason = reason;
-    order.qaRejectedAt = new Date();
-    const savedOrder = await this.orderRepo.save(order);
+    subOrder.trackingNumber = dto.trackingNumber;
+    if (dto.fabricTrackingNumber) subOrder.fabricTrackingNumber = dto.fabricTrackingNumber;
 
-    try {
-      await this.notificationsService.sendQARejection(
-        savedOrder,
-        order.design?.designer,
-        order.fabric?.seller,
-        reason,
-      );
-    } catch (e) {
-      this.logger.warn(`Failed to send QA rejection notifications for ${orderId}: ${e.message}`);
+    // Also update the main order's designerToQaTracking
+    if (subOrder.order) {
+      await this.orderRepo.update(subOrder.order.id, { designerToQaTracking: dto.trackingNumber });
     }
 
-    return savedOrder;
+    return this.designerOrderRepo.save(subOrder);
+  }
+
+  async updateFabricSellerSubOrderStatus(subOrderId: string, sellerId: string, dto: UpdateSubOrderStatusDto): Promise<FabricSellerOrder> {
+    const subOrder = await this.fabricSellerOrderRepo.findOne({
+      where: { id: subOrderId },
+      relations: ['fabricSeller'],
+    });
+    if (!subOrder) throw new NotFoundException(`Fabric seller order ${subOrderId} not found`);
+    if (subOrder.fabricSeller.id !== sellerId) throw new ForbiddenException('Access denied');
+
+    subOrder.status = dto.status;
+    return this.fabricSellerOrderRepo.save(subOrder);
+  }
+
+  async updateFabricSellerSubOrderTracking(subOrderId: string, sellerId: string, dto: UpdateSubOrderTrackingDto): Promise<FabricSellerOrder> {
+    const subOrder = await this.fabricSellerOrderRepo.findOne({
+      where: { id: subOrderId },
+      relations: ['fabricSeller', 'order'],
+    });
+    if (!subOrder) throw new NotFoundException(`Fabric seller order ${subOrderId} not found`);
+    if (subOrder.fabricSeller.id !== sellerId) throw new ForbiddenException('Access denied');
+
+    subOrder.trackingNumber = dto.trackingNumber;
+
+    // Also update the main order's fabricToDesignerTracking
+    if (subOrder.order) {
+      await this.orderRepo.update(subOrder.order.id, { fabricToDesignerTracking: dto.trackingNumber });
+    }
+
+    return this.fabricSellerOrderRepo.save(subOrder);
   }
 }

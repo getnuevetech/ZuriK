@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsEnum, Min } from 'class-validator';
+import { IsNumber, IsOptional, IsEnum, IsString, IsBoolean, Min } from 'class-validator';
 
 export class UpdateMeasurementDto {
   @IsOptional()
@@ -34,4 +34,12 @@ export class UpdateMeasurementDto {
   @IsOptional()
   @IsEnum(['CM', 'INCHES'])
   unit?: 'CM' | 'INCHES';
+
+  @IsOptional()
+  @IsString()
+  notes?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isDefault?: boolean;
 }

@@ -30,6 +30,12 @@ export class MeasurementsService {
     });
   }
 
+  async findDefault(customerId: string): Promise<Measurement | null> {
+    return this.measurementRepo.findOne({
+      where: { customer: { id: customerId }, isDefault: true },
+    });
+  }
+
   async update(
     id: string,
     customerId: string,
@@ -47,5 +53,19 @@ export class MeasurementsService {
     }
     Object.assign(measurement, dto);
     return this.measurementRepo.save(measurement);
+  }
+
+  async remove(id: string, customerId: string): Promise<void> {
+    const measurement = await this.measurementRepo.findOne({
+      where: { id },
+      relations: ['customer'],
+    });
+    if (!measurement) {
+      throw new NotFoundException(`Measurement ${id} not found`);
+    }
+    if (measurement.customer.id !== customerId) {
+      throw new ForbiddenException('You do not own this measurement');
+    }
+    await this.measurementRepo.remove(measurement);
   }
 }
