@@ -7,7 +7,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from '../../user/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { Product } from '../../products/entities/product.entity';
 import { Fabric } from '../../fabrics/entities/fabric.entity';
 import { Measurement } from '../../measurements/entities/measurement.entity';

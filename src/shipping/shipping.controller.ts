@@ -2,7 +2,7 @@ import { Controller, Get, Post, Patch, Param, Body, UseGuards } from '@nestjs/co
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { UserRole } from '../user/user.entity';
+import { UserRole } from '../users/entities/user.entity';
 import { ShippingService } from './shipping.service';
 import { CreateCarrierDto } from './dto/create-carrier.dto';
 

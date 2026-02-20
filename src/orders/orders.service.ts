@@ -7,7 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order, OrderStatus } from './entities/order.entity';
-import { UserRole, User } from '../user/user.entity';
+import { UserRole, User } from '../users/entities/user.entity';
 import { Product } from '../products/entities/product.entity';
 import { Fabric } from '../fabrics/entities/fabric.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -144,12 +144,12 @@ export class OrdersService {
       fabricSellerEarnings: fabricSellerPayout,
       shippingAddress: dto.shippingAddress,
       qaAddress: qaUser ? {
-        facilityName: qaUser.qaFacilityName,
-        addressLine1: qaUser.qaAddressLine1,
-        city: qaUser.qaCity,
-        state: qaUser.qaState,
-        country: qaUser.qaCountry,
-        postalCode: qaUser.qaPostalCode,
+        facilityName: undefined,
+        addressLine1: undefined,
+        city: undefined,
+        state: undefined,
+        country: undefined,
+        postalCode: undefined,
       } : undefined,
       customerNotes: dto.customerNotes,
       status: OrderStatus.PENDING_PAYMENT,

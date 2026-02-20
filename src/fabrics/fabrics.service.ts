@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Fabric } from './entities/fabric.entity';
 import { CreateFabricDto } from './dto/create-fabric.dto';
 import { UpdateFabricDto } from './dto/update-fabric.dto';
-import { UserRole } from '../user/user.entity';
+import { UserRole } from '../users/entities/user.entity';
 
 @Injectable()
 export class FabricsService {

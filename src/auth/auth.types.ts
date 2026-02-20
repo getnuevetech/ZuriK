@@ -1,4 +1,4 @@
-import { UserRole } from '../user/user.entity';
+import { UserRole } from '../users/entities/user.entity';
 
 export interface AuthenticatedUser {
   id: string;

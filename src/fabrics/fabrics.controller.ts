@@ -2,7 +2,7 @@ import { Controller, Get, Post, Patch, Param, Body, UseGuards, Request } from '@
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { UserRole } from '../user/user.entity';
+import { UserRole } from '../users/entities/user.entity';
 import { FabricsService } from './fabrics.service';
 import { CreateFabricDto } from './dto/create-fabric.dto';
 import { UpdateFabricDto } from './dto/update-fabric.dto';

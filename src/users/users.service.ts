@@ -1,7 +1,7 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User, UserRole } from '../user/user.entity';
+import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
@@ -10,31 +10,41 @@ export class UsersService {
     @InjectRepository(User) private userRepo: Repository<User>,
   ) {}
 
-  async findById(id: string): Promise<Omit<User, 'passwordHash' | 'refreshToken'>> {
-    const user = await this.userRepo.findOne({ where: { id } });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    const { passwordHash, refreshToken, ...result } = user;
+  private sanitize(user: User): Omit<User, 'password' | 'refreshToken'> {
+    const { password: _pw, refreshToken: _rt, ...result } = user;
     return result;
   }
 
-  async update(
-    id: string,
-    dto: UpdateUserDto,
-    requesterId: string,
-    requesterRole: UserRole,
-  ): Promise<Omit<User, 'passwordHash' | 'refreshToken'>> {
+  async findAll(): Promise<Omit<User, 'password' | 'refreshToken'>[]> {
+    const users = await this.userRepo.find();
+    return users.map(u => this.sanitize(u));
+  }
+
+  async findById(id: string): Promise<Omit<User, 'password' | 'refreshToken'>> {
     const user = await this.userRepo.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    if (requesterRole !== UserRole.ADMIN && requesterId !== id) {
-      throw new ForbiddenException('Access denied');
+    return this.sanitize(user);
+  }
+
+  async update(id: string, dto: UpdateUserDto): Promise<Omit<User, 'password' | 'refreshToken'>> {
+    const user = await this.userRepo.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
     Object.assign(user, dto);
     await this.userRepo.save(user);
-    const { passwordHash, refreshToken, ...result } = user;
-    return result;
+    return this.sanitize(user);
+  }
+
+  async remove(id: string): Promise<void> {
+    const user = await this.userRepo.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    user.isActive = false;
+    await this.userRepo.save(user);
   }
 }
+

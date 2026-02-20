@@ -2,39 +2,48 @@ import {
   Controller,
   Get,
   Patch,
+  Delete,
   Param,
   Body,
-  UseGuards,
-  Request,
-  ForbiddenException,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { RequestWithUser } from '../auth/auth.types';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserRole } from '../user/user.entity';
 
+@ApiTags('Users')
 @Controller('users')
-@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
+  @Get()
+  @ApiOperation({ summary: 'List all users' })
+  @ApiResponse({ status: 200, description: 'List of users' })
+  findAll() {
+    return this.usersService.findAll();
+  }
+
   @Get(':id')
-  getUser(@Param('id') id: string, @Request() req: RequestWithUser) {
-    const { id: requesterId, role } = req.user;
-    if (role !== UserRole.ADMIN && requesterId !== id) {
-      throw new ForbiddenException('Access denied');
-    }
+  @ApiOperation({ summary: 'Get user by ID' })
+  @ApiResponse({ status: 200, description: 'User found' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  findOne(@Param('id') id: string) {
     return this.usersService.findById(id);
   }
 
   @Patch(':id')
-  updateUser(
-    @Param('id') id: string,
-    @Body() dto: UpdateUserDto,
-    @Request() req: RequestWithUser,
-  ) {
-    const { id: requesterId, role } = req.user;
-    return this.usersService.update(id, dto, requesterId, role);
+  @ApiOperation({ summary: 'Update user' })
+  @ApiResponse({ status: 200, description: 'User updated' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+    return this.usersService.update(id, dto);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Deactivate user' })
+  @ApiResponse({ status: 200, description: 'User deactivated' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  remove(@Param('id') id: string) {
+    return this.usersService.remove(id);
   }
 }
+

@@ -2,7 +2,7 @@ import { Controller, Get, Post, Patch, Param, Body, Query, UseGuards } from '@ne
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { UserRole } from '../user/user.entity';
+import { UserRole } from '../users/entities/user.entity';
 import { SettingsService } from './settings.service';
 import { CreateSettingsDto } from './dto/create-settings.dto';
 

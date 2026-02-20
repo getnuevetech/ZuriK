@@ -8,7 +8,7 @@ import { SettingsModule } from '../settings/settings.module';
 import { TaxesModule } from '../taxes/taxes.module';
 import { Product } from '../products/entities/product.entity';
 import { Fabric } from '../fabrics/entities/fabric.entity';
-import { User } from '../user/user.entity';
+import { User } from '../users/entities/user.entity';
 
 @Module({
   imports: [
