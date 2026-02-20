@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
   JoinColumn,
 } from 'typeorm';
-import { User } from '../../user/user.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity('measurements')
 export class Measurement {

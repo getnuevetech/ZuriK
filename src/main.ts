@@ -21,21 +21,11 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('African Fashion Marketplace API')
-    .setDescription('Complete API with JWT auth, multi-role system, order workflow')
+    .setDescription('Phase 1: Authentication and User Management')
     .setVersion('1.0')
     .addBearerAuth()
     .addTag('Authentication')
     .addTag('Users')
-    .addTag('Products')
-    .addTag('Fabrics')
-    .addTag('Measurements')
-    .addTag('Orders')
-    .addTag('QA')
-    .addTag('Admin - Settings')
-    .addTag('Admin - Taxes')
-    .addTag('Admin - Payments')
-    .addTag('Admin - Shipping')
-    .addTag('Upload')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
