@@ -19,6 +19,12 @@ import { UploadModule } from './upload/upload.module';
 import { HeroBannersModule } from './hero-banners/hero-banners.module';
 import { AdminModule } from './admin/admin.module';
 import { ReviewsModule } from './reviews/reviews.module';
+import { HomepageModule } from './homepage/homepage.module';
+import { FeaturedSection } from './homepage/entities/featured-section.entity';
+import { CountryHero } from './homepage/entities/country-hero.entity';
+import { CollectionDisplay } from './homepage/entities/collection-display.entity';
+import { ThemeSettings } from './homepage/entities/theme-settings.entity';
+import { HomepageLayout } from './homepage/entities/homepage-layout.entity';
 import { User } from './users/entities/user.entity';
 import { Product } from './products/entities/product.entity';
 import { Fabric } from './fabrics/entities/fabric.entity';
@@ -50,6 +56,7 @@ const isProduction = process.env.NODE_ENV === 'production';
       entities: [
         User, Product, Fabric, Measurement, Order, FabricSellerOrder, DesignerOrder,
         PlatformSettings, TaxConfiguration, ShippingCarrier, PaymentGateway, Payment, Payout, HeroBanner, Notification, Review,
+        FeaturedSection, CountryHero, CollectionDisplay, ThemeSettings, HomepageLayout,
       ],
       synchronize: process.env.AUTO_SYNC === 'true' || !isProduction,
       ssl: isProduction,
@@ -73,6 +80,7 @@ const isProduction = process.env.NODE_ENV === 'production';
     HeroBannersModule,
     AdminModule,
     ReviewsModule,
+    HomepageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
