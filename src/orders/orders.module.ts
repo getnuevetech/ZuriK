@@ -1,15 +1,21 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Order } from './entities/order.entity';
-import { Product } from '../product.entity';
-import { Fabric } from '../fabric.entity';
-import { Measurement } from '../measurements/entities/measurement.entity';
 import { OrdersService } from './orders.service';
-import { OrdersController } from './orders.controller';
+import { OrdersController, QaController } from './orders.controller';
+import { NotificationsModule } from '../notifications/notifications.module';
+import { SettingsModule } from '../settings/settings.module';
+import { TaxesModule } from '../taxes/taxes.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Order, Product, Fabric, Measurement])],
-  controllers: [OrdersController],
+  imports: [
+    TypeOrmModule.forFeature([Order]),
+    NotificationsModule,
+    SettingsModule,
+    TaxesModule,
+  ],
+  controllers: [OrdersController, QaController],
   providers: [OrdersService],
+  exports: [OrdersService],
 })
 export class OrdersModule {}

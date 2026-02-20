@@ -1,6 +1,15 @@
-import { IsEnum } from 'class-validator';
+import { IsString, IsOptional, IsEnum } from 'class-validator';
+import { OrderStatus } from '../entities/order.entity';
 
 export class UpdateOrderStatusDto {
-  @IsEnum(['PENDING', 'CONFIRMED', 'IN_PRODUCTION', 'SHIPPED', 'DELIVERED', 'CANCELLED'])
-  status: 'PENDING' | 'CONFIRMED' | 'IN_PRODUCTION' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+  @IsEnum(OrderStatus)
+  status: OrderStatus;
+
+  @IsOptional()
+  @IsString()
+  trackingNumber?: string;
+
+  @IsOptional()
+  @IsString()
+  rejectionReason?: string;
 }

@@ -22,14 +22,57 @@ export class User {
   @Column({ nullable: true })
   refreshToken: string;
 
-  @Column()
+  @Column({ nullable: true })
+  firstName: string;
+
+  @Column({ nullable: true })
+  lastName: string;
+
+  @Column({ nullable: true })
   fullName: string;
 
-  @Column()
+  @Column({ nullable: true })
+  phone: string;
+
+  @Column({ nullable: true })
   country: string;
 
   @Column({ type: 'enum', enum: UserRole, default: UserRole.CUSTOMER })
   role: UserRole;
+
+  @Column({ default: true })
+  isActive: boolean;
+
+  // QA-specific fields
+  @Column({ nullable: true })
+  qaFacilityName: string;
+
+  @Column({ nullable: true })
+  qaAddressLine1: string;
+
+  @Column({ nullable: true })
+  qaCity: string;
+
+  @Column({ nullable: true })
+  qaState: string;
+
+  @Column({ nullable: true })
+  qaCountry: string;
+
+  @Column({ nullable: true })
+  qaPostalCode: string;
+
+  @Column({ nullable: true })
+  qaContactPhone: string;
+
+  @Column({ type: 'simple-array', nullable: true })
+  qaServesRegions: string[];
+
+  @Column({ nullable: true })
+  qaPriority: number;
+
+  @Column({ nullable: true })
+  qaCapacity: number;
 
   @CreateDateColumn()
   createdAt: Date;
