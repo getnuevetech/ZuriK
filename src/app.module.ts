@@ -23,7 +23,7 @@ const isProduction = process.env.NODE_ENV === 'production';
       type: 'postgres',
       url: process.env.DATABASE_URL,
       entities: [Product, Fabric, Designer, User],
-      synchronize: !isProduction,
+      synchronize: process.env.AUTO_SYNC === 'true' || !isProduction,
       ssl: isProduction,
       extra: isProduction
         ? { ssl: { rejectUnauthorized: false } }
