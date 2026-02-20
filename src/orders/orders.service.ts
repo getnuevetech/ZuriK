@@ -21,6 +21,7 @@ import { UpdateSubOrderStatusDto, UpdateDesignerSubOrderStatusDto } from './dto/
 import { UpdateSubOrderTrackingDto } from './dto/update-sub-order-tracking.dto';
 import { SettingsService } from '../settings/settings.service';
 import { TaxesService } from '../taxes/taxes.service';
+import { NotificationTriggersService } from '../notifications/notification-triggers.service';
 
 const DEFAULT_PLATFORM_FEE_RATE = 10;
 
@@ -43,6 +44,7 @@ export class OrdersService {
     private readonly userRepo: Repository<User>,
     private readonly settingsService: SettingsService,
     private readonly taxesService: TaxesService,
+    private readonly notificationTriggers: NotificationTriggersService,
   ) {}
 
   private generateOrderNumber(): string {
@@ -182,6 +184,12 @@ export class OrdersService {
     fabric.stock = fabric.stock - 1;
     await this.fabricRepo.save(fabric);
 
+    // Trigger notifications (fire-and-forget)
+    const customer = await this.userRepo.findOne({ where: { id: customerId } });
+    if (customer) {
+      this.notificationTriggers.onOrderCreated(order, customer).catch(() => undefined);
+    }
+
     return order;
   }
 
@@ -249,6 +257,12 @@ export class OrdersService {
         status: 'in_production',
       }),
     );
+
+    // Trigger notifications (fire-and-forget)
+    const customer = await this.userRepo.findOne({ where: { id: customerId } });
+    if (customer) {
+      this.notificationTriggers.onOrderCreated(order, customer).catch(() => undefined);
+    }
 
     return order;
   }
@@ -321,6 +335,12 @@ export class OrdersService {
 
     fabric.stock = fabric.stock - quantity;
     await this.fabricRepo.save(fabric);
+
+    // Trigger notifications (fire-and-forget)
+    const customer = await this.userRepo.findOne({ where: { id: customerId } });
+    if (customer) {
+      this.notificationTriggers.onOrderCreated(order, customer).catch(() => undefined);
+    }
 
     return order;
   }
@@ -468,7 +488,7 @@ export class OrdersService {
   async updateOrderStatus(orderId: string, userId: string, userRole: UserRole, dto: UpdateOrderStatusDto): Promise<Order> {
     const order = await this.orderRepo.findOne({
       where: { id: orderId },
-      relations: ['customer'],
+      relations: ['customer', 'design', 'design.designer', 'fabric'],
     });
     if (!order) throw new NotFoundException(`Order ${orderId} not found`);
 
@@ -494,7 +514,44 @@ export class OrdersService {
     if (dto.trackingNumber) order.qaToCustomerTracking = dto.trackingNumber;
     if (dto.qaComments) order.qaComments = dto.qaComments;
 
-    return this.orderRepo.save(order);
+    const saved = await this.orderRepo.save(order);
+
+    // Trigger notifications based on status (fire-and-forget)
+    this.triggerStatusNotifications(saved, dto).catch(() => undefined);
+
+    return saved;
+  }
+
+  private async triggerStatusNotifications(order: Order & { customer?: User }, dto: UpdateOrderStatusDto): Promise<void> {
+    const customer = order.customer;
+    if (!customer) return;
+
+    switch (order.status) {
+      case OrderStatus.PAID:
+        await this.notificationTriggers.onPaymentReceived(order, customer);
+        break;
+      case OrderStatus.SHIPPED_TO_QA:
+        await this.notificationTriggers.onShippedToQA(order);
+        break;
+      case OrderStatus.QA_APPROVED: {
+        const designer = order.design?.designer as User | undefined;
+        await this.notificationTriggers.onQAApproved(order, customer, designer);
+        break;
+      }
+      case OrderStatus.QA_REJECTED: {
+        const designer = order.design?.designer as User | undefined;
+        await this.notificationTriggers.onQARejected(order, designer);
+        break;
+      }
+      case OrderStatus.SHIPPED_TO_CUSTOMER:
+        await this.notificationTriggers.onShippedToCustomer(order, customer, dto.trackingNumber);
+        break;
+      case OrderStatus.DELIVERED:
+        await this.notificationTriggers.onDelivered(order, customer);
+        break;
+      default:
+        break;
+    }
   }
 
   async updateDesignerSubOrderStatus(subOrderId: string, designerId: string, dto: UpdateDesignerSubOrderStatusDto): Promise<DesignerOrder> {

@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { Avatar } from '../ui/Avatar';
 import { Button } from '../ui/Button';
 import { GlobalSearch } from '../common/GlobalSearch';
+import { NotificationBell } from '../notifications/NotificationBell';
 
 interface NavbarProps {
   cartCount?: number;
@@ -213,7 +214,9 @@ export function Navbar({ cartCount = 0 }: NavbarProps) {
             </Link>
 
             {user ? (
-              <div className="relative" ref={userMenuRef}>
+              <>
+                <NotificationBell />
+                <div className="relative" ref={userMenuRef}>
                 <button onClick={() => setUserMenuOpen((v) => !v)} className="flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary-400 rounded-lg p-1" aria-expanded={userMenuOpen} aria-haspopup="true">
                   <Avatar name={user.name || user.email} size="sm" />
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-neutral-300" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
@@ -247,6 +250,7 @@ export function Navbar({ cartCount = 0 }: NavbarProps) {
                   </div>
                 )}
               </div>
+              </>
             ) : (
               <div className="hidden md:flex items-center gap-2">
                 <Link href="/login"><Button variant="ghost" size="sm" className="text-neutral-200 hover:text-white hover:bg-white/10">Sign in</Button></Link>

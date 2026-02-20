@@ -11,12 +11,14 @@ import { Measurement } from '../measurements/entities/measurement.entity';
 import { User } from '../users/entities/user.entity';
 import { SettingsModule } from '../settings/settings.module';
 import { TaxesModule } from '../taxes/taxes.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Order, FabricSellerOrder, DesignerOrder, Product, Fabric, Measurement, User]),
     SettingsModule,
     TaxesModule,
+    NotificationsModule,
   ],
   controllers: [OrdersController],
   providers: [OrdersService],

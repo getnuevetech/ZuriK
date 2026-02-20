@@ -29,6 +29,7 @@ import { TaxConfiguration } from './taxes/entities/tax-configuration.entity';
 import { ShippingCarrier } from './shipping/entities/shipping-carrier.entity';
 import { PaymentGateway } from './payments/entities/payment-gateway.entity';
 import { HeroBanner } from './hero-banners/entities/hero-banner.entity';
+import { Notification } from './notifications/entities/notification.entity';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -43,7 +44,7 @@ const isProduction = process.env.NODE_ENV === 'production';
       url: process.env.DATABASE_URL,
       entities: [
         User, Product, Fabric, Measurement, Order, FabricSellerOrder, DesignerOrder,
-        PlatformSettings, TaxConfiguration, ShippingCarrier, PaymentGateway, HeroBanner,
+        PlatformSettings, TaxConfiguration, ShippingCarrier, PaymentGateway, HeroBanner, Notification,
       ],
       synchronize: process.env.AUTO_SYNC === 'true' || !isProduction,
       ssl: isProduction,
