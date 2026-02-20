@@ -169,7 +169,22 @@ export function Navbar({ cartCount = 0 }: NavbarProps) {
             {user && (
               <>
                 <Link href="/orders" className="text-sm font-medium text-neutral-200 hover:text-secondary-300 transition-colors px-3 py-2 rounded-lg">My Orders</Link>
-                <Link href="/dashboard" className="text-sm font-medium text-neutral-200 hover:text-secondary-300 transition-colors px-3 py-2 rounded-lg">Dashboard</Link>
+                <Link
+                  href={
+                    user.role === 'designer' ? '/dashboard/designer'
+                    : user.role === 'fabric_seller' ? '/dashboard/fabric-seller'
+                    : user.role === 'qa' ? '/dashboard/qa'
+                    : user.role === 'admin' ? '/dashboard/admin'
+                    : '/account'
+                  }
+                  className="text-sm font-medium text-neutral-200 hover:text-secondary-300 transition-colors px-3 py-2 rounded-lg"
+                >
+                  {user.role === 'designer' ? 'Designer Dashboard'
+                    : user.role === 'fabric_seller' ? 'Seller Dashboard'
+                    : user.role === 'qa' ? 'QA Dashboard'
+                    : user.role === 'admin' ? 'Admin Dashboard'
+                    : 'My Account'}
+                </Link>
               </>
             )}
           </div>
@@ -211,7 +226,23 @@ export function Navbar({ cartCount = 0 }: NavbarProps) {
                     </div>
                     <Link href="/profile" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>Profile</Link>
                     <Link href="/orders" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>My Orders</Link>
-                    <Link href="/dashboard" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>Dashboard</Link>
+                    <Link
+                      href={
+                        user.role === 'designer' ? '/dashboard/designer'
+                        : user.role === 'fabric_seller' ? '/dashboard/fabric-seller'
+                        : user.role === 'qa' ? '/dashboard/qa'
+                        : user.role === 'admin' ? '/dashboard/admin'
+                        : '/account'
+                      }
+                      className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      {user.role === 'designer' ? 'Designer Dashboard'
+                        : user.role === 'fabric_seller' ? 'Seller Dashboard'
+                        : user.role === 'qa' ? 'QA Dashboard'
+                        : user.role === 'admin' ? 'Admin Dashboard'
+                        : 'My Account'}
+                    </Link>
                     <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">Sign out</button>
                   </div>
                 )}
@@ -264,7 +295,23 @@ export function Navbar({ cartCount = 0 }: NavbarProps) {
             {user ? (
               <>
                 <Link href="/orders" className="block px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-200 hover:bg-white/10" onClick={() => setMobileOpen(false)}>My Orders</Link>
-                <Link href="/dashboard" className="block px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-200 hover:bg-white/10" onClick={() => setMobileOpen(false)}>Dashboard</Link>
+                <Link
+                  href={
+                    user.role === 'designer' ? '/dashboard/designer'
+                    : user.role === 'fabric_seller' ? '/dashboard/fabric-seller'
+                    : user.role === 'qa' ? '/dashboard/qa'
+                    : user.role === 'admin' ? '/dashboard/admin'
+                    : '/account'
+                  }
+                  className="block px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-200 hover:bg-white/10"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {user.role === 'designer' ? 'Designer Dashboard'
+                    : user.role === 'fabric_seller' ? 'Seller Dashboard'
+                    : user.role === 'qa' ? 'QA Dashboard'
+                    : user.role === 'admin' ? 'Admin Dashboard'
+                    : 'My Account'}
+                </Link>
                 <button onClick={handleLogout} className="block w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-white/10">Sign out</button>
               </>
             ) : (

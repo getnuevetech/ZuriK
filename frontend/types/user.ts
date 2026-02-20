@@ -5,6 +5,8 @@ export interface User {
   lastName?: string;
   role: 'customer' | 'designer' | 'fabric_seller' | 'qa' | 'admin';
   isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Designer extends User {
