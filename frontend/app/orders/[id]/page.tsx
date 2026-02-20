@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ordersApi } from '../../../lib/api';
+import { ordersApi, paymentsApi } from '../../../lib/api';
 import { useAuth } from '../../../lib/auth-context';
 import { useToast } from '../../../components/ui/Toast';
 import { Spinner } from '../../../components/ui/Spinner';
@@ -14,7 +14,10 @@ import { OrderStatusBadge } from '../../../components/orders/OrderStatusBadge';
 import { OrderStatusTimeline } from '../../../components/orders/OrderStatusTimeline';
 import { Breadcrumbs } from '../../../components/common/Breadcrumbs';
 import { PriceDisplay } from '../../../components/common/PriceDisplay';
+import { PaymentStatusBadge } from '../../../components/payments/PaymentStatusBadge';
+import { PaymentHistory } from '../../../components/payments/PaymentHistory';
 import type { Order } from '../../../types';
+import type { Payment } from '../../../types/payment';
 
 const ORDER_TYPE_LABELS: Record<string, string> = {
   CUSTOM_DESIGN: 'Custom Design',
@@ -29,7 +32,9 @@ export default function OrderDetailPage() {
   const { toast } = useToast();
 
   const [order, setOrder] = useState<Order | null>(null);
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [initiatingPayment, setInitiatingPayment] = useState(false);
 
   useEffect(() => {
     if (authLoading) return;
@@ -38,12 +43,33 @@ export default function OrderDetailPage() {
       return;
     }
     if (params?.id) {
-      ordersApi.getOrder(String(params.id))
-        .then((data) => setOrder(data))
+      const orderId = String(params.id);
+      Promise.all([
+        ordersApi.getOrder(orderId),
+        paymentsApi.getByOrder(orderId).catch(() => [] as Payment[]),
+      ])
+        .then(([orderData, paymentsData]) => {
+          setOrder(orderData);
+          setPayments(paymentsData);
+        })
         .catch(() => toast('error', 'Failed to load order'))
         .finally(() => setLoading(false));
     }
   }, [params?.id, isAuthenticated, authLoading, router, toast]);
+
+  const handleCompletePayment = async () => {
+    if (!order) return;
+    setInitiatingPayment(true);
+    try {
+      const callbackUrl = `${window.location.origin}/payments/callback`;
+      const { paymentUrl } = await paymentsApi.initiate(order.id, 'PAYSTACK', callbackUrl);
+      window.location.href = paymentUrl;
+    } catch {
+      toast('error', 'Failed to initiate payment. Please try again.');
+    } finally {
+      setInitiatingPayment(false);
+    }
+  };
 
   if (authLoading || loading) return <div className="flex justify-center py-20"><Spinner size="lg" /></div>;
 
@@ -53,6 +79,8 @@ export default function OrderDetailPage() {
       <Link href="/orders"><Button variant="outline">Back to Orders</Button></Link>
     </div>
   );
+
+  const latestPayment = payments[0];
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -68,6 +96,7 @@ export default function OrderDetailPage() {
           <div className="flex items-center gap-3 mb-2 flex-wrap">
             <h1 className="font-heading text-3xl font-bold text-neutral-900">#{order.orderNumber}</h1>
             <OrderStatusBadge status={order.status} className="text-sm px-3 py-1" />
+            {latestPayment && <PaymentStatusBadge status={latestPayment.status} />}
           </div>
           <div className="flex items-center gap-2 flex-wrap text-sm text-neutral-500">
             <Badge variant="default">{ORDER_TYPE_LABELS[order.orderType] ?? order.orderType}</Badge>
@@ -76,6 +105,26 @@ export default function OrderDetailPage() {
         </div>
         <PriceDisplay amount={order.totalPrice} className="text-2xl font-bold text-neutral-900" />
       </div>
+
+      {/* Complete payment CTA */}
+      {order.status === 'PENDING_PAYMENT' && (
+        <Card className="mb-6 border-yellow-200 bg-yellow-50">
+          <CardBody className="flex items-center justify-between gap-4">
+            <div>
+              <p className="font-semibold text-yellow-800">Payment Required</p>
+              <p className="text-sm text-yellow-700">Complete your payment to proceed with this order.</p>
+            </div>
+            <Button
+              size="sm"
+              loading={initiatingPayment}
+              onClick={handleCompletePayment}
+              className="flex-shrink-0"
+            >
+              Complete Payment
+            </Button>
+          </CardBody>
+        </Card>
+      )}
 
       {/* Status timeline */}
       <Card className="mb-6">
@@ -168,6 +217,16 @@ export default function OrderDetailPage() {
         </CardBody>
       </Card>
 
+      {/* Payment history */}
+      {payments.length > 0 && (
+        <Card className="mb-6">
+          <CardHeader><h2 className="font-heading text-lg font-semibold text-neutral-800">Payment History</h2></CardHeader>
+          <CardBody>
+            <PaymentHistory payments={payments} />
+          </CardBody>
+        </Card>
+      )}
+
       {/* Customer notes */}
       {order.customerNotes && (
         <Card className="mb-6">
@@ -185,3 +244,5 @@ export default function OrderDetailPage() {
     </div>
   );
 }
+
+

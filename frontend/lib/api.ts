@@ -3,6 +3,7 @@ import type {
   Product, Fabric, Order, OrderStatus,
   CreateCustomDesignOrderDto, CreateReadyToWearOrderDto, CreateFabricOnlyOrderDto,
   User, PlatformSettings, HeroBanner, AnalyticsOverview,
+  Payment, PaymentInitiateResponse, PaymentVerifyResponse, Payout, PaymentProvider,
 } from '../types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
@@ -293,6 +294,18 @@ export const analyticsApi = {
       recentOrders,
     };
   },
+};
+
+// --- Payments API ---
+export const paymentsApi = {
+  initiate: (orderId: string, provider: PaymentProvider, callbackUrl?: string): Promise<PaymentInitiateResponse> =>
+    api.post<PaymentInitiateResponse>('/payments/initiate', { orderId, provider, callbackUrl }).then((r) => r.data),
+  verify: (paymentId: string): Promise<PaymentVerifyResponse> =>
+    api.get<PaymentVerifyResponse>(`/payments/verify/${paymentId}`).then((r) => r.data),
+  getByOrder: (orderId: string): Promise<Payment[]> =>
+    api.get<Payment[]>(`/payments/order/${orderId}`).then((r) => r.data),
+  getMyPayouts: (): Promise<Payout[]> =>
+    api.get<Payout[]>('/payments/payouts').then((r) => r.data),
 };
 
 // Re-export HeroBanner type to support existing imports from this module

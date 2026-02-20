@@ -32,7 +32,9 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^5.0.1",
-    "typeorm": "^0.3.26"
+    "typeorm": "^0.3.26",
+    "stripe": "^17.7.0",
+    "axios": "^1.13.5"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
