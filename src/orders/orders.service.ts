@@ -1,5 +1,6 @@
 import {
   Injectable,
+  Logger,
   NotFoundException,
   ForbiddenException,
   BadRequestException,
@@ -21,11 +22,13 @@ import { UpdateSubOrderStatusDto, UpdateDesignerSubOrderStatusDto } from './dto/
 import { UpdateSubOrderTrackingDto } from './dto/update-sub-order-tracking.dto';
 import { SettingsService } from '../settings/settings.service';
 import { TaxesService } from '../taxes/taxes.service';
+import { NotificationEventsService } from '../notifications/notification-events.service';
 
 const DEFAULT_PLATFORM_FEE_RATE = 10;
 
 @Injectable()
 export class OrdersService {
+  private readonly logger = new Logger(OrdersService.name);
   constructor(
     @InjectRepository(Order)
     private readonly orderRepo: Repository<Order>,
@@ -43,6 +46,7 @@ export class OrdersService {
     private readonly userRepo: Repository<User>,
     private readonly settingsService: SettingsService,
     private readonly taxesService: TaxesService,
+    private readonly notificationEventsService: NotificationEventsService,
   ) {}
 
   private generateOrderNumber(): string {
@@ -494,7 +498,13 @@ export class OrdersService {
     if (dto.trackingNumber) order.qaToCustomerTracking = dto.trackingNumber;
     if (dto.qaComments) order.qaComments = dto.qaComments;
 
-    return this.orderRepo.save(order);
+    const saved = await this.orderRepo.save(order);
+
+    // Fire-and-forget notification
+    this.notificationEventsService.onOrderStatusChanged(orderId, status)
+      .catch((err) => this.logger.warn(`Failed to send notifications for order ${orderId}: ${err.message}`));
+
+    return saved;
   }
 
   async updateDesignerSubOrderStatus(subOrderId: string, designerId: string, dto: UpdateDesignerSubOrderStatusDto): Promise<DesignerOrder> {

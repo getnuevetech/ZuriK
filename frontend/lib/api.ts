@@ -298,5 +298,19 @@ export const analyticsApi = {
 // Re-export HeroBanner type to support existing imports from this module
 export type { HeroBanner } from '../types';
 
+// --- Notifications API ---
+export const notificationsApi = {
+  list: (params?: { page?: number; limit?: number; unreadOnly?: boolean }) =>
+    api.get<{ data: import('../types').Notification[]; total: number }>('/notifications', { params }).then((r) => r.data),
+  getUnreadCount: () =>
+    api.get<{ count: number }>('/notifications/unread-count').then((r) => r.data),
+  markAsRead: (id: string) =>
+    api.patch<import('../types').Notification>(`/notifications/${id}/read`).then((r) => r.data),
+  markAllAsRead: () =>
+    api.patch<{ success: boolean }>('/notifications/read-all').then((r) => r.data),
+  delete: (id: string) =>
+    api.delete<{ success: boolean }>(`/notifications/${id}`).then((r) => r.data),
+};
+
 export default api;
 

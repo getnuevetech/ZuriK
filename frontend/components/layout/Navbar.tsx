@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { Avatar } from '../ui/Avatar';
 import { Button } from '../ui/Button';
 import { GlobalSearch } from '../common/GlobalSearch';
+import { NotificationBell } from '../notifications/NotificationBell';
 
 interface NavbarProps {
   cartCount?: number;
@@ -30,7 +31,7 @@ export function Navbar({ cartCount = 0 }: NavbarProps) {
   const [shopOpen, setShopOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [user, setUser] = useState<{ name?: string; email?: string; role?: string } | null>(null);
+  const [user, setUser] = useState<{ id?: string; name?: string; email?: string; role?: string } | null>(null);
   const pathname = usePathname();
   const userMenuRef = useRef<HTMLDivElement>(null);
   const shopMenuRef = useRef<HTMLDivElement>(null);
@@ -211,6 +212,8 @@ export function Navbar({ cartCount = 0 }: NavbarProps) {
                 </span>
               )}
             </Link>
+
+            {user && <NotificationBell userId={user.id || ''} />}
 
             {user ? (
               <div className="relative" ref={userMenuRef}>
