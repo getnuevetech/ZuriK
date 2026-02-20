@@ -49,6 +49,12 @@ export class HeroBannersService {
   }
 
   async reorder(orders: { id: string; sortOrder: number }[]): Promise<void> {
+    // Verify all IDs exist before updating
+    const ids = orders.map((o) => o.id);
+    const banners = await this.bannerRepo.findByIds(ids);
+    if (banners.length !== ids.length) {
+      throw new NotFoundException('One or more banner IDs not found');
+    }
     await Promise.all(
       orders.map(({ id, sortOrder }) =>
         this.bannerRepo.update(id, { sortOrder }),

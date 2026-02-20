@@ -24,7 +24,15 @@ export function HeroBannerCarousel() {
   const [current, setCurrent] = useState(0);
   const [loading, setLoading] = useState(true);
   const [paused, setPaused] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     heroBannersApi.listActive()
@@ -56,7 +64,6 @@ export function HeroBannerCarousel() {
     ? { opacity: banner.overlayOpacity / 100 }
     : { opacity: 0.5 };
 
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   const mediaUrl = (isMobile && banner.mobileMediaUrl) ? banner.mobileMediaUrl : banner.mediaUrl;
 
   return (
