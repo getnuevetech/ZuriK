@@ -44,12 +44,10 @@ export default function AdminThemePage() {
       .then(([presetsRes, themeRes]) => {
         setPresets(presetsRes.data);
         // Find active theme key by matching name
-        const currentColors = themeRes.data?.colors;
         const currentName = themeRes.data?.name;
         const found = THEME_KEYS.find((k) => presetsRes.data?.[k]?.name === currentName);
         setActiveTheme(found ?? 'BOLD_VIBRANT_AFRICAN');
         setPendingTheme(found ?? 'BOLD_VIBRANT_AFRICAN');
-        void currentColors;
       })
       .catch(() => toast('error', 'Failed to load theme settings'))
       .finally(() => setLoading(false));

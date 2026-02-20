@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { homepageAdminApi } from '../../../../lib/api';
 import AdminPageHeader from '../../../../components/admin/AdminPageHeader';
 import { Spinner } from '../../../../components/ui/Spinner';
@@ -31,16 +31,16 @@ export default function AdminFeaturedPage() {
   const [newMaxRows, setNewMaxRows] = useState(2);
   const { toast } = useToast();
 
-  const load = () => {
+  const load = useCallback(() => {
     setLoading(true);
     homepageAdminApi
       .getFeaturedSections()
       .then((r) => setSections(r.data ?? []))
       .catch(() => toast('error', 'Failed to load featured sections'))
       .finally(() => setLoading(false));
-  };
+  }, [toast]);
 
-  useEffect(load, []);
+  useEffect(load, [load]);
 
   const handleCreate = async () => {
     if (!newTitle.trim()) return;

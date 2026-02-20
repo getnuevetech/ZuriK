@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { homepageAdminApi } from '../../../../lib/api';
 import AdminPageHeader from '../../../../components/admin/AdminPageHeader';
 import { Spinner } from '../../../../components/ui/Spinner';
@@ -40,16 +40,16 @@ export default function AdminCollectionsPage() {
   const [newEditorialText, setNewEditorialText] = useState('');
   const { toast } = useToast();
 
-  const load = () => {
+  const load = useCallback(() => {
     setLoading(true);
     homepageAdminApi
       .getCollections()
       .then((r) => setCollections(r.data ?? []))
       .catch(() => toast('error', 'Failed to load collections'))
       .finally(() => setLoading(false));
-  };
+  }, [toast]);
 
-  useEffect(load, []);
+  useEffect(load, [load]);
 
   const handleCreate = async () => {
     if (!newName.trim()) return;
