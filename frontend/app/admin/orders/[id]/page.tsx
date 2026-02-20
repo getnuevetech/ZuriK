@@ -58,7 +58,7 @@ export default function AdminOrderDetailPage() {
       })
       .catch(() => toast('error', 'Failed to load order'))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, toast]);
 
   const handleStatusSave = async () => {
     if (!order) return;

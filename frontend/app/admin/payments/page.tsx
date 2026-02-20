@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { adminApi } from '../../../lib/api';
 import AdminPageHeader from '../../../components/admin/AdminPageHeader';
 import DataTable from '../../../components/admin/DataTable';
@@ -39,7 +39,7 @@ export default function AdminPaymentsPage() {
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
 
-  const fetchGateways = () => {
+  const fetchGateways = useCallback(() => {
     setLoading(true);
     adminApi
       .getGateways()
@@ -48,11 +48,11 @@ export default function AdminPaymentsPage() {
       )
       .catch(() => toast('error', 'Failed to load gateways'))
       .finally(() => setLoading(false));
-  };
+  }, [toast]);
 
   useEffect(() => {
     fetchGateways();
-  }, []);
+  }, [fetchGateways]);
 
   const openAdd = () => {
     setEditGateway(null);

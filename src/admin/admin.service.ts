@@ -63,7 +63,9 @@ export class AdminService {
       ordersByStatus[status] = allOrders.filter((o) => o.status === status).length;
     }
 
-    const twelveMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 11, 1);
+    const twelveMonthsAgo = new Date(now);
+    twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 11);
+    twelveMonthsAgo.setDate(1);
     const monthlyOrders = await this.orderRepository
       .createQueryBuilder('order')
       .select('order.createdAt', 'createdAt')
@@ -243,7 +245,9 @@ export class AdminService {
 
   async getUserAnalytics() {
     const now = new Date();
-    const twelveMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 11, 1);
+    const twelveMonthsAgo = new Date(now);
+    twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 11);
+    twelveMonthsAgo.setDate(1);
 
     const users = await this.userRepository
       .createQueryBuilder('user')

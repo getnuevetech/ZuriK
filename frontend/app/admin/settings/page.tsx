@@ -36,7 +36,7 @@ export default function AdminSettingsPage() {
       })
       .catch(() => toast('error', 'Failed to load settings'))
       .finally(() => setLoading(false));
-  }, []);
+  }, [toast]);
 
   const handleSave = async () => {
     if (!settings) return;

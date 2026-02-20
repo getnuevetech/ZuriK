@@ -46,7 +46,7 @@ export default function AdminUserDetailPage() {
       })
       .catch(() => toast('error', 'Failed to load user'))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, toast]);
 
   const handleRoleSave = async () => {
     if (!user) return;

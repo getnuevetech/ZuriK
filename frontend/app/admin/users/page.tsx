@@ -63,7 +63,7 @@ export default function AdminUsersPage() {
       })
       .catch(() => toast('error', 'Failed to load users'))
       .finally(() => setLoading(false));
-  }, [page, search, roleFilter]);
+  }, [page, search, roleFilter, toast]);
 
   useEffect(() => {
     fetchUsers();

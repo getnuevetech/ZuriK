@@ -74,7 +74,7 @@ export default function AdminOrdersPage() {
       })
       .catch(() => toast('error', 'Failed to load orders'))
       .finally(() => setLoading(false));
-  }, [page, search, statusFilter, typeFilter]);
+  }, [page, search, statusFilter, typeFilter, toast]);
 
   useEffect(() => {
     fetchOrders();
