@@ -4,6 +4,7 @@ import './globals.css';
 import { AuthProvider } from '../lib/auth-context';
 import { CartProvider } from '../lib/cart-context';
 import { ToastProvider } from '../components/ui/Toast';
+import { WishlistProvider } from '../components/WishlistContext';
 import { NavbarWrapper } from '../components/layout/NavbarWrapper';
 import { Footer } from '../components/layout/Footer';
 import { MobileBottomTabs } from '../components/layout/MobileBottomTabs';
@@ -24,14 +25,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-body text-neutral-900 bg-neutral-50 min-h-screen flex flex-col">
         <AuthProvider>
           <CartProvider>
-            <ToastProvider>
-              <NavbarWrapper />
-              <main className="flex-1 pb-16 md:pb-0">
-                {children}
-              </main>
-              <Footer />
-              <MobileBottomTabs />
-            </ToastProvider>
+            <WishlistProvider>
+              <ToastProvider>
+                <NavbarWrapper />
+                <main className="flex-1 pb-16 md:pb-0">
+                  {children}
+                </main>
+                <Footer />
+                <MobileBottomTabs />
+              </ToastProvider>
+            </WishlistProvider>
           </CartProvider>
         </AuthProvider>
       </body>

@@ -7,3 +7,4 @@ export * from './hero-banner';
 export * from './analytics';
 export * from './payment';
 export * from './review';
+export * from './wishlist';
