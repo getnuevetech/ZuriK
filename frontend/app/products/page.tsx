@@ -1,103 +1,94 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { productsApi } from '../../lib/api';
+import { Card, CardBody } from '../../components/ui/Card';
+import { Button } from '../../components/ui/Button';
+import { Badge } from '../../components/ui/Badge';
+import { Spinner } from '../../components/ui/Spinner';
+
+interface Product {
+  id: number;
+  name: string;
+  description?: string;
+  price: number;
+  category?: string;
+}
 
 export default function Products() {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [addedId, setAddedId] = useState<number | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-        const response = await fetch(`${apiUrl}/products`);
-        if (!response.ok) throw new Error('Failed to fetch products');
-        const data = await response.json();
-        setProducts(data);
-      } catch (err) {
-        console.error('Error:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadProducts();
+    productsApi.list()
+      .then((data) => setProducts(data))
+      .catch((err) => console.error('Error:', err))
+      .finally(() => setLoading(false));
   }, []);
 
-  const handleAddToCart = (product: any) => {
-    const existingCart = localStorage.getItem('cart');
-    const cart = existingCart ? JSON.parse(existingCart) : [];
-    
-    const existingItem = cart.find((item: any) => item.id === product.id);
-    
-    if (existingItem) {
-      existingItem.quantity += 1;
-    } else {
-      cart.push({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        description: product.description,
-        quantity: 1,
-      });
+  const handleAddToCart = (product: Product) => {
+    try {
+      const existingCart = localStorage.getItem('cart');
+      const cart = existingCart ? JSON.parse(existingCart) : [];
+      const existingItem = cart.find((item: { id: number }) => item.id === product.id);
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        cart.push({ id: product.id, name: product.name, price: product.price, description: product.description, quantity: 1 });
+      }
+      localStorage.setItem('cart', JSON.stringify(cart));
+      setAddedId(product.id);
+      setTimeout(() => setAddedId(null), 1500);
+      window.dispatchEvent(new Event('storage'));
+    } catch (err) {
+      console.error('Cart error:', err);
     }
-    
-    localStorage.setItem('cart', JSON.stringify(cart));
-    setAddedId(product.id);
-    setTimeout(() => setAddedId(null), 1500);
-    window.dispatchEvent(new Event('storage'));
   };
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '3rem 1rem' }}>
-      <h2 style={{ fontSize: '2.25rem', fontWeight: 'bold', marginBottom: '2rem' }}>Products</h2>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="mb-8">
+        <h1 className="font-heading text-4xl font-bold text-neutral-900 mb-2">Products</h1>
+        <p className="text-neutral-500">Explore our collection of authentic African fashion</p>
+      </div>
       {loading ? (
-        <p>Loading products...</p>
+        <div className="flex justify-center items-center py-20">
+          <Spinner size="lg" />
+        </div>
       ) : products.length === 0 ? (
-        <p>No products available yet.</p>
+        <div className="text-center py-20">
+          <div className="text-5xl mb-4">👗</div>
+          <h3 className="font-heading text-xl font-semibold text-neutral-700 mb-2">No products yet</h3>
+          <p className="text-neutral-500">Check back soon for new arrivals</p>
+        </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1.5rem' }}>
-          {products.map((product: any) => (
-            <div key={product.id} style={{ backgroundColor: '#fff', padding: '1rem', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <div style={{ width: '100%', height: '150px', backgroundColor: '#f0f0f0', borderRadius: '0.5rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <p style={{ fontSize: '2rem' }}>📦</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {products.map((product) => (
+            <Card key={product.id} hover>
+              <div className="w-full h-48 bg-gradient-to-br from-primary-100 to-accent-100 flex items-center justify-center">
+                <span className="text-4xl">📦</span>
               </div>
-              <h3 style={{ fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.5rem' }}>{product.name}</h3>
-              <p style={{ color: '#666', fontSize: '0.9rem', marginBottom: '0.5rem', minHeight: '40px' }}>{product.description}</p>
-              <p style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#d97706', marginBottom: '1rem' }}>${product.price}</p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                <button
-                  onClick={() => router.push(`/products/${product.id}`)}
-                  style={{
-                    padding: '0.5rem',
-                    backgroundColor: '#e5e7eb',
-                    color: '#000',
-                    border: 'none',
-                    borderRadius: '0.25rem',
-                    cursor: 'pointer',
-                    fontSize: '0.9rem',
-                  }}
-                >
-                  View
-                </button>
-                <button
-                  onClick={() => handleAddToCart(product)}
-                  style={{
-                    padding: '0.5rem',
-                    backgroundColor: addedId === product.id ? '#10b981' : '#d97706',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '0.25rem',
-                    cursor: 'pointer',
-                    fontSize: '0.9rem',
-                  }}
-                >
-                  {addedId === product.id ? '✓' : 'Add'}
-                </button>
-              </div>
-            </div>
+              <CardBody>
+                {product.category && <Badge variant="primary" className="mb-2">{product.category}</Badge>}
+                <h3 className="font-semibold text-neutral-900 mb-1">{product.name}</h3>
+                {product.description && <p className="text-sm text-neutral-500 mb-3 line-clamp-2">{product.description}</p>}
+                <p className="text-xl font-bold text-secondary-600 mb-4">${product.price}</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button variant="outline" size="sm" onClick={() => router.push(`/products/${product.id}`)}>View</Button>
+                  <Button
+                    variant={addedId === product.id ? 'ghost' : 'primary'}
+                    size="sm"
+                    onClick={() => handleAddToCart(product)}
+                    className={addedId === product.id ? 'text-green-600' : ''}
+                  >
+                    {addedId === product.id ? '✓ Added' : 'Add to Cart'}
+                  </Button>
+                </div>
+              </CardBody>
+            </Card>
           ))}
         </div>
       )}
