@@ -438,5 +438,23 @@ export const homepageApi = {
     api.put('/homepage/admin/layout', { sections }).then((r) => r.data),
 };
 
+// --- Wishlist API ---
+export const wishlistApi = {
+  getWishlist: (params?: { page?: number; limit?: number }) =>
+    api.get('/wishlist', { params }).then((r) => r.data),
+  getWishlistIds: (): Promise<string[]> =>
+    api.get<string[]>('/wishlist/ids').then((r) => r.data),
+  getWishlistCount: (): Promise<{ count: number }> =>
+    api.get<{ count: number }>('/wishlist/count').then((r) => r.data),
+  addToWishlist: (productId: string) =>
+    api.post(`/wishlist/${productId}`).then((r) => r.data),
+  removeFromWishlist: (productId: string) =>
+    api.delete(`/wishlist/${productId}`).then((r) => r.data),
+  toggleWishlist: (productId: string): Promise<{ added: boolean }> =>
+    api.post<{ added: boolean }>(`/wishlist/${productId}/toggle`).then((r) => r.data),
+  clearWishlist: () =>
+    api.delete('/wishlist').then((r) => r.data),
+};
+
 export default api;
 
