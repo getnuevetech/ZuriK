@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { productsApi, ordersApi } from '../../../lib/api';
+import { productsApi, ordersApi, reviewsApi } from '../../../lib/api';
 import { useCart } from '../../../lib/cart-context';
 import { useAuth } from '../../../lib/auth-context';
 import { useToast } from '../../../components/ui/Toast';
@@ -16,7 +16,11 @@ import { Breadcrumbs } from '../../../components/common/Breadcrumbs';
 import { PriceDisplay } from '../../../components/common/PriceDisplay';
 import { ProductCard } from '../../../components/products/ProductCard';
 import { TryOnPreview } from '../../../components/try-on';
-import type { Product, Order } from '../../../types';
+import { StarRating } from '../../../components/reviews/StarRating';
+import { RatingSummary } from '../../../components/reviews/RatingSummary';
+import { ReviewList } from '../../../components/reviews/ReviewList';
+import { ReviewForm } from '../../../components/reviews/ReviewForm';
+import type { Product, Order, RatingSummary as RatingSummaryType } from '../../../types';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -32,14 +36,25 @@ export default function ProductDetailPage() {
   const [tryOnOpen, setTryOnOpen] = useState(false);
   const [savedMeasurements, setSavedMeasurements] = useState<Partial<Order> | null>(null);
 
+  // Reviews state
+  const [ratingSummary, setRatingSummary] = useState<RatingSummaryType | null>(null);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewFormLoading, setReviewFormLoading] = useState(false);
+  const [hasReviewed, setHasReviewed] = useState(false);
+  const [reviewListKey, setReviewListKey] = useState(0);
+
   useEffect(() => {
     if (params?.id) {
       productsApi.get(String(params.id))
         .then((data) => {
           setProduct(data);
-          return productsApi.list();
+          return Promise.all([
+            productsApi.list(),
+            reviewsApi.getRatingSummary(String(params.id)).catch(() => null),
+          ]);
         })
-        .then((all) => {
+        .then(([all, summaryRes]) => {
+          if (summaryRes) setRatingSummary(summaryRes.data as RatingSummaryType);
           if (!all) return;
           const current = all.find((p: Product) => p.id === params.id);
           if (current) {
@@ -66,6 +81,40 @@ export default function ProductDetailPage() {
       })
       .catch(() => {});
   }, [isAuthenticated]);
+
+  // Check if user already reviewed this product
+  const checkHasReviewed = useCallback(async () => {
+    if (!isAuthenticated || !params?.id) return;
+    try {
+      const res = await reviewsApi.getMyReviews();
+      const myReviews = (res.data as { reviews: { product?: { id: string } }[] }).reviews;
+      setHasReviewed(myReviews.some((r) => r.product?.id === params.id));
+    } catch {
+      // ignore
+    }
+  }, [isAuthenticated, params?.id]);
+
+  useEffect(() => {
+    checkHasReviewed();
+  }, [checkHasReviewed]);
+
+  const handleSubmitReview = async (data: { rating: number; title?: string; comment: string; images?: string[] }) => {
+    if (!params?.id) return;
+    setReviewFormLoading(true);
+    try {
+      await reviewsApi.createReview(String(params.id), data);
+      toast('success', 'Review submitted! It will appear after moderation.');
+      setShowReviewForm(false);
+      setHasReviewed(true);
+      setReviewListKey((k) => k + 1);
+      const summaryRes = await reviewsApi.getRatingSummary(String(params.id)).catch(() => null);
+      if (summaryRes) setRatingSummary(summaryRes.data as RatingSummaryType);
+    } catch (err: any) {
+      toast('error', err?.response?.data?.message ?? 'Failed to submit review');
+    } finally {
+      setReviewFormLoading(false);
+    }
+  };
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -162,6 +211,13 @@ export default function ProductDetailPage() {
               by {designerName}
             </Link>
           )}
+          {/* Rating summary inline */}
+          {(product.totalReviews ?? 0) > 0 && (
+            <div className="flex items-center gap-2 mb-4">
+              <StarRating rating={product.averageRating ?? 0} size="sm" />
+              <span className="text-sm text-neutral-500">({product.totalReviews} review{(product.totalReviews ?? 0) !== 1 ? 's' : ''})</span>
+            </div>
+          )}
           <PriceDisplay amount={product.customerPrice} className="text-3xl font-bold text-secondary-600 block mb-6" />
           {product.description && (
             <p className="text-neutral-600 leading-relaxed mb-8">{product.description}</p>
@@ -234,6 +290,35 @@ export default function ProductDetailPage() {
           } : undefined}
         />
       </Modal>
+
+      {/* Reviews section */}
+      <div className="mb-16">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="font-heading text-2xl font-bold text-neutral-900">Customer Reviews</h2>
+          {isAuthenticated && !hasReviewed && !showReviewForm && (
+            <Button onClick={() => setShowReviewForm(true)}>Write a Review</Button>
+          )}
+        </div>
+
+        {ratingSummary && ratingSummary.totalReviews > 0 && (
+          <div className="mb-6">
+            <RatingSummary summary={ratingSummary} />
+          </div>
+        )}
+
+        {showReviewForm && (
+          <div className="bg-white rounded-xl border border-neutral-200 p-6 mb-6">
+            <h3 className="text-lg font-semibold mb-4">Write Your Review</h3>
+            <ReviewForm
+              onSubmit={handleSubmitReview}
+              onCancel={() => setShowReviewForm(false)}
+              loading={reviewFormLoading}
+            />
+          </div>
+        )}
+
+        <ReviewList key={reviewListKey} productId={product.id} />
+      </div>
 
       {/* Related products */}
       {related.length > 0 && (
