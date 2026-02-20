@@ -4,6 +4,7 @@ import type {
   CreateCustomDesignOrderDto, CreateReadyToWearOrderDto, CreateFabricOnlyOrderDto,
   User, PlatformSettings, HeroBanner, AnalyticsOverview,
   Payment, Payout, PaymentInitiateResponse, PaymentProvider,
+  SearchFilters, SearchResponse, SearchSuggestion,
 } from '../types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
@@ -367,6 +368,16 @@ export const adminApi = {
     api.post('/admin/payments/gateways', data).then((r) => r.data),
   updateGateway: (id: string, data: Record<string, unknown>) =>
     api.patch(`/admin/payments/gateways/${id}`, data).then((r) => r.data),
+};
+
+// --- Search API ---
+export const searchApi = {
+  searchProducts: (filters: SearchFilters): Promise<SearchResponse> =>
+    api.get<SearchResponse>('/products/search', { params: filters }).then((r) => r.data),
+  getSuggestions: (q: string): Promise<SearchSuggestion> =>
+    api.get<SearchSuggestion>('/products/search/suggestions', { params: { q } }).then((r) => r.data),
+  getTrending: (): Promise<{ products: Product[] }> =>
+    api.get<{ products: Product[] }>('/products/search/trending').then((r) => r.data),
 };
 
 export default api;

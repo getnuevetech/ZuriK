@@ -33,6 +33,18 @@ export class Product {
   @ManyToOne(() => User, { eager: true })
   designer: User;
 
+  @Column({ nullable: true })
+  fabricType: string;
+
+  @Column({ nullable: true })
+  region: string;
+
+  @Column('simple-array', { nullable: true })
+  sizes: string[];
+
+  @Column({ default: true })
+  inStock: boolean;
+
   @Column({ default: true })
   isActive: boolean;
 

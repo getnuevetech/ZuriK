@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsNumber, IsArray, Min } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsArray, IsBoolean, Min } from 'class-validator';
 
 export class CreateProductDto {
   @IsString()
@@ -18,6 +18,22 @@ export class CreateProductDto {
   @IsOptional()
   @IsArray()
   tags?: string[];
+
+  @IsOptional()
+  @IsString()
+  fabricType?: string;
+
+  @IsOptional()
+  @IsString()
+  region?: string;
+
+  @IsOptional()
+  @IsArray()
+  sizes?: string[];
+
+  @IsOptional()
+  @IsBoolean()
+  inStock?: boolean;
 
   @IsString()
   country: string;

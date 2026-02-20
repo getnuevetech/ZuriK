@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, Query, UseGuards, Request } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -6,11 +6,27 @@ import { UserRole } from '../users/entities/user.entity';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { SearchProductDto } from './dto/search-product.dto';
 import { RequestWithUser } from '../auth/auth.types';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
+
+  @Get('search/suggestions')
+  getSuggestions(@Query('q') q: string) {
+    return this.productsService.getSuggestions(q ?? '');
+  }
+
+  @Get('search/trending')
+  getTrending() {
+    return this.productsService.getTrending();
+  }
+
+  @Get('search')
+  search(@Query() dto: SearchProductDto) {
+    return this.productsService.search(dto);
+  }
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
