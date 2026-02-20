@@ -4,34 +4,39 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { productsApi } from '../../../lib/api';
+import { productsApi, ordersApi } from '../../../lib/api';
 import { useCart } from '../../../lib/cart-context';
+import { useAuth } from '../../../lib/auth-context';
 import { useToast } from '../../../components/ui/Toast';
 import { Button } from '../../../components/ui/Button';
 import { Badge } from '../../../components/ui/Badge';
 import { Spinner } from '../../../components/ui/Spinner';
+import { Modal } from '../../../components/ui/Modal';
 import { Breadcrumbs } from '../../../components/common/Breadcrumbs';
 import { PriceDisplay } from '../../../components/common/PriceDisplay';
 import { ProductCard } from '../../../components/products/ProductCard';
-import type { Product } from '../../../types';
+import { TryOnPreview } from '../../../components/try-on';
+import type { Product, Order } from '../../../types';
 
 export default function ProductDetailPage() {
   const params = useParams();
   const { addToCart } = useCart();
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [related, setRelated] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [mainImage, setMainImage] = useState(0);
+  const [tryOnOpen, setTryOnOpen] = useState(false);
+  const [savedMeasurements, setSavedMeasurements] = useState<Partial<Order> | null>(null);
 
   useEffect(() => {
     if (params?.id) {
       productsApi.get(String(params.id))
         .then((data) => {
           setProduct(data);
-          // Fetch related: all products then filter by category or designer
           return productsApi.list();
         })
         .then((all) => {
@@ -48,6 +53,19 @@ export default function ProductDetailPage() {
         .finally(() => setLoading(false));
     }
   }, [params?.id]);
+
+  // Pre-fetch saved measurements if user is logged in
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    ordersApi.getMyOrders()
+      .then((orders: Order[]) => {
+        const customOrder = orders
+          .filter((o) => o.orderType === 'CUSTOM_DESIGN' && o.chest)
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+        if (customOrder) setSavedMeasurements(customOrder);
+      })
+      .catch(() => {});
+  }, [isAuthenticated]);
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -171,6 +189,14 @@ export default function ProductDetailPage() {
               <Button size="lg" onClick={handleAddToCart} className="w-full">
                 Add to Cart
               </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={() => setTryOnOpen(true)}
+                className="w-full mt-2 border-accent-500 text-accent-600 hover:bg-accent-50"
+              >
+                👤 Try It On
+              </Button>
             </div>
 
             {/* Custom design */}
@@ -186,6 +212,28 @@ export default function ProductDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Try It On Modal */}
+      <Modal
+        isOpen={tryOnOpen}
+        onClose={() => setTryOnOpen(false)}
+        title="Try It On"
+        size="lg"
+      >
+        <TryOnPreview
+          mode="ready-to-wear"
+          product={product}
+          savedMeasurements={savedMeasurements ? {
+            chest: savedMeasurements.chest,
+            waist: savedMeasurements.waist,
+            hips: savedMeasurements.hips,
+            shoulder: savedMeasurements.shoulder,
+            sleeveLength: savedMeasurements.sleeveLength,
+            length: savedMeasurements.length,
+            unit: savedMeasurements.unit,
+          } : undefined}
+        />
+      </Modal>
 
       {/* Related products */}
       {related.length > 0 && (
