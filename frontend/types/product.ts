@@ -16,6 +16,8 @@ export interface Product {
   images?: string[];
   isActive: boolean;
   designer?: Designer;
+  averageRating?: number;
+  totalReviews?: number;
   createdAt: string;
   updatedAt: string;
 }
