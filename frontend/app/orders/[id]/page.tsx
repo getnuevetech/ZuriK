@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ordersApi } from '../../../lib/api';
+import { ordersApi, paymentsApi } from '../../../lib/api';
 import { useAuth } from '../../../lib/auth-context';
 import { useToast } from '../../../components/ui/Toast';
 import { Spinner } from '../../../components/ui/Spinner';
@@ -14,7 +14,9 @@ import { OrderStatusBadge } from '../../../components/orders/OrderStatusBadge';
 import { OrderStatusTimeline } from '../../../components/orders/OrderStatusTimeline';
 import { Breadcrumbs } from '../../../components/common/Breadcrumbs';
 import { PriceDisplay } from '../../../components/common/PriceDisplay';
+import { PaymentHistory } from '../../../components/payments/PaymentHistory';
 import type { Order } from '../../../types';
+import type { Payment } from '../../../types/payment';
 
 const ORDER_TYPE_LABELS: Record<string, string> = {
   CUSTOM_DESIGN: 'Custom Design',
@@ -29,7 +31,9 @@ export default function OrderDetailPage() {
   const { toast } = useToast();
 
   const [order, setOrder] = useState<Order | null>(null);
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [paymentLoading, setPaymentLoading] = useState(false);
 
   useEffect(() => {
     if (authLoading) return;
@@ -38,12 +42,32 @@ export default function OrderDetailPage() {
       return;
     }
     if (params?.id) {
-      ordersApi.getOrder(String(params.id))
-        .then((data) => setOrder(data))
+      const orderId = String(params.id);
+      Promise.all([
+        ordersApi.getOrder(orderId),
+        paymentsApi.getByOrder(orderId).catch(() => []),
+      ])
+        .then(([orderData, paymentData]) => {
+          setOrder(orderData);
+          setPayments(paymentData);
+        })
         .catch(() => toast('error', 'Failed to load order'))
         .finally(() => setLoading(false));
     }
   }, [params?.id, isAuthenticated, authLoading, router, toast]);
+
+  const handleCompletePayment = async () => {
+    if (!order) return;
+    setPaymentLoading(true);
+    try {
+      const { paymentUrl } = await paymentsApi.initiate(order.id, 'PAYSTACK');
+      window.location.href = paymentUrl;
+    } catch {
+      toast('error', 'Failed to initiate payment. Please try again.');
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
 
   if (authLoading || loading) return <div className="flex justify-center py-20"><Spinner size="lg" /></div>;
 
@@ -74,7 +98,14 @@ export default function OrderDetailPage() {
             <span>Placed {new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
           </div>
         </div>
-        <PriceDisplay amount={order.totalPrice} className="text-2xl font-bold text-neutral-900" />
+        <div className="flex flex-col items-end gap-2">
+          <PriceDisplay amount={order.totalPrice} className="text-2xl font-bold text-neutral-900" />
+          {order.status === 'PENDING_PAYMENT' && (
+            <Button size="sm" loading={paymentLoading} onClick={handleCompletePayment}>
+              Complete Payment
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Status timeline */}
@@ -165,6 +196,14 @@ export default function OrderDetailPage() {
             <span>Total</span>
             <PriceDisplay amount={order.totalPrice} />
           </div>
+        </CardBody>
+      </Card>
+
+      {/* Payment history */}
+      <Card className="mb-6">
+        <CardHeader><h2 className="font-heading text-lg font-semibold text-neutral-800">Payment History</h2></CardHeader>
+        <CardBody>
+          <PaymentHistory payments={payments} />
         </CardBody>
       </Card>
 
