@@ -1,6 +1,12 @@
-import { IsNumber, IsOptional, IsEnum, IsString, IsBoolean, Min } from 'class-validator';
+import { IsString, IsOptional, IsNumber, Min } from 'class-validator';
 
-export class CreateMeasurementDto {
+export class CreateCustomDesignOrderDto {
+  @IsString()
+  designId: string;
+
+  @IsString()
+  fabricId: string;
+
   @IsNumber()
   @Min(0)
   chest: number;
@@ -26,14 +32,14 @@ export class CreateMeasurementDto {
   length: number;
 
   @IsOptional()
-  @IsEnum(['CM', 'INCHES'])
+  @IsString()
   unit?: 'CM' | 'INCHES';
 
   @IsOptional()
   @IsString()
-  notes?: string;
+  measurementNotes?: string;
 
   @IsOptional()
-  @IsBoolean()
-  isDefault?: boolean;
+  @IsString()
+  customerNotes?: string;
 }

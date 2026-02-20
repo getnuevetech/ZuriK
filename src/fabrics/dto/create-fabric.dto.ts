@@ -4,9 +4,8 @@ export class CreateFabricDto {
   @IsString()
   name: string;
 
-  @IsOptional()
   @IsString()
-  description?: string;
+  description: string;
 
   @IsOptional()
   @IsArray()
@@ -29,17 +28,16 @@ export class CreateFabricDto {
   material?: string;
 
   @IsOptional()
-  @IsString()
-  width?: string;
-
-  @IsOptional()
-  @IsString()
-  country?: string;
-
-  @IsOptional()
   @IsNumber()
   @Min(0)
-  sellerPrice?: number;
+  width?: number;
+
+  @IsString()
+  country: string;
+
+  @IsNumber()
+  @Min(0)
+  sellerPrice: number;
 
   @IsNumber()
   @Min(0)

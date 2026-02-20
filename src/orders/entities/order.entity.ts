@@ -3,6 +3,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
+  OneToOne,
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
@@ -12,23 +13,24 @@ import { Product } from '../../products/entities/product.entity';
 import { Fabric } from '../../fabrics/entities/fabric.entity';
 import { Measurement } from '../../measurements/entities/measurement.entity';
 
+export enum OrderType {
+  CUSTOM_DESIGN = 'custom_design',
+  READY_TO_WEAR = 'ready_to_wear',
+  FABRIC_ONLY = 'fabric_only',
+}
+
 export enum OrderStatus {
-  PENDING_PAYMENT = 'PENDING_PAYMENT',
-  PAID = 'PAID',
-  AWAITING_MATERIALS = 'AWAITING_MATERIALS',
-  IN_PRODUCTION = 'IN_PRODUCTION',
-  SHIPPED_TO_QA = 'SHIPPED_TO_QA',
-  QA_INSPECTION = 'QA_INSPECTION',
-  QA_APPROVED = 'QA_APPROVED',
-  QA_REJECTED = 'QA_REJECTED',
-  SHIPPED_TO_CUSTOMER = 'SHIPPED_TO_CUSTOMER',
-  DELIVERED = 'DELIVERED',
-  // Legacy statuses for backward compat
-  PENDING = 'PENDING',
-  CONFIRMED = 'CONFIRMED',
-  IN_PRODUCTION_LEGACY = 'IN_PRODUCTION_LEGACY',
-  SHIPPED = 'SHIPPED',
-  CANCELLED = 'CANCELLED',
+  PENDING_PAYMENT = 'pending_payment',
+  PAID = 'paid',
+  AWAITING_MATERIALS = 'awaiting_materials',
+  IN_PRODUCTION = 'in_production',
+  SHIPPED_TO_QA = 'shipped_to_qa',
+  QA_INSPECTION = 'qa_inspection',
+  QA_APPROVED = 'qa_approved',
+  QA_REJECTED = 'qa_rejected',
+  SHIPPED_TO_CUSTOMER = 'shipped_to_customer',
+  DELIVERED = 'delivered',
+  CANCELLED = 'cancelled',
 }
 
 @Entity('orders')
@@ -39,107 +41,64 @@ export class Order {
   @Column({ unique: true })
   orderNumber: string;
 
-  @ManyToOne(() => User, { nullable: true })
-  @JoinColumn()
+  @Column({ type: 'enum', enum: OrderType })
+  orderType: OrderType;
+
+  @Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.PENDING_PAYMENT })
+  status: OrderStatus;
+
+  @ManyToOne(() => User)
   customer: User;
 
-  @ManyToOne(() => Product, { nullable: true })
-  @JoinColumn()
+  @ManyToOne(() => Product, { nullable: true, eager: true })
   design: Product;
 
-  @ManyToOne(() => Fabric, { nullable: true })
-  @JoinColumn()
+  @ManyToOne(() => Fabric, { nullable: true, eager: true })
   fabric: Fabric;
 
-  @ManyToOne(() => Measurement, { nullable: true })
+  @OneToOne(() => Measurement, { nullable: true, eager: true })
   @JoinColumn()
   measurement: Measurement;
 
-  @ManyToOne(() => User, { nullable: true })
-  @JoinColumn({ name: 'qaAssigneeId' })
-  qaAssignee: User;
-
-  // Pricing
   @Column('decimal', { precision: 10, scale: 2, default: 0 })
   designPrice: number;
 
   @Column('decimal', { precision: 10, scale: 2, default: 0 })
   fabricPrice: number;
 
+  @Column('decimal', { precision: 10, scale: 2 })
+  totalPrice: number;
+
+  @Column('decimal', { precision: 10, scale: 2, default: 0 })
+  designerEarnings: number;
+
+  @Column('decimal', { precision: 10, scale: 2, default: 0 })
+  fabricSellerEarnings: number;
+
   @Column('decimal', { precision: 10, scale: 2, default: 0 })
   platformFee: number;
 
-  @Column('decimal', { precision: 10, scale: 2, default: 0 })
-  subtotal: number;
-
-  @Column('decimal', { precision: 10, scale: 2, default: 0 })
-  taxAmount: number;
-
-  @Column('decimal', { precision: 5, scale: 2, default: 0 })
-  taxRate: number;
-
-  @Column('decimal', { precision: 10, scale: 2, default: 0 })
-  shippingCost: number;
-
-  @Column('decimal', { precision: 10, scale: 2, default: 0 })
-  totalAmount: number;
-
-  // Legacy
-  @Column('decimal', { precision: 10, scale: 2, nullable: true })
-  totalPrice: number;
-
-  // Payouts
-  @Column('decimal', { precision: 10, scale: 2, default: 0 })
-  designerPayout: number;
-
-  @Column('decimal', { precision: 10, scale: 2, default: 0 })
-  fabricSellerPayout: number;
-
-  @Column('decimal', { precision: 10, scale: 2, default: 0 })
-  platformRevenue: number;
-
-  // Legacy payout fields
-  @Column('decimal', { precision: 10, scale: 2, nullable: true })
-  designerEarnings: number;
-
-  @Column('decimal', { precision: 10, scale: 2, nullable: true })
-  fabricSellerEarnings: number;
-
-  // Addresses
-  @Column({ type: 'jsonb', nullable: true })
-  shippingAddress: object;
-
-  @Column({ type: 'jsonb', nullable: true })
-  qaAddress: object;
-
-  // Status
-  @Column({ default: OrderStatus.PENDING_PAYMENT })
-  status: string;
+  @Column({ nullable: true })
+  fabricToDesignerTracking: string;
 
   @Column({ nullable: true })
-  trackingNumber: string;
+  designerToQaTracking: string;
+
+  @Column({ nullable: true })
+  qaToCustomerTracking: string;
 
   @Column({ type: 'text', nullable: true })
   customerNotes: string;
 
   @Column({ type: 'text', nullable: true })
-  rejectionReason: string;
+  qaComments: string;
+
+  @Column({ nullable: true })
+  quantity: number;
 
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  @Column({ nullable: true })
-  shippedAt: Date;
-
-  @Column({ nullable: true })
-  deliveredAt: Date;
-
-  @Column({ nullable: true })
-  qaApprovedAt: Date;
-
-  @Column({ nullable: true })
-  qaRejectedAt: Date;
 }

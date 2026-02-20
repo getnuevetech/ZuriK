@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Patch,
+  Delete,
   Param,
   Body,
   UseGuards,
@@ -32,6 +33,11 @@ export class MeasurementsController {
     return this.measurementsService.findAllForCustomer(req.user.id);
   }
 
+  @Get('default')
+  findDefault(@Request() req: RequestWithUser) {
+    return this.measurementsService.findDefault(req.user.id);
+  }
+
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -39,5 +45,13 @@ export class MeasurementsController {
     @Body() dto: UpdateMeasurementDto,
   ) {
     return this.measurementsService.update(id, req.user.id, dto);
+  }
+
+  @Delete(':id')
+  remove(
+    @Param('id') id: string,
+    @Request() req: RequestWithUser,
+  ) {
+    return this.measurementsService.remove(id, req.user.id);
   }
 }

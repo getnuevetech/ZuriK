@@ -17,7 +17,6 @@ export class FabricsService {
     const fabric = this.fabricRepo.create({
       ...dto,
       seller: { id: sellerId },
-      price: dto.customerPrice,
     });
     return this.fabricRepo.save(fabric);
   }
@@ -52,7 +51,21 @@ export class FabricsService {
       throw new ForbiddenException('You can only update your own fabrics');
     }
     Object.assign(fabric, dto);
-    if (dto.customerPrice) fabric.price = dto.customerPrice;
     return this.fabricRepo.save(fabric);
+  }
+
+  async remove(id: string, sellerId: string, role: UserRole): Promise<void> {
+    const fabric = await this.fabricRepo.findOne({
+      where: { id },
+      relations: ['seller'],
+    });
+    if (!fabric) {
+      throw new NotFoundException(`Fabric ${id} not found`);
+    }
+    if (role !== UserRole.ADMIN && fabric.seller?.id !== sellerId) {
+      throw new ForbiddenException('You can only deactivate your own fabrics');
+    }
+    fabric.isActive = false;
+    await this.fabricRepo.save(fabric);
   }
 }

@@ -5,7 +5,6 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
-  JoinColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 
@@ -15,7 +14,6 @@ export class Measurement {
   id: string;
 
   @ManyToOne(() => User)
-  @JoinColumn()
   customer: User;
 
   @Column('decimal', { precision: 5, scale: 2 })
@@ -36,12 +34,14 @@ export class Measurement {
   @Column('decimal', { precision: 5, scale: 2 })
   length: number;
 
-  @Column({
-    type: 'enum',
-    enum: ['CM', 'INCHES'],
-    default: 'CM',
-  })
+  @Column({ type: 'enum', enum: ['CM', 'INCHES'], default: 'CM' })
   unit: string;
+
+  @Column({ type: 'text', nullable: true })
+  notes: string;
+
+  @Column({ default: false })
+  isDefault: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
