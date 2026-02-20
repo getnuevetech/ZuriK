@@ -26,7 +26,15 @@ let isRefreshing = false;
 let failedQueue: Array<{ resolve: (v: string) => void; reject: (e: unknown) => void }> = [];
 
 function processQueue(error: unknown, token: string | null) {
-  failedQueue.forEach((p) => (error ? p.reject(error) : p.resolve(token!)));
+  failedQueue.forEach((p) => {
+    if (error) {
+      p.reject(error);
+    } else if (token !== null) {
+      p.resolve(token);
+    } else {
+      p.reject(new Error('No token available'));
+    }
+  });
   failedQueue = [];
 }
 
