@@ -2,6 +2,7 @@ import React from 'react';
 import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '../lib/auth-context';
+import { CartProvider } from '../lib/cart-context';
 import { ToastProvider } from '../components/ui/Toast';
 import { NavbarWrapper } from '../components/layout/NavbarWrapper';
 import { Footer } from '../components/layout/Footer';
@@ -21,13 +22,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className="font-body text-neutral-900 bg-neutral-50 min-h-screen flex flex-col">
         <AuthProvider>
-          <ToastProvider>
-            <NavbarWrapper />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
-          </ToastProvider>
+          <CartProvider>
+            <ToastProvider>
+              <NavbarWrapper />
+              <main className="flex-1">
+                {children}
+              </main>
+              <Footer />
+            </ToastProvider>
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>
