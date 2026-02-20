@@ -26,7 +26,7 @@ const AFRICAN_COUNTRIES = [
   'Uganda',
   'Rwanda',
   'Senegal',
-  'Côte d\'Ivoire',
+  "Côte d'Ivoire",
   'Cameroon',
   'Zimbabwe',
   'Zambia',

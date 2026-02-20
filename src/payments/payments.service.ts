@@ -268,7 +268,7 @@ export class PaymentsService {
       const payout = this.payoutRepo.create({
         orderId,
         order,
-        userId: (order as any).designerId || '',
+        userId: '',
         amount: order.designerEarnings,
         currency,
         status: PayoutStatus.PENDING,
@@ -280,7 +280,7 @@ export class PaymentsService {
       const payout = this.payoutRepo.create({
         orderId,
         order,
-        userId: (order as any).fabricSellerId || '',
+        userId: '',
         amount: order.fabricSellerEarnings,
         currency,
         status: PayoutStatus.PENDING,

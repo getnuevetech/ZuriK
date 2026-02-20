@@ -282,8 +282,14 @@ export default function CheckoutPage() {
               <div className="border-t border-neutral-100 pt-3">
                 <h3 className="text-sm font-semibold text-neutral-700 mb-1">Shipping to</h3>
                 <p className="text-sm text-neutral-600">
-                  {shippingAddress.fullName}, {shippingAddress.addressLine1},
-                  {' '}{shippingAddress.city}, {shippingAddress.country}
+                  {[
+                    shippingAddress.fullName,
+                    shippingAddress.addressLine1,
+                    shippingAddress.addressLine2,
+                    shippingAddress.city,
+                    shippingAddress.state,
+                    shippingAddress.country,
+                  ].filter(Boolean).join(', ')}
                 </p>
               </div>
               <div className="border-t border-neutral-100 pt-3">
