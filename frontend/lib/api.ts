@@ -312,5 +312,45 @@ export const notificationsApi = {
     api.delete(`/notifications/${id}`).then((r) => r.data),
 };
 
+// --- Admin API ---
+export const adminApi = {
+  // Analytics
+  getOverview: () => api.get('/admin/analytics/overview').then((r) => r.data),
+  getRevenueAnalytics: () => api.get('/admin/analytics/revenue').then((r) => r.data),
+  getOrderAnalytics: () => api.get('/admin/analytics/orders').then((r) => r.data),
+  getUserAnalytics: () => api.get('/admin/analytics/users').then((r) => r.data),
+
+  // Users
+  getUsers: (params?: Record<string, string | number>) =>
+    api.get('/admin/users', { params }).then((r) => r.data),
+  getUser: (id: string) => api.get(`/admin/users/${id}`).then((r) => r.data),
+  updateUserRole: (id: string, role: string) =>
+    api.patch(`/admin/users/${id}/role`, { role }).then((r) => r.data),
+  updateUserStatus: (id: string, isActive: boolean) =>
+    api.patch(`/admin/users/${id}/status`, { isActive }).then((r) => r.data),
+  getPendingApprovals: () => api.get('/admin/users/pending-approvals').then((r) => r.data),
+
+  // Orders
+  getOrders: (params?: Record<string, string | number>) =>
+    api.get('/admin/orders', { params }).then((r) => r.data),
+  getOrder: (id: string) => api.get(`/admin/orders/${id}`).then((r) => r.data),
+  updateOrderStatus: (id: string, status: string, reason?: string) =>
+    api.patch(`/admin/orders/${id}/status`, { status, reason }).then((r) => r.data),
+  refundOrder: (id: string) =>
+    api.post(`/admin/orders/${id}/refund`, {}).then((r) => r.data),
+
+  // Settings (using existing endpoints)
+  getSettings: () => api.get('/admin/settings').then((r) => r.data),
+  updateSettings: (data: Record<string, unknown>) =>
+    api.patch('/admin/settings', data).then((r) => r.data),
+
+  // Gateways (using existing endpoints)
+  getGateways: () => api.get('/admin/payments/gateways').then((r) => r.data),
+  createGateway: (data: Record<string, unknown>) =>
+    api.post('/admin/payments/gateways', data).then((r) => r.data),
+  updateGateway: (id: string, data: Record<string, unknown>) =>
+    api.patch(`/admin/payments/gateways/${id}`, data).then((r) => r.data),
+};
+
 export default api;
 
