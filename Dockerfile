@@ -1,19 +1,22 @@
-# Use the official Node.js image as a parent image
-FROM node:14
-
-# Set the working directory
+# Build stage
+FROM node:18-alpine AS builder
 WORKDIR /app
 
-# Copy package.json and install dependencies
-COPY package.json ./
-RUN npm install --silent
+COPY package*.json ./
+RUN npm install
 
-# TODO: Removed COPY package-lock.json ./ line
-# Copy the source files into the container
 COPY . .
+RUN npm run build
 
-# Expose the application port
+# Production stage
+FROM node:18-alpine
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install --only=production
+
+COPY --from=builder /app/dist ./dist
+
 EXPOSE 3000
 
-# Start the application
-CMD [ "npm", "start" ]
+CMD ["node", "dist/main"]

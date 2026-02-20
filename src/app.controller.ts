@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { Product } from './product.entity';
 import { Fabric } from './fabric.entity';
 import { Designer } from './designer.entity';
@@ -11,11 +11,23 @@ export class AppController {
     @InjectRepository(Product) private productRepo: Repository<Product>,
     @InjectRepository(Fabric) private fabricRepo: Repository<Fabric>,
     @InjectRepository(Designer) private designerRepo: Repository<Designer>,
+    private dataSource: DataSource,
   ) {}
 
   @Get('/health')
-  health() {
-    return { status: 'ok', timestamp: new Date() };
+  async health() {
+    let dbStatus = 'connected';
+    try {
+      await this.dataSource.query('SELECT 1');
+    } catch {
+      dbStatus = 'disconnected';
+    }
+    return {
+      status: 'ok',
+      timestamp: new Date(),
+      uptime: process.uptime(),
+      database: dbStatus,
+    };
   }
 
   @Get('/products')

@@ -7,6 +7,11 @@ import { SeedService } from './seed.service';
 import { Product } from './product.entity';
 import { Fabric } from './fabric.entity';
 import { Designer } from './designer.entity';
+import { User } from './user/user.entity';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+
+const isProduction = process.env.NODE_ENV === 'production';
 
 @Module({
   imports: [
@@ -17,25 +22,18 @@ import { Designer } from './designer.entity';
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
-      entities: [Product, Fabric, Designer],
-      synchronize: true,
-      logging: ['query', 'error'],
-      ssl: true,
-      extra: {
-        ssl: {
-          rejectUnauthorized: false,
-        },
-      },
+      entities: [Product, Fabric, Designer, User],
+      synchronize: !isProduction,
+      ssl: isProduction,
+      extra: isProduction
+        ? { ssl: { rejectUnauthorized: false } }
+        : undefined,
     }),
     TypeOrmModule.forFeature([Product, Fabric, Designer]),
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService, SeedService],
 })
-export class AppModule {
-  constructor() {
-    console.log('🔌 AppModule initialized');
-    console.log('📦 Entities: Product, Fabric, Designer');
-    console.log('🌱 SeedService should run on startup');
-  }
-}
+export class AppModule {}
