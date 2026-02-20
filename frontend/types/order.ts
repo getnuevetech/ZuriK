@@ -1,11 +1,23 @@
 import { Product } from './product';
 import { Fabric } from './fabric';
 
+export type OrderStatus =
+  | 'PENDING_PAYMENT'
+  | 'PAID'
+  | 'IN_PRODUCTION'
+  | 'SHIPPED_TO_QA'
+  | 'QA_INSPECTION'
+  | 'QA_APPROVED'
+  | 'QA_REJECTED'
+  | 'SHIPPED_TO_CUSTOMER'
+  | 'DELIVERED'
+  | 'CANCELLED';
+
 export interface Order {
   id: string;
   orderNumber: string;
   orderType: 'CUSTOM_DESIGN' | 'READY_TO_WEAR' | 'FABRIC_ONLY';
-  status: string;
+  status: OrderStatus;
   design?: Product;
   fabric?: Fabric;
   designPrice?: number;

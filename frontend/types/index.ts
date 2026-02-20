@@ -2,3 +2,6 @@ export * from './user';
 export * from './product';
 export * from './fabric';
 export * from './order';
+export * from './settings';
+export * from './hero-banner';
+export * from './analytics';

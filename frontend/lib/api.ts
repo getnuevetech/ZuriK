@@ -1,7 +1,8 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import type {
-  Product, Fabric, Order,
+  Product, Fabric, Order, OrderStatus,
   CreateCustomDesignOrderDto, CreateReadyToWearOrderDto, CreateFabricOnlyOrderDto,
+  User, PlatformSettings, HeroBanner, AnalyticsOverview,
 } from '../types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
@@ -31,6 +32,20 @@ export interface FabricFilters {
   maxPrice?: number;
   pattern?: string;
   inStock?: boolean;
+}
+
+export interface OrderFilters {
+  status?: string;
+  orderType?: string;
+  search?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface UserFilters {
+  role?: string;
+  isActive?: boolean;
+  search?: string;
 }
 
 // --- Axios instance ---
@@ -129,6 +144,14 @@ export const productsApi = {
     return api.get<Product[]>(`/products${query ? `?${query}` : ''}`).then((r) => r.data);
   },
   get: (id: string): Promise<Product> => api.get<Product>(`/products/${id}`).then((r) => r.data),
+  create: (data: Partial<Product>): Promise<Product> =>
+    api.post<Product>('/products', data).then((r) => r.data),
+  update: (id: string, data: Partial<Product>): Promise<Product> =>
+    api.patch<Product>(`/products/${id}`, data).then((r) => r.data),
+  delete: (id: string): Promise<void> =>
+    api.delete(`/products/${id}`).then(() => undefined),
+  toggleActive: (id: string): Promise<Product> =>
+    api.patch<Product>(`/products/${id}/toggle-active`).then((r) => r.data),
 };
 
 // --- Fabrics API ---
@@ -146,11 +169,42 @@ export const fabricsApi = {
     return api.get<Fabric[]>(`/fabrics${query ? `?${query}` : ''}`).then((r) => r.data);
   },
   get: (id: string): Promise<Fabric> => api.get<Fabric>(`/fabrics/${id}`).then((r) => r.data),
+  create: (data: Partial<Fabric>): Promise<Fabric> =>
+    api.post<Fabric>('/fabrics', data).then((r) => r.data),
+  update: (id: string, data: Partial<Fabric>): Promise<Fabric> =>
+    api.patch<Fabric>(`/fabrics/${id}`, data).then((r) => r.data),
+  delete: (id: string): Promise<void> =>
+    api.delete(`/fabrics/${id}`).then(() => undefined),
+  updateStock: (id: string, stock: number): Promise<Fabric> =>
+    api.patch<Fabric>(`/fabrics/${id}`, { stock }).then((r) => r.data),
 };
 
 // --- Designers API ---
 export const designersApi = {
   list: () => api.get('/users?role=designer').then((r) => r.data),
+};
+
+// --- Users API ---
+export const usersApi = {
+  list: (filters?: UserFilters): Promise<User[]> => {
+    const params = new URLSearchParams();
+    if (filters?.role) params.set('role', filters.role);
+    if (filters?.search) params.set('search', filters.search);
+    if (filters?.isActive !== undefined) params.set('isActive', String(filters.isActive));
+    const query = params.toString();
+    return api.get<User[]>(`/users${query ? `?${query}` : ''}`).then((r) => r.data);
+  },
+  getById: (id: string): Promise<User> => api.get<User>(`/users/${id}`).then((r) => r.data),
+  update: (id: string, data: Partial<User>): Promise<User> =>
+    api.patch<User>(`/users/${id}`, data).then((r) => r.data),
+  delete: (id: string): Promise<void> =>
+    api.delete(`/users/${id}`).then(() => undefined),
+  changeRole: (id: string, role: string): Promise<User> =>
+    api.patch<User>(`/users/${id}`, { role }).then((r) => r.data),
+  toggleActive: (id: string, isActive: boolean): Promise<User> =>
+    api.patch<User>(`/users/${id}`, { isActive }).then((r) => r.data),
+  create: (data: Partial<User> & { password: string }): Promise<User> =>
+    api.post<User>('/users', data).then((r) => r.data),
 };
 
 // --- Orders API ---
@@ -163,27 +217,86 @@ export const ordersApi = {
     api.post<Order>('/orders/fabric-only', data).then((r) => r.data),
   getMyOrders: (): Promise<Order[]> => api.get<Order[]>('/orders').then((r) => r.data),
   getOrder: (id: string): Promise<Order> => api.get<Order>(`/orders/${id}`).then((r) => r.data),
+  listAll: (filters?: OrderFilters): Promise<Order[]> => {
+    const params = new URLSearchParams();
+    if (filters?.status) params.set('status', filters.status);
+    if (filters?.orderType) params.set('orderType', filters.orderType);
+    if (filters?.search) params.set('search', filters.search);
+    if (filters?.startDate) params.set('startDate', filters.startDate);
+    if (filters?.endDate) params.set('endDate', filters.endDate);
+    const query = params.toString();
+    return api.get<Order[]>(`/orders/all${query ? `?${query}` : ''}`).then((r) => r.data);
+  },
+  updateStatus: (id: string, status: OrderStatus, notes?: string): Promise<Order> =>
+    api.patch<Order>(`/orders/${id}/status`, { status, notes }).then((r) => r.data),
 };
 
 // --- Hero Banners API ---
-export interface HeroBanner {
-  id: string;
-  title: string;
-  subtitle?: string;
-  ctaText?: string;
-  ctaLink?: string;
-  mediaType: string;
-  mediaUrl: string;
-  mobileMediaUrl?: string;
-  sortOrder: number;
-  isActive: boolean;
-  textColor?: string;
-  overlayOpacity?: number;
-}
-
 export const heroBannersApi = {
   listActive: (): Promise<HeroBanner[]> =>
     api.get<HeroBanner[]>('/hero-banners').then((r) => r.data),
+  list: (): Promise<HeroBanner[]> =>
+    api.get<HeroBanner[]>('/hero-banners/all').then((r) => r.data),
+  create: (data: Partial<HeroBanner>): Promise<HeroBanner> =>
+    api.post<HeroBanner>('/hero-banners', data).then((r) => r.data),
+  update: (id: string, data: Partial<HeroBanner>): Promise<HeroBanner> =>
+    api.patch<HeroBanner>(`/hero-banners/${id}`, data).then((r) => r.data),
+  delete: (id: string): Promise<void> =>
+    api.delete(`/hero-banners/${id}`).then(() => undefined),
 };
 
+// --- Settings API ---
+export const settingsApi = {
+  get: (): Promise<PlatformSettings> =>
+    api.get<PlatformSettings>('/settings').then((r) => r.data),
+  update: (data: Partial<PlatformSettings>): Promise<PlatformSettings> =>
+    api.patch<PlatformSettings>('/settings', data).then((r) => r.data),
+};
+
+// --- Upload API ---
+export const uploadApi = {
+  uploadImage: (file: File): Promise<{ url: string }> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return api.post<{ url: string }>('/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then((r) => r.data);
+  },
+};
+
+// --- Analytics API ---
+export const analyticsApi = {
+  getOverview: async (): Promise<AnalyticsOverview> => {
+    const [users, orders, products, fabrics] = await Promise.all([
+      usersApi.list().catch(() => [] as User[]),
+      ordersApi.listAll().catch(() => [] as Order[]),
+      productsApi.list().catch(() => [] as Product[]),
+      fabricsApi.list().catch(() => [] as Fabric[]),
+    ]);
+    const totalRevenue = orders.reduce((sum, o) => sum + (o.totalPrice || 0), 0);
+    const recentOrders = [...orders]
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 10)
+      .map((o) => ({
+        id: o.id,
+        orderNumber: o.orderNumber,
+        status: o.status,
+        totalPrice: o.totalPrice,
+        createdAt: o.createdAt,
+      }));
+    return {
+      totalUsers: users.length,
+      totalOrders: orders.length,
+      totalRevenue,
+      activeProducts: products.filter((p) => p.isActive).length,
+      activeFabrics: fabrics.filter((f) => f.stock > 0).length,
+      recentOrders,
+    };
+  },
+};
+
+// Re-export HeroBanner type to support existing imports from this module
+export type { HeroBanner } from '../types';
+
 export default api;
+
