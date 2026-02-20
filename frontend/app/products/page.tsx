@@ -184,24 +184,33 @@ function ProductsContent() {
                   >
                     ‹ Prev
                   </button>
-                  {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
-                    const pg = i + 1;
-                    return (
-                      <button
-                        key={pg}
-                        onClick={() => handlePageChange(pg)}
-                        className={[
-                          'px-3 py-2 text-sm rounded-lg border transition-colors',
-                          pg === currentPage
-                            ? 'bg-primary-600 text-white border-primary-600 font-medium'
-                            : 'border-neutral-300 hover:border-primary-400',
-                        ].join(' ')}
-                      >
-                        {pg}
-                      </button>
+                  {(() => {
+                    const delta = 2;
+                    const pages: (number | 'ellipsis')[] = [];
+                    const left = Math.max(1, currentPage - delta);
+                    const right = Math.min(totalPages, currentPage + delta);
+                    if (left > 1) { pages.push(1); if (left > 2) pages.push('ellipsis'); }
+                    for (let p = left; p <= right; p++) pages.push(p);
+                    if (right < totalPages) { if (right < totalPages - 1) pages.push('ellipsis'); pages.push(totalPages); }
+                    return pages.map((item, idx) =>
+                      item === 'ellipsis' ? (
+                        <span key={`e${idx}`} className="px-2 text-neutral-400">…</span>
+                      ) : (
+                        <button
+                          key={item}
+                          onClick={() => handlePageChange(item as number)}
+                          className={[
+                            'px-3 py-2 text-sm rounded-lg border transition-colors',
+                            item === currentPage
+                              ? 'bg-primary-600 text-white border-primary-600 font-medium'
+                              : 'border-neutral-300 hover:border-primary-400',
+                          ].join(' ')}
+                        >
+                          {item}
+                        </button>
+                      )
                     );
-                  })}
-                  {totalPages > 7 && <span className="px-2 text-neutral-400">…</span>}
+                  })()}
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage >= totalPages}

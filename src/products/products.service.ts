@@ -107,9 +107,18 @@ export class ProductsService {
       qb.andWhere('product.inStock = :inStock', { inStock: dto.inStock });
     }
     if (dto.sizes && dto.sizes.length > 0) {
-      const sizeClauses = dto.sizes.map((s, i) => `product.sizes LIKE :size${i}`);
+      // simple-array column stores values as comma-separated: "S,M,L"
+      // Match each size at start, end, or surrounded by commas to avoid partial matches
+      const sizeClauses = dto.sizes.map((_, i) =>
+        `(product.sizes = :sizeExact${i} OR product.sizes LIKE :sizeStart${i} OR product.sizes LIKE :sizeEnd${i} OR product.sizes LIKE :sizeMid${i})`
+      );
       const sizeParams: Record<string, string> = {};
-      dto.sizes.forEach((s, i) => { sizeParams[`size${i}`] = `%${s}%`; });
+      dto.sizes.forEach((s, i) => {
+        sizeParams[`sizeExact${i}`] = s;
+        sizeParams[`sizeStart${i}`] = `${s},%`;
+        sizeParams[`sizeEnd${i}`] = `%,${s}`;
+        sizeParams[`sizeMid${i}`] = `%,${s},%`;
+      });
       qb.andWhere(`(${sizeClauses.join(' OR ')})`, sizeParams);
     }
 
@@ -126,6 +135,9 @@ export class ProductsService {
       case SortBy.NAME_DESC:
         qb.orderBy('product.name', 'DESC');
         break;
+      case SortBy.RATING:
+      case SortBy.POPULARITY:
+      case SortBy.NEWEST:
       default:
         qb.orderBy('product.createdAt', 'DESC');
     }
@@ -133,19 +145,47 @@ export class ProductsService {
     const total = await qb.getCount();
     const products = await qb.skip(offset).take(limit).getMany();
 
-    // Build facets from a separate (unfiltered-by-category/fabric) query for counts
-    const allActive = await this.productRepo.find({ where: { isActive: true }, select: ['category', 'fabricType', 'region', 'customerPrice', 'sizes'] });
+    // Build facets using aggregation queries
+    const [categoryRows, fabricTypeRows, regionRows, priceRow, sizeRows] = await Promise.all([
+      this.productRepo.createQueryBuilder('p')
+        .select('p.category', 'name').addSelect('COUNT(*)', 'count')
+        .where('p.isActive = true AND p.category IS NOT NULL AND p.category != \'\'')
+        .groupBy('p.category').orderBy('count', 'DESC')
+        .getRawMany<{ name: string; count: string }>(),
 
-    const countMap = <T extends string>(items: (T | null | undefined)[]): { name: string; count: number }[] => {
-      const map = new Map<string, number>();
-      for (const item of items) {
-        if (item) map.set(item, (map.get(item) ?? 0) + 1);
+      this.productRepo.createQueryBuilder('p')
+        .select('p.fabricType', 'name').addSelect('COUNT(*)', 'count')
+        .where('p.isActive = true AND p.fabricType IS NOT NULL AND p.fabricType != \'\'')
+        .groupBy('p.fabricType').orderBy('count', 'DESC')
+        .getRawMany<{ name: string; count: string }>(),
+
+      this.productRepo.createQueryBuilder('p')
+        .select('p.region', 'name').addSelect('COUNT(*)', 'count')
+        .where('p.isActive = true AND p.region IS NOT NULL AND p.region != \'\'')
+        .groupBy('p.region').orderBy('count', 'DESC')
+        .getRawMany<{ name: string; count: string }>(),
+
+      this.productRepo.createQueryBuilder('p')
+        .select('MIN(p.customerPrice)', 'min').addSelect('MAX(p.customerPrice)', 'max')
+        .where('p.isActive = true')
+        .getRawOne<{ min: string; max: string }>(),
+
+      this.productRepo.createQueryBuilder('p')
+        .select('p.sizes', 'sizes')
+        .where('p.isActive = true AND p.sizes IS NOT NULL AND p.sizes != \'\'')
+        .getRawMany<{ sizes: string }>(),
+    ]);
+
+    // Parse sizes from comma-separated strings
+    const sizeCountMap = new Map<string, number>();
+    for (const row of sizeRows) {
+      for (const s of (row.sizes ?? '').split(',').map((x) => x.trim()).filter(Boolean)) {
+        sizeCountMap.set(s, (sizeCountMap.get(s) ?? 0) + 1);
       }
-      return Array.from(map.entries()).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count);
-    };
-
-    const prices = allActive.map((p) => Number(p.customerPrice)).filter((p) => !isNaN(p));
-    const allSizes = allActive.flatMap((p) => p.sizes ?? []);
+    }
+    const sizeFacets = Array.from(sizeCountMap.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
 
     return {
       products,
@@ -154,14 +194,14 @@ export class ProductsService {
       limit,
       totalPages: Math.ceil(total / limit),
       filters: {
-        categories: countMap(allActive.map((p) => p.category)),
-        fabricTypes: countMap(allActive.map((p) => p.fabricType)),
-        regions: countMap(allActive.map((p) => p.region)),
+        categories: categoryRows.map((r) => ({ name: r.name, count: Number(r.count) })),
+        fabricTypes: fabricTypeRows.map((r) => ({ name: r.name, count: Number(r.count) })),
+        regions: regionRows.map((r) => ({ name: r.name, count: Number(r.count) })),
         priceRange: {
-          min: prices.length ? Math.min(...prices) : 0,
-          max: prices.length ? Math.max(...prices) : 0,
+          min: priceRow ? Number(priceRow.min) || 0 : 0,
+          max: priceRow ? Number(priceRow.max) || 0 : 0,
         },
-        sizes: countMap(allSizes),
+        sizes: sizeFacets,
       },
     };
   }
