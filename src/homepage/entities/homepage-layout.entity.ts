@@ -6,6 +6,13 @@ export interface LayoutSection {
   order: number;
 }
 
+export enum SectionType {
+  FEATURED_PRODUCTS = 'FEATURED_PRODUCTS',
+  COUNTRY_CATEGORIES = 'COUNTRY_CATEGORIES',
+  COLLECTIONS = 'COLLECTIONS',
+  HERO_BANNER = 'HERO_BANNER',
+}
+
 const DEFAULT_SECTIONS: LayoutSection[] = [
   { type: 'HERO_BANNER', isActive: true, order: 1 },
   { type: 'FEATURED_PRODUCTS', isActive: true, order: 2 },
