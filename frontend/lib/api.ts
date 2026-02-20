@@ -299,6 +299,28 @@ export const analyticsApi = {
 // Re-export HeroBanner type to support existing imports from this module
 export type { HeroBanner } from '../types';
 
+// --- Reviews API ---
+export const reviewsApi = {
+  getProductReviews: (productId: string, params?: { page?: number; limit?: number; sort?: string }) =>
+    api.get(`/products/${productId}/reviews`, { params }),
+  getRatingSummary: (productId: string) =>
+    api.get(`/products/${productId}/reviews/summary`),
+  createReview: (productId: string, data: { rating: number; title?: string; comment: string; images?: string[] }) =>
+    api.post(`/products/${productId}/reviews`, data),
+  updateReview: (reviewId: string, data: Partial<{ rating: number; title: string; comment: string; images: string[] }>) =>
+    api.patch(`/reviews/${reviewId}`, data),
+  deleteReview: (reviewId: string) =>
+    api.delete(`/reviews/${reviewId}`),
+  markHelpful: (reviewId: string) =>
+    api.post(`/reviews/${reviewId}/helpful`),
+  getMyReviews: (params?: { page?: number; limit?: number }) =>
+    api.get('/reviews/my', { params }),
+  adminGetReviews: (params?: { status?: string; productId?: string; userId?: string; page?: number; limit?: number }) =>
+    api.get('/admin/reviews', { params }),
+  adminModerateReview: (reviewId: string, data: { status: string; adminNote?: string }) =>
+    api.patch(`/admin/reviews/${reviewId}/moderate`, data),
+};
+
 // --- Payments API ---
 export const paymentsApi = {
   initiate: (orderId: string, provider: PaymentProvider, callbackUrl?: string): Promise<PaymentInitiateResponse> =>
@@ -316,8 +338,7 @@ export const paymentsApi = {
 };
 
 // --- Notifications API ---
-export const notificationsApi = {
-  list: (params?: { page?: number; limit?: number; unread?: boolean }) =>
+export const notificationsApi = {  list: (params?: { page?: number; limit?: number; unread?: boolean }) =>
     api.get('/notifications', { params }).then((r) => r.data),
   getUnreadCount: () =>
     api.get<{ count: number }>('/notifications/unread-count').then((r) => r.data),
