@@ -375,7 +375,13 @@ export class OrdersService {
   }
 
   private filterOrderForQa(order: Order & { customer?: User }): object {
-    const isApproved = order.status === OrderStatus.QA_APPROVED;
+    const addressVisibleStatuses = [
+      OrderStatus.SHIPPED_TO_QA,
+      OrderStatus.QA_INSPECTION,
+      OrderStatus.QA_APPROVED,
+      OrderStatus.SHIPPED_TO_CUSTOMER,
+    ];
+    const showAddress = addressVisibleStatuses.includes(order.status);
     return {
       id: order.id,
       orderNumber: order.orderNumber,
@@ -386,8 +392,8 @@ export class OrdersService {
       measurement: order.measurement,
       qaComments: order.qaComments,
       quantity: order.quantity,
-      // Customer address revealed ONLY after qa_approved
-      customerAddress: isApproved ? {
+      // Customer address revealed once item is shipped to QA
+      customerAddress: showAddress ? {
         addressLine1: order.customer?.addressLine1,
         city: order.customer?.city,
         country: order.customer?.country,
