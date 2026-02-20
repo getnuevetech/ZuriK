@@ -1,7 +1,6 @@
-import { IsArray, ValidateNested } from 'class-validator';
+import { IsArray, ValidateNested, IsString, IsEnum, IsInt, IsBoolean, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEnum, IsInt, IsBoolean, IsOptional } from 'class-validator';
 import { SectionType } from '../entities/homepage-layout.entity';
 
 class LayoutSectionDto {

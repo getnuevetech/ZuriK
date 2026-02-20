@@ -52,12 +52,13 @@ export default function AdminHomepagePage() {
   }, [fetchData]);
 
   const move = (index: number, direction: -1 | 1) => {
-    const newLayout = [...layout];
     const target = index + direction;
-    if (target < 0 || target >= newLayout.length) return;
-    [newLayout[index], newLayout[target]] = [newLayout[target], newLayout[index]];
-    newLayout.forEach((s, i) => { s.displayOrder = i; });
-    setLayout(newLayout);
+    if (target < 0 || target >= layout.length) return;
+    setLayout((prev) => {
+      const newLayout = [...prev];
+      [newLayout[index], newLayout[target]] = [newLayout[target], newLayout[index]];
+      return newLayout.map((s, i) => ({ ...s, displayOrder: i }));
+    });
   };
 
   const toggleActive = (id: string) => {

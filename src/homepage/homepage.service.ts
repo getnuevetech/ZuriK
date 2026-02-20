@@ -228,7 +228,10 @@ export class HomepageService {
   async updateHomepageLayout(dto: UpdateHomepageLayoutDto): Promise<HomepageLayout[]> {
     await Promise.all(
       dto.sections.map((s) =>
-        this.layoutRepo.save({ id: s.id, sectionType: s.sectionType, sectionId: s.sectionId, displayOrder: s.displayOrder, isActive: s.isActive }),
+        this.layoutRepo.upsert(
+          { id: s.id, sectionType: s.sectionType, sectionId: s.sectionId, displayOrder: s.displayOrder, isActive: s.isActive },
+          ['id'],
+        ),
       ),
     );
     return this.getHomepageLayout();
