@@ -21,8 +21,8 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('African Fashion Marketplace API')
-    .setDescription('Phase 2: Custom Design Pipeline')
-    .setVersion('2.0')
+    .setDescription('Phase 3: Admin Settings & Dynamic Fees')
+    .setVersion('3.0')
     .addBearerAuth()
     .addTag('Authentication')
     .addTag('Users')
@@ -30,6 +30,11 @@ async function bootstrap() {
     .addTag('Fabrics')
     .addTag('Measurements')
     .addTag('Orders')
+    .addTag('Admin Settings')
+    .addTag('Admin Taxes')
+    .addTag('Admin Shipping')
+    .addTag('Admin Payments')
+    .addTag('Upload')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

@@ -7,6 +7,7 @@ import {
   UploadedFiles,
   BadRequestException,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
@@ -20,6 +21,8 @@ const imageFilter = (req: any, file: Express.Multer.File, callback: (error: Erro
   callback(null, true);
 };
 
+@ApiTags('Upload')
+@ApiBearerAuth()
 @Controller('upload')
 @UseGuards(JwtAuthGuard)
 export class UploadController {

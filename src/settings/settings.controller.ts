@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Patch, Param, Body, Query, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -6,6 +7,8 @@ import { UserRole } from '../users/entities/user.entity';
 import { SettingsService } from './settings.service';
 import { CreateSettingsDto } from './dto/create-settings.dto';
 
+@ApiTags('Admin Settings')
+@ApiBearerAuth()
 @Controller('admin/settings')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)

@@ -5,6 +5,9 @@ export async function runSeed(dataSource: DataSource): Promise<void> {
   const userRepo = dataSource.getRepository('User');
   const productRepo = dataSource.getRepository('Product');
   const fabricRepo = dataSource.getRepository('Fabric');
+  const settingsRepo = dataSource.getRepository('PlatformSettings');
+  const taxRepo = dataSource.getRepository('TaxConfiguration');
+  const carrierRepo = dataSource.getRepository('ShippingCarrier');
 
   console.log('🌱 Seeding database...');
 
@@ -188,6 +191,66 @@ export async function runSeed(dataSource: DataSource): Promise<void> {
     console.log('ℹ️  Fabrics already exist, skipping fabric seed');
   }
 
+  const settingsCount = await settingsRepo.count();
+  if (settingsCount === 0) {
+    await settingsRepo.save(
+      settingsRepo.create({
+        key: 'default',
+        percentageFee: 10,
+        currency: 'USD',
+        description: 'Default 10% platform commission',
+        isActive: true,
+      }),
+    );
+    console.log('✅ Platform settings seeded');
+  } else {
+    console.log('ℹ️  Platform settings already exist, skipping');
+  }
+
+  const taxCount = await taxRepo.count();
+  if (taxCount === 0) {
+    await taxRepo.save([
+      taxRepo.create({
+        country: 'Nigeria',
+        taxName: 'VAT',
+        baseTaxRate: 7.5,
+        adminMarkupRate: 0,
+        description: 'Nigeria Value Added Tax',
+        isActive: true,
+      }),
+      taxRepo.create({
+        country: 'Ghana',
+        taxName: 'VAT',
+        baseTaxRate: 15,
+        adminMarkupRate: 0,
+        description: 'Ghana Value Added Tax',
+        isActive: true,
+      }),
+    ]);
+    console.log('✅ Tax configurations seeded');
+  } else {
+    console.log('ℹ️  Tax configurations already exist, skipping');
+  }
+
+  const carrierCount = await carrierRepo.count();
+  if (carrierCount === 0) {
+    await carrierRepo.save(
+      carrierRepo.create({
+        name: 'Flat Rate Shipping',
+        provider: 'FLAT_RATE',
+        settings: { rate: 5.00, currency: 'USD' },
+        supportedCountries: ['Nigeria', 'Ghana'],
+        supportedCurrencies: ['USD', 'NGN', 'GHS'],
+        isActive: true,
+        priority: 1,
+      }),
+    );
+    console.log('✅ Shipping carrier seeded');
+  } else {
+    console.log('ℹ️  Shipping carriers already exist, skipping');
+  }
+
   console.log('🎉 Database seeded successfully!');
 }
+
 

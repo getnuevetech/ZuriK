@@ -9,6 +9,13 @@ import { ProductsModule } from './products/products.module';
 import { FabricsModule } from './fabrics/fabrics.module';
 import { MeasurementsModule } from './measurements/measurements.module';
 import { OrdersModule } from './orders/orders.module';
+import { SettingsModule } from './settings/settings.module';
+import { TaxesModule } from './taxes/taxes.module';
+import { ShippingModule } from './shipping/shipping.module';
+import { PaymentsModule } from './payments/payments.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { UploadModule } from './upload/upload.module';
 import { User } from './users/entities/user.entity';
 import { Product } from './products/entities/product.entity';
 import { Fabric } from './fabrics/entities/fabric.entity';
@@ -16,6 +23,10 @@ import { Measurement } from './measurements/entities/measurement.entity';
 import { Order } from './orders/entities/order.entity';
 import { FabricSellerOrder } from './orders/entities/fabric-seller-order.entity';
 import { DesignerOrder } from './orders/entities/designer-order.entity';
+import { PlatformSettings } from './settings/entities/platform-settings.entity';
+import { TaxConfiguration } from './taxes/entities/tax-configuration.entity';
+import { ShippingCarrier } from './shipping/entities/shipping-carrier.entity';
+import { PaymentGateway } from './payments/entities/payment-gateway.entity';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -28,7 +39,10 @@ const isProduction = process.env.NODE_ENV === 'production';
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
-      entities: [User, Product, Fabric, Measurement, Order, FabricSellerOrder, DesignerOrder],
+      entities: [
+        User, Product, Fabric, Measurement, Order, FabricSellerOrder, DesignerOrder,
+        PlatformSettings, TaxConfiguration, ShippingCarrier, PaymentGateway,
+      ],
       synchronize: process.env.AUTO_SYNC === 'true' || !isProduction,
       ssl: isProduction,
       extra: isProduction
@@ -41,6 +55,13 @@ const isProduction = process.env.NODE_ENV === 'production';
     FabricsModule,
     MeasurementsModule,
     OrdersModule,
+    SettingsModule,
+    TaxesModule,
+    ShippingModule,
+    PaymentsModule,
+    NotificationsModule,
+    CloudinaryModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

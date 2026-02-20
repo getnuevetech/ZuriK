@@ -1,23 +1,12 @@
-import { IsString, IsOptional, IsNumber, IsEnum, Min } from 'class-validator';
-import { FeeType } from '../entities/platform-settings.entity';
+import { IsString, IsOptional, IsNumber, Min } from 'class-validator';
 
 export class CreateSettingsDto {
   @IsString()
   key: string;
 
-  @IsOptional()
-  @IsEnum(FeeType)
-  platformFeeType?: FeeType;
-
-  @IsOptional()
   @IsNumber()
   @Min(0)
-  fixedFee?: number;
-
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  percentageFee?: number;
+  percentageFee: number;
 
   @IsOptional()
   @IsString()

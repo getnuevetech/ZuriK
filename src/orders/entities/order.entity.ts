@@ -78,6 +78,15 @@ export class Order {
   @Column('decimal', { precision: 10, scale: 2, default: 0 })
   platformFee: number;
 
+  @Column('decimal', { precision: 10, scale: 2, default: 0 })
+  subtotal: number;
+
+  @Column('decimal', { precision: 5, scale: 2, default: 0 })
+  taxRate: number;
+
+  @Column('decimal', { precision: 10, scale: 2, default: 0 })
+  taxAmount: number;
+
   @Column({ nullable: true })
   fabricToDesignerTracking: string;
 

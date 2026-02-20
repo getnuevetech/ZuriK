@@ -19,8 +19,10 @@ import { CreateFabricOnlyOrderDto } from './dto/create-fabric-only-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { UpdateSubOrderStatusDto, UpdateDesignerSubOrderStatusDto } from './dto/update-sub-order-status.dto';
 import { UpdateSubOrderTrackingDto } from './dto/update-sub-order-tracking.dto';
+import { SettingsService } from '../settings/settings.service';
+import { TaxesService } from '../taxes/taxes.service';
 
-const PLATFORM_FEE_RATE = 0.10;
+const DEFAULT_PLATFORM_FEE_RATE = 10;
 
 @Injectable()
 export class OrdersService {
@@ -39,6 +41,8 @@ export class OrdersService {
     private readonly measurementRepo: Repository<Measurement>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+    private readonly settingsService: SettingsService,
+    private readonly taxesService: TaxesService,
   ) {}
 
   private generateOrderNumber(): string {
@@ -94,10 +98,26 @@ export class OrdersService {
 
     const designPrice = Number(design.customerPrice);
     const fabricPrice = Number(fabric.customerPrice);
-    const totalPrice = designPrice + fabricPrice;
-    const platformFee = totalPrice * PLATFORM_FEE_RATE;
-    const designerEarnings = designPrice * (1 - PLATFORM_FEE_RATE);
-    const fabricSellerEarnings = fabricPrice * (1 - PLATFORM_FEE_RATE);
+
+    const platformSettings = await this.settingsService.findActive();
+    const platformFeeRate = platformSettings
+      ? Number(platformSettings.percentageFee)
+      : DEFAULT_PLATFORM_FEE_RATE;
+    const platformFee = platformSettings
+      ? this.settingsService.calculateFee(designPrice, fabricPrice, platformSettings)
+      : ((designPrice + fabricPrice) * DEFAULT_PLATFORM_FEE_RATE) / 100;
+
+    const subtotal = designPrice + fabricPrice + platformFee;
+    const taxConfig = await this.taxesService.findByCountry(design.country);
+    const totalTaxRate = taxConfig
+      ? Number(taxConfig.baseTaxRate) + Number(taxConfig.adminMarkupRate)
+      : 0;
+    const taxAmount = (subtotal * totalTaxRate) / 100;
+    const totalPrice = subtotal + taxAmount;
+
+    const earningsRate = 1 - platformFeeRate / 100;
+    const designerEarnings = designPrice * earningsRate;
+    const fabricSellerEarnings = fabricPrice * earningsRate;
 
     const order = await this.orderRepo.save(
       this.orderRepo.create({
@@ -110,10 +130,13 @@ export class OrdersService {
         measurement: { id: measurement.id },
         designPrice,
         fabricPrice,
+        subtotal,
+        platformFee,
+        taxRate: totalTaxRate,
+        taxAmount,
         totalPrice,
         designerEarnings,
         fabricSellerEarnings,
-        platformFee,
         customerNotes: dto.customerNotes,
         quantity: 1,
       }),
@@ -171,9 +194,25 @@ export class OrdersService {
 
     const quantity = dto.quantity || 1;
     const designPrice = Number(design.customerPrice) * quantity;
-    const totalPrice = designPrice;
-    const platformFee = totalPrice * PLATFORM_FEE_RATE;
-    const designerEarnings = designPrice * (1 - PLATFORM_FEE_RATE);
+
+    const platformSettings = await this.settingsService.findActive();
+    const platformFeeRate = platformSettings
+      ? Number(platformSettings.percentageFee)
+      : DEFAULT_PLATFORM_FEE_RATE;
+    const platformFee = platformSettings
+      ? this.settingsService.calculateFee(designPrice, 0, platformSettings)
+      : (designPrice * DEFAULT_PLATFORM_FEE_RATE) / 100;
+
+    const subtotal = designPrice + platformFee;
+    const taxConfig = await this.taxesService.findByCountry(design.country);
+    const totalTaxRate = taxConfig
+      ? Number(taxConfig.baseTaxRate) + Number(taxConfig.adminMarkupRate)
+      : 0;
+    const taxAmount = (subtotal * totalTaxRate) / 100;
+    const totalPrice = subtotal + taxAmount;
+
+    const earningsRate = 1 - platformFeeRate / 100;
+    const designerEarnings = designPrice * earningsRate;
 
     const order = await this.orderRepo.save(
       this.orderRepo.create({
@@ -183,9 +222,12 @@ export class OrdersService {
         customer: { id: customerId },
         design: { id: dto.designId },
         designPrice,
+        subtotal,
+        platformFee,
+        taxRate: totalTaxRate,
+        taxAmount,
         totalPrice,
         designerEarnings,
-        platformFee,
         customerNotes: dto.customerNotes,
         quantity,
       }),
@@ -221,9 +263,25 @@ export class OrdersService {
 
     const quantity = dto.quantity || 1;
     const fabricPrice = Number(fabric.customerPrice) * quantity;
-    const totalPrice = fabricPrice;
-    const platformFee = totalPrice * PLATFORM_FEE_RATE;
-    const fabricSellerEarnings = fabricPrice * (1 - PLATFORM_FEE_RATE);
+
+    const platformSettings = await this.settingsService.findActive();
+    const platformFeeRate = platformSettings
+      ? Number(platformSettings.percentageFee)
+      : DEFAULT_PLATFORM_FEE_RATE;
+    const platformFee = platformSettings
+      ? this.settingsService.calculateFee(0, fabricPrice, platformSettings)
+      : (fabricPrice * DEFAULT_PLATFORM_FEE_RATE) / 100;
+
+    const subtotal = fabricPrice + platformFee;
+    const taxConfig = await this.taxesService.findByCountry(fabric.country);
+    const totalTaxRate = taxConfig
+      ? Number(taxConfig.baseTaxRate) + Number(taxConfig.adminMarkupRate)
+      : 0;
+    const taxAmount = (subtotal * totalTaxRate) / 100;
+    const totalPrice = subtotal + taxAmount;
+
+    const earningsRate = 1 - platformFeeRate / 100;
+    const fabricSellerEarnings = fabricPrice * earningsRate;
 
     const order = await this.orderRepo.save(
       this.orderRepo.create({
@@ -233,9 +291,12 @@ export class OrdersService {
         customer: { id: customerId },
         fabric: { id: dto.fabricId },
         fabricPrice,
+        subtotal,
+        platformFee,
+        taxRate: totalTaxRate,
+        taxAmount,
         totalPrice,
         fabricSellerEarnings,
-        platformFee,
         customerNotes: dto.customerNotes,
         quantity,
       }),
