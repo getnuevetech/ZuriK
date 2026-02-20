@@ -87,7 +87,7 @@ export class HomepageService {
           products = await qb.getMany();
         } else if (section.selectionMode === SelectionMode.AUTO_BEST_SELLING) {
           const qb = this.productRepo.createQueryBuilder('p')
-            .leftJoin('orders', 'o', 'o.designId = p.id')
+            .leftJoin(Order, 'o', 'o.designId = p.id')
             .where('p.isActive = :active', { active: true })
             .groupBy('p.id')
             .orderBy('COUNT(o.id)', 'DESC')
