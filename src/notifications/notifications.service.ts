@@ -1,97 +1,191 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import * as nodemailer from 'nodemailer';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Notification, NotificationType } from './entities/notification.entity';
+import { EmailService } from './email.service';
 
 @Injectable()
 export class NotificationsService {
-  private readonly logger = new Logger(NotificationsService.name);
-  private transporter: nodemailer.Transporter;
+  constructor(
+    @InjectRepository(Notification)
+    private readonly notificationRepo: Repository<Notification>,
+    private readonly emailService: EmailService,
+  ) {}
 
-  constructor(private configService: ConfigService) {
-    this.transporter = nodemailer.createTransport({
-      host: this.configService.get('SMTP_HOST') || 'smtp.gmail.com',
-      port: Number(this.configService.get('SMTP_PORT')) || 587,
-      secure: false,
-      auth: {
-        user: this.configService.get('SMTP_USER'),
-        pass: this.configService.get('SMTP_PASS'),
-      },
+  // ── In-app notification CRUD ──────────────────────────────────────────────
+
+  async createNotification(
+    userId: string,
+    type: NotificationType,
+    title: string,
+    message: string,
+    data?: Record<string, any>,
+  ): Promise<Notification> {
+    const notification = this.notificationRepo.create({
+      user: { id: userId },
+      type,
+      title,
+      message,
+      data: data ?? null,
+    });
+    return this.notificationRepo.save(notification);
+  }
+
+  async getNotificationsForUser(
+    userId: string,
+    page = 1,
+    limit = 20,
+  ): Promise<{ notifications: Notification[]; total: number; page: number; limit: number }> {
+    const [notifications, total] = await this.notificationRepo.findAndCount({
+      where: { user: { id: userId } },
+      order: { createdAt: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    return { notifications, total, page, limit };
+  }
+
+  async getUnreadCount(userId: string): Promise<number> {
+    return this.notificationRepo.count({
+      where: { user: { id: userId }, isRead: false },
     });
   }
 
-  private async sendEmail(to: string, subject: string, html: string): Promise<void> {
-    try {
-      const from = this.configService.get('SMTP_USER') || 'noreply@africanfashion.com';
-      if (!from || !this.configService.get('SMTP_PASS')) {
-        this.logger.warn(`Email not sent (SMTP not configured): ${subject} to ${to}`);
-        return;
-      }
-      await this.transporter.sendMail({ from, to, subject, html });
-      this.logger.log(`Email sent: ${subject} to ${to}`);
-    } catch (error) {
-      this.logger.error(`Failed to send email to ${to}: ${error.message}`);
+  async markAsRead(notificationId: string, userId: string): Promise<Notification> {
+    const notification = await this.notificationRepo.findOne({
+      where: { id: notificationId },
+      relations: ['user'],
+    });
+    if (!notification) throw new NotFoundException('Notification not found');
+    if (notification.user.id !== userId) throw new ForbiddenException('Access denied');
+    if (!notification.isRead) {
+      notification.isRead = true;
+      notification.readAt = new Date();
+      return this.notificationRepo.save(notification);
     }
+    return notification;
   }
 
-  async sendOrderConfirmation(order: any, customer: any): Promise<void> {
-    await this.sendEmail(
-      customer.email,
-      `Order Confirmation - ${order.orderNumber}`,
-      `<h2>Order Confirmed!</h2><p>Your order ${order.orderNumber} has been placed successfully.</p><p>Total: $${order.totalAmount}</p>`,
+  async markAllAsRead(userId: string): Promise<void> {
+    await this.notificationRepo.update(
+      { user: { id: userId }, isRead: false },
+      { isRead: true, readAt: new Date() },
     );
+  }
+
+  async deleteNotification(notificationId: string, userId: string): Promise<void> {
+    const notification = await this.notificationRepo.findOne({
+      where: { id: notificationId },
+      relations: ['user'],
+    });
+    if (!notification) throw new NotFoundException('Notification not found');
+    if (notification.user.id !== userId) throw new ForbiddenException('Access denied');
+    await this.notificationRepo.remove(notification);
+  }
+
+  // ── Email helpers (delegate to EmailService) ─────────────────────────────
+
+  async sendOrderConfirmation(order: any, customer: any): Promise<void> {
+    await this.emailService.sendOrderConfirmation(order, customer.email);
   }
 
   async notifyDesigner(order: any, designer: any): Promise<void> {
-    await this.sendEmail(
-      designer.email,
-      `New Order - ${order.orderNumber}`,
-      `<h2>New Order Received</h2><p>Order ${order.orderNumber} requires your attention.</p>`,
-    );
+    if (designer?.id) {
+      await this.createNotification(
+        designer.id,
+        NotificationType.NEW_ORDER,
+        'New Order Received',
+        `Order ${order.orderNumber} requires your attention.`,
+        { orderId: order.id },
+      );
+    }
   }
 
   async notifyFabricSeller(order: any, seller: any): Promise<void> {
-    await this.sendEmail(
-      seller.email,
-      `New Fabric Order - ${order.orderNumber}`,
-      `<h2>New Fabric Order</h2><p>Order ${order.orderNumber} requires your fabric.</p>`,
-    );
+    if (seller?.id) {
+      await this.createNotification(
+        seller.id,
+        NotificationType.NEW_ORDER,
+        'New Fabric Order',
+        `Order ${order.orderNumber} requires your fabric.`,
+        { orderId: order.id },
+      );
+    }
   }
 
   async notifyQA(order: any, qaUser: any): Promise<void> {
-    await this.sendEmail(
-      qaUser.email,
-      `QA Inspection Required - ${order.orderNumber}`,
-      `<h2>QA Inspection Required</h2><p>Order ${order.orderNumber} is ready for QA inspection.</p>`,
-    );
+    if (qaUser?.id) {
+      await this.createNotification(
+        qaUser.id,
+        NotificationType.QA_RESULT,
+        'QA Inspection Required',
+        `Order ${order.orderNumber} is ready for QA inspection.`,
+        { orderId: order.id },
+      );
+    }
   }
 
   async sendQAApproval(order: any, customer: any): Promise<void> {
-    await this.sendEmail(
-      customer.email,
-      `Order Approved - ${order.orderNumber}`,
-      `<h2>Great News!</h2><p>Your order ${order.orderNumber} has passed QA inspection and will be shipped soon.</p>`,
-    );
+    if (customer?.id) {
+      await this.createNotification(
+        customer.id,
+        NotificationType.QA_RESULT,
+        'Order Passed QA',
+        `Your order ${order.orderNumber} has passed QA inspection and will be shipped soon.`,
+        { orderId: order.id },
+      );
+    }
+    if (customer?.email) {
+      await this.emailService.sendOrderStatusUpdate(order, 'QA_APPROVED', customer.email);
+    }
   }
 
   async sendQARejection(order: any, designer: any, seller: any, reason: string): Promise<void> {
-    const html = `<h2>Order Rejected</h2><p>Order ${order.orderNumber} has been rejected by QA.</p><p>Reason: ${reason}</p>`;
-    if (designer) await this.sendEmail(designer.email, `Order Rejected - ${order.orderNumber}`, html);
-    if (seller) await this.sendEmail(seller.email, `Order Rejected - ${order.orderNumber}`, html);
+    const message = `Order ${order.orderNumber} has been rejected by QA. Reason: ${reason}`;
+    if (designer?.id) {
+      await this.createNotification(designer.id, NotificationType.QA_RESULT, 'Order Rejected by QA', message, { orderId: order.id });
+    }
+    if (seller?.id) {
+      await this.createNotification(seller.id, NotificationType.QA_RESULT, 'Order Rejected by QA', message, { orderId: order.id });
+    }
   }
 
   async sendShippingNotification(order: any, customer: any, tracking: string): Promise<void> {
-    await this.sendEmail(
-      customer.email,
-      `Order Shipped - ${order.orderNumber}`,
-      `<h2>Your Order is on its Way!</h2><p>Order ${order.orderNumber} has been shipped.</p><p>Tracking: ${tracking}</p>`,
-    );
+    if (customer?.id) {
+      await this.createNotification(
+        customer.id,
+        NotificationType.ORDER_STATUS,
+        'Order Shipped',
+        `Your order ${order.orderNumber} has been shipped. Tracking: ${tracking}`,
+        { orderId: order.id, tracking },
+      );
+    }
+    if (customer?.email) {
+      await this.emailService.sendOrderStatusUpdate(order, 'SHIPPED_TO_CUSTOMER', customer.email);
+    }
   }
 
   async sendDeliveryConfirmation(order: any, customer: any): Promise<void> {
-    await this.sendEmail(
-      customer.email,
-      `Order Delivered - ${order.orderNumber}`,
-      `<h2>Order Delivered!</h2><p>Your order ${order.orderNumber} has been delivered.</p>`,
-    );
+    if (customer?.id) {
+      await this.createNotification(
+        customer.id,
+        NotificationType.ORDER_STATUS,
+        'Order Delivered',
+        `Your order ${order.orderNumber} has been delivered!`,
+        { orderId: order.id },
+      );
+    }
+    if (customer?.email) {
+      await this.emailService.sendOrderStatusUpdate(order, 'DELIVERED', customer.email);
+    }
+  }
+
+  // Delegate welcome/password-reset email methods
+  async sendWelcomeEmail(user: { email: string; firstName?: string }): Promise<void> {
+    await this.emailService.sendWelcomeEmail(user);
+  }
+
+  async sendPasswordResetEmail(user: { email: string; firstName?: string }, resetToken: string): Promise<void> {
+    await this.emailService.sendPasswordResetEmail(user, resetToken);
   }
 }
