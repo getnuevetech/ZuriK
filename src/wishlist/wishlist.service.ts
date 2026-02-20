@@ -54,12 +54,13 @@ export class WishlistService {
   }
 
   async getWishlistProductIds(userId: string): Promise<string[]> {
-    const items = await this.wishlistRepo.find({
-      where: { user: { id: userId } },
-      relations: ['product'],
-      select: ['id'],
-    });
-    return items.map((item) => item.product.id);
+    const items = await this.wishlistRepo
+      .createQueryBuilder('item')
+      .innerJoin('item.product', 'product')
+      .select('product.id', 'productId')
+      .where('item.userId = :userId', { userId })
+      .getRawMany();
+    return items.map((row) => row.productId);
   }
 
   async getWishlistCount(userId: string): Promise<number> {
