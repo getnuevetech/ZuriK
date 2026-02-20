@@ -6,6 +6,7 @@ import { CartProvider } from '../lib/cart-context';
 import { ToastProvider } from '../components/ui/Toast';
 import { NavbarWrapper } from '../components/layout/NavbarWrapper';
 import { Footer } from '../components/layout/Footer';
+import { MobileBottomTabs } from '../components/layout/MobileBottomTabs';
 
 export const metadata: Metadata = {
   title: 'African Fashion — Premium African Marketplace',
@@ -25,10 +26,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <CartProvider>
             <ToastProvider>
               <NavbarWrapper />
-              <main className="flex-1">
+              <main className="flex-1 pb-16 md:pb-0">
                 {children}
               </main>
               <Footer />
+              <MobileBottomTabs />
             </ToastProvider>
           </CartProvider>
         </AuthProvider>

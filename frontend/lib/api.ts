@@ -165,4 +165,25 @@ export const ordersApi = {
   getOrder: (id: string): Promise<Order> => api.get<Order>(`/orders/${id}`).then((r) => r.data),
 };
 
+// --- Hero Banners API ---
+export interface HeroBanner {
+  id: string;
+  title: string;
+  subtitle?: string;
+  ctaText?: string;
+  ctaLink?: string;
+  mediaType: string;
+  mediaUrl: string;
+  mobileMediaUrl?: string;
+  sortOrder: number;
+  isActive: boolean;
+  textColor?: string;
+  overlayOpacity?: number;
+}
+
+export const heroBannersApi = {
+  listActive: (): Promise<HeroBanner[]> =>
+    api.get<HeroBanner[]>('/hero-banners').then((r) => r.data),
+};
+
 export default api;

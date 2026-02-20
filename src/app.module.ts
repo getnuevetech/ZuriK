@@ -16,6 +16,7 @@ import { PaymentsModule } from './payments/payments.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { UploadModule } from './upload/upload.module';
+import { HeroBannersModule } from './hero-banners/hero-banners.module';
 import { User } from './users/entities/user.entity';
 import { Product } from './products/entities/product.entity';
 import { Fabric } from './fabrics/entities/fabric.entity';
@@ -27,6 +28,7 @@ import { PlatformSettings } from './settings/entities/platform-settings.entity';
 import { TaxConfiguration } from './taxes/entities/tax-configuration.entity';
 import { ShippingCarrier } from './shipping/entities/shipping-carrier.entity';
 import { PaymentGateway } from './payments/entities/payment-gateway.entity';
+import { HeroBanner } from './hero-banners/entities/hero-banner.entity';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -41,7 +43,7 @@ const isProduction = process.env.NODE_ENV === 'production';
       url: process.env.DATABASE_URL,
       entities: [
         User, Product, Fabric, Measurement, Order, FabricSellerOrder, DesignerOrder,
-        PlatformSettings, TaxConfiguration, ShippingCarrier, PaymentGateway,
+        PlatformSettings, TaxConfiguration, ShippingCarrier, PaymentGateway, HeroBanner,
       ],
       synchronize: process.env.AUTO_SYNC === 'true' || !isProduction,
       ssl: isProduction,
@@ -62,6 +64,7 @@ const isProduction = process.env.NODE_ENV === 'production';
     NotificationsModule,
     CloudinaryModule,
     UploadModule,
+    HeroBannersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
