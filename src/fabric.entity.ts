@@ -1,9 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { User } from './user/user.entity';
 
 @Entity('fabrics')
 export class Fabric {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @ManyToOne(() => User, { nullable: true, eager: true })
+  @JoinColumn()
+  seller: User;
 
   @Column()
   name: string;

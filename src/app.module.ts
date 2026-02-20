@@ -10,6 +10,10 @@ import { Designer } from './designer.entity';
 import { User } from './user/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { MeasurementsModule } from './measurements/measurements.module';
+import { OrdersModule } from './orders/orders.module';
+import { Measurement } from './measurements/entities/measurement.entity';
+import { Order } from './orders/entities/order.entity';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -22,7 +26,7 @@ const isProduction = process.env.NODE_ENV === 'production';
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
-      entities: [Product, Fabric, Designer, User],
+      entities: [Product, Fabric, Designer, User, Measurement, Order],
       synchronize: process.env.AUTO_SYNC === 'true' || !isProduction,
       ssl: isProduction,
       extra: isProduction
@@ -32,6 +36,8 @@ const isProduction = process.env.NODE_ENV === 'production';
     TypeOrmModule.forFeature([Product, Fabric, Designer]),
     AuthModule,
     UsersModule,
+    MeasurementsModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService, SeedService],
