@@ -18,6 +18,13 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { UploadModule } from './upload/upload.module';
 import { HeroBannersModule } from './hero-banners/hero-banners.module';
 import { AdminModule } from './admin/admin.module';
+import { ReviewsModule } from './reviews/reviews.module';
+import { HomepageModule } from './homepage/homepage.module';
+import { FeaturedSection } from './homepage/entities/featured-section.entity';
+import { CountryHero } from './homepage/entities/country-hero.entity';
+import { CollectionDisplay } from './homepage/entities/collection-display.entity';
+import { ThemeSettings } from './homepage/entities/theme-settings.entity';
+import { HomepageLayout } from './homepage/entities/homepage-layout.entity';
 import { WishlistModule } from './wishlist/wishlist.module';
 import { WishlistItem } from './wishlist/entities/wishlist-item.entity';
 import { User } from './users/entities/user.entity';
@@ -35,6 +42,7 @@ import { Payment } from './payments/entities/payment.entity';
 import { Payout } from './payments/entities/payout.entity';
 import { HeroBanner } from './hero-banners/entities/hero-banner.entity';
 import { Notification } from './notifications/entities/notification.entity';
+import { Review } from './reviews/entities/review.entity';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -49,7 +57,9 @@ const isProduction = process.env.NODE_ENV === 'production';
       url: process.env.DATABASE_URL,
       entities: [
         User, Product, Fabric, Measurement, Order, FabricSellerOrder, DesignerOrder,
-        PlatformSettings, TaxConfiguration, ShippingCarrier, PaymentGateway, Payment, Payout, HeroBanner, Notification, WishlistItem,
+        PlatformSettings, TaxConfiguration, ShippingCarrier, PaymentGateway, Payment, Payout, HeroBanner, Notification, Review,
+        FeaturedSection, CountryHero, CollectionDisplay, ThemeSettings, HomepageLayout,
+        WishlistItem,
       ],
       synchronize: process.env.AUTO_SYNC === 'true' || !isProduction,
       ssl: isProduction,
@@ -72,6 +82,8 @@ const isProduction = process.env.NODE_ENV === 'production';
     UploadModule,
     HeroBannersModule,
     AdminModule,
+    ReviewsModule,
+    HomepageModule,
     WishlistModule,
   ],
   controllers: [AppController],

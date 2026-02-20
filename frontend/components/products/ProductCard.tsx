@@ -8,6 +8,7 @@ import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { PriceDisplay } from '../common/PriceDisplay';
 import { WishlistButton } from '../wishlist/WishlistButton';
+import { StarRating } from '../reviews/StarRating';
 import { getUserDisplayName } from '../../lib/utils';
 import type { Product } from '../../types';
 
@@ -45,6 +46,15 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           {product.country && <Badge variant="secondary">{product.country}</Badge>}
         </div>
         <h3 className="font-semibold text-neutral-900 mb-1 line-clamp-1">{product.name}</h3>
+        {/* Rating */}
+        {(product.totalReviews ?? 0) > 0 ? (
+          <div className="flex items-center gap-1.5 mb-1">
+            <StarRating rating={product.averageRating ?? 0} size="sm" />
+            <span className="text-xs text-neutral-500">({product.totalReviews})</span>
+          </div>
+        ) : (
+          <p className="text-xs text-neutral-400 mb-1">No reviews yet</p>
+        )}
         {designerName && (
           <Link
             href={`/designers/${product.designer!.id}`}
