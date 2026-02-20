@@ -1,4 +1,8 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+import type {
+  Product, Fabric, Order,
+  CreateCustomDesignOrderDto, CreateReadyToWearOrderDto, CreateFabricOnlyOrderDto,
+} from '../types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -8,6 +12,26 @@ export interface RegisterPayload { email: string; password: string; firstName: s
 export interface AuthResponse { accessToken: string; refreshToken: string; user: UserProfile; }
 export interface UserProfile { id: string; email: string; firstName: string; lastName: string; role: string; }
 export interface RefreshResponse { accessToken: string; refreshToken: string; }
+
+export interface ProductFilters {
+  category?: string;
+  country?: string;
+  search?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  sort?: string;
+}
+
+export interface FabricFilters {
+  material?: string;
+  color?: string;
+  country?: string;
+  search?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  pattern?: string;
+  inStock?: boolean;
+}
 
 // --- Axios instance ---
 const api: AxiosInstance = axios.create({ baseURL: API_URL });
@@ -93,19 +117,52 @@ export const authApi = {
 
 // --- Products API ---
 export const productsApi = {
-  list: () => api.get('/products').then((r) => r.data),
-  get: (id: string) => api.get(`/products/${id}`).then((r) => r.data),
+  list: (filters?: ProductFilters): Promise<Product[]> => {
+    const params = new URLSearchParams();
+    if (filters?.category) params.set('category', filters.category);
+    if (filters?.country) params.set('country', filters.country);
+    if (filters?.search) params.set('search', filters.search);
+    if (filters?.minPrice !== undefined) params.set('minPrice', String(filters.minPrice));
+    if (filters?.maxPrice !== undefined) params.set('maxPrice', String(filters.maxPrice));
+    if (filters?.sort) params.set('sort', filters.sort);
+    const query = params.toString();
+    return api.get<Product[]>(`/products${query ? `?${query}` : ''}`).then((r) => r.data);
+  },
+  get: (id: string): Promise<Product> => api.get<Product>(`/products/${id}`).then((r) => r.data),
 };
 
 // --- Fabrics API ---
 export const fabricsApi = {
-  list: () => api.get('/fabrics').then((r) => r.data),
-  get: (id: string) => api.get(`/fabrics/${id}`).then((r) => r.data),
+  list: (filters?: FabricFilters): Promise<Fabric[]> => {
+    const params = new URLSearchParams();
+    if (filters?.material) params.set('material', filters.material);
+    if (filters?.color) params.set('color', filters.color);
+    if (filters?.country) params.set('country', filters.country);
+    if (filters?.search) params.set('search', filters.search);
+    if (filters?.minPrice !== undefined) params.set('minPrice', String(filters.minPrice));
+    if (filters?.maxPrice !== undefined) params.set('maxPrice', String(filters.maxPrice));
+    if (filters?.pattern) params.set('pattern', filters.pattern);
+    const query = params.toString();
+    return api.get<Fabric[]>(`/fabrics${query ? `?${query}` : ''}`).then((r) => r.data);
+  },
+  get: (id: string): Promise<Fabric> => api.get<Fabric>(`/fabrics/${id}`).then((r) => r.data),
 };
 
 // --- Designers API ---
 export const designersApi = {
   list: () => api.get('/users?role=designer').then((r) => r.data),
+};
+
+// --- Orders API ---
+export const ordersApi = {
+  createCustomDesign: (data: CreateCustomDesignOrderDto): Promise<Order> =>
+    api.post<Order>('/orders/custom-design', data).then((r) => r.data),
+  createReadyToWear: (data: CreateReadyToWearOrderDto): Promise<Order> =>
+    api.post<Order>('/orders/ready-to-wear', data).then((r) => r.data),
+  createFabricOnly: (data: CreateFabricOnlyOrderDto): Promise<Order> =>
+    api.post<Order>('/orders/fabric-only', data).then((r) => r.data),
+  getMyOrders: (): Promise<Order[]> => api.get<Order[]>('/orders').then((r) => r.data),
+  getOrder: (id: string): Promise<Order> => api.get<Order>(`/orders/${id}`).then((r) => r.data),
 };
 
 export default api;
