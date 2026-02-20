@@ -7,6 +7,7 @@ import { Card, CardBody } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { PriceDisplay } from '../common/PriceDisplay';
+import { getUserDisplayName } from '../../lib/utils';
 import type { Product } from '../../types';
 
 interface ProductCardProps {
@@ -15,9 +16,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onAddToCart }: ProductCardProps) {
-  const designerName = product.designer
-    ? `${product.designer.firstName ?? ''} ${product.designer.lastName ?? ''}`.trim() || product.designer.email
-    : null;
+  const designerName = product.designer ? getUserDisplayName(product.designer) : null;
 
   return (
     <Card hover className="flex flex-col h-full">

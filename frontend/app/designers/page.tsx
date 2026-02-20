@@ -11,6 +11,7 @@ import { Button } from '../../components/ui/Button';
 import { Spinner } from '../../components/ui/Spinner';
 import { SearchBar } from '../../components/common/SearchBar';
 import { EmptyState } from '../../components/common/EmptyState';
+import { getUserDisplayName } from '../../lib/utils';
 import type { Product, Designer } from '../../types';
 
 interface DesignerWithProducts extends Designer {
@@ -84,7 +85,7 @@ export default function DesignersPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((designer) => {
-            const name = [designer.firstName, designer.lastName].filter(Boolean).join(' ') || designer.email;
+            const name = getUserDisplayName(designer);
             return (
               <Card key={designer.id} hover>
                 <CardBody className="flex flex-col items-center text-center py-8">

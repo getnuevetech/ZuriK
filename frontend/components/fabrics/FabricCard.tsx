@@ -7,6 +7,7 @@ import { Card, CardBody } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { PriceDisplay } from '../common/PriceDisplay';
+import { getUserDisplayName } from '../../lib/utils';
 import type { Fabric } from '../../types';
 
 interface FabricCardProps {
@@ -15,9 +16,7 @@ interface FabricCardProps {
 }
 
 export function FabricCard({ fabric, onOrder }: FabricCardProps) {
-  const sellerName = fabric.seller
-    ? `${fabric.seller.firstName ?? ''} ${fabric.seller.lastName ?? ''}`.trim() || fabric.seller.email
-    : null;
+  const sellerName = fabric.seller ? getUserDisplayName(fabric.seller) : null;
 
   const inStock = fabric.stock > 0;
 

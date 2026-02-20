@@ -13,6 +13,7 @@ import { Spinner } from '../../../components/ui/Spinner';
 import { Breadcrumbs } from '../../../components/common/Breadcrumbs';
 import { ProductCard } from '../../../components/products/ProductCard';
 import { EmptyState } from '../../../components/common/EmptyState';
+import { getUserDisplayName } from '../../../lib/utils';
 import type { Product, Designer } from '../../../types';
 
 export default function DesignerProfilePage() {
@@ -61,7 +62,7 @@ export default function DesignerProfilePage() {
     </div>
   );
 
-  const designerName = `${designer.firstName ?? ''} ${designer.lastName ?? ''}`.trim() || designer.email;
+  const designerName = getUserDisplayName(designer);
   const countrySet = new Set(products.map((p) => p.country).filter(Boolean));
   const countries = Array.from(countrySet);
 

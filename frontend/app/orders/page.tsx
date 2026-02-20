@@ -66,11 +66,8 @@ export default function OrdersPage() {
     return <div className="flex justify-center py-20"><Spinner size="lg" /></div>;
   }
 
-  const filtered = statusFilter
-    ? orders.filter((o) => o.status === statusFilter)
-    : [...orders].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-  const sorted = statusFilter ? filtered : [...filtered].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const filtered = statusFilter ? orders.filter((o) => o.status === statusFilter) : orders;
+  const sorted = [...filtered].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
