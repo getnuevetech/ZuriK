@@ -1,36 +1,19 @@
-# Stage 1: Build the application
-FROM node:18-alpine AS builder
+# Use the official Node.js image as a parent image
+FROM node:14
+
+# Set the working directory
 WORKDIR /app
 
-# Copy package files
+# Copy package.json and install dependencies
 COPY package.json ./
+RUN npm install --silent
 
-# Install dependencies
-RUN npm install
+# TODO: Removed COPY package-lock.json ./ line
+# Copy the source files into the container
+COPY . .
 
-# Copy source code
-COPY src ./src
-COPY tsconfig.json ./
-COPY nest-cli.json ./
-
-# Build the application
-RUN npm run build
-
-# Stage 2: Production
-FROM node:18-alpine AS production
-WORKDIR /app
-
-# Copy package file
-COPY package.json ./
-
-# Install production dependencies
-RUN npm install --only=production
-
-# Copy built app from builder
-COPY --from=builder /app/dist ./dist
-
-# Expose port
+# Expose the application port
 EXPOSE 3000
 
-# Start application
-CMD ["node", "dist/main.js"]
+# Start the application
+CMD [ "npm", "start" ]
