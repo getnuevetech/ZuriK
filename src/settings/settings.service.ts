@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { PlatformSettings, FeeType } from './entities/platform-settings.entity';
+import { PlatformSettings } from './entities/platform-settings.entity';
 import { CreateSettingsDto } from './dto/create-settings.dto';
 
 @Injectable()
@@ -33,16 +33,7 @@ export class SettingsService {
 
   calculateFee(designPrice: number, fabricPrice: number, settings: PlatformSettings): number {
     const subtotal = designPrice + fabricPrice;
-    switch (settings.platformFeeType) {
-      case FeeType.FIXED:
-        return Number(settings.fixedFee);
-      case FeeType.PERCENTAGE:
-        return (subtotal * Number(settings.percentageFee)) / 100;
-      case FeeType.HYBRID:
-        return Number(settings.fixedFee) + (subtotal * Number(settings.percentageFee)) / 100;
-      default:
-        return 0;
-    }
+    return (subtotal * Number(settings.percentageFee)) / 100;
   }
 
   async previewFee(designPrice: number, fabricPrice: number): Promise<object> {
@@ -55,7 +46,6 @@ export class SettingsService {
       subtotal: designPrice + fabricPrice,
       platformFee: fee,
       total: designPrice + fabricPrice + fee,
-      feeType: settings.platformFeeType,
     };
   }
 }
