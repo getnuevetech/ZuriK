@@ -16,9 +16,10 @@ import { Spinner } from '../../../components/ui/Spinner';
 import { Card, CardBody, CardHeader } from '../../../components/ui/Card';
 import { PriceDisplay } from '../../../components/common/PriceDisplay';
 import { SearchBar } from '../../../components/common/SearchBar';
+import { TryOnPreview } from '../../../components/try-on';
 import type { Product, Fabric, CreateCustomDesignOrderDto } from '../../../types';
 
-const STEPS = ['Select Design', 'Select Fabric', 'Measurements', 'Review & Confirm'];
+const STEPS = ['Select Design', 'Select Fabric', 'Measurements', 'Preview', 'Review & Confirm'];
 
 interface Measurements {
   chest: string;
@@ -321,13 +322,38 @@ function CustomDesignContent() {
           />
           <div className="flex gap-3">
             <Button variant="ghost" onClick={() => setStep(1)}>← Back</Button>
-            <Button onClick={() => setStep(3)} disabled={!measurementsValid}>Continue →</Button>
+            <Button onClick={() => setStep(3)} disabled={!measurementsValid}>Preview →</Button>
           </div>
         </div>
       )}
 
-      {/* Step 3: Review & Confirm */}
+      {/* Step 3: Preview */}
       {step === 3 && selectedDesign && selectedFabric && (
+        <div>
+          <h2 className="font-heading text-xl font-semibold text-neutral-800 mb-4">Preview Your Design</h2>
+          <TryOnPreview
+            mode="custom-design"
+            product={selectedDesign}
+            fabric={selectedFabric}
+            measurements={{
+              chest: measurements.chest ? parseFloat(measurements.chest) : undefined,
+              waist: measurements.waist ? parseFloat(measurements.waist) : undefined,
+              hips: measurements.hips ? parseFloat(measurements.hips) : undefined,
+              shoulder: measurements.shoulder ? parseFloat(measurements.shoulder) : undefined,
+              sleeveLength: measurements.sleeveLength ? parseFloat(measurements.sleeveLength) : undefined,
+              length: measurements.length ? parseFloat(measurements.length) : undefined,
+              unit: measurements.unit,
+            }}
+          />
+          <div className="flex gap-3 mt-6">
+            <Button variant="ghost" onClick={() => setStep(2)}>← Back to Measurements</Button>
+            <Button onClick={() => setStep(4)}>Looks Good →</Button>
+          </div>
+        </div>
+      )}
+
+      {/* Step 4: Review & Confirm */}
+      {step === 4 && selectedDesign && selectedFabric && (
         <div>
           <h2 className="font-heading text-xl font-semibold text-neutral-800 mb-6">Review Your Order</h2>
           <div className="space-y-4 mb-6">
@@ -420,7 +446,7 @@ function CustomDesignContent() {
           </div>
 
           <div className="flex gap-3">
-            <Button variant="ghost" onClick={() => setStep(2)}>← Back</Button>
+            <Button variant="ghost" onClick={() => setStep(3)}>← Back</Button>
             <Button onClick={handleSubmit} loading={submitting} className="flex-1">
               Place Order
             </Button>
