@@ -371,3 +371,21 @@ export const adminApi = {
 
 export default api;
 
+// --- Wishlist API ---
+export const wishlistApi = {
+  getWishlist: (params?: { page?: number; limit?: number }) =>
+    api.get('/wishlist', { params }),
+  getWishlistIds: () =>
+    api.get<{ ids: string[] }>('/wishlist/ids'),
+  getWishlistCount: () =>
+    api.get<{ count: number }>('/wishlist/count'),
+  addToWishlist: (productId: string) =>
+    api.post(`/wishlist/${productId}`),
+  removeFromWishlist: (productId: string) =>
+    api.delete(`/wishlist/${productId}`),
+  toggleWishlist: (productId: string) =>
+    api.post<{ added: boolean }>(`/wishlist/${productId}/toggle`),
+  clearWishlist: () =>
+    api.delete('/wishlist'),
+};
+

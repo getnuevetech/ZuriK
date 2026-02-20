@@ -7,6 +7,7 @@ import { Card, CardBody } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { PriceDisplay } from '../common/PriceDisplay';
+import { WishlistButton } from '../wishlist/WishlistButton';
 import { getUserDisplayName } from '../../lib/utils';
 import type { Product } from '../../types';
 
@@ -32,6 +33,11 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
         ) : (
           <span className="text-4xl">👗</span>
         )}
+        <div className="absolute top-2 right-2">
+          <div className="bg-white/80 backdrop-blur-sm rounded-full shadow-sm">
+            <WishlistButton productId={product.id} size="sm" />
+          </div>
+        </div>
       </div>
       <CardBody className="flex flex-col flex-1">
         <div className="flex items-center gap-2 mb-2 flex-wrap">

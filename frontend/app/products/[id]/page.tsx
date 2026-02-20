@@ -15,6 +15,7 @@ import { Modal } from '../../../components/ui/Modal';
 import { Breadcrumbs } from '../../../components/common/Breadcrumbs';
 import { PriceDisplay } from '../../../components/common/PriceDisplay';
 import { ProductCard } from '../../../components/products/ProductCard';
+import { WishlistButton } from '../../../components/wishlist/WishlistButton';
 import { TryOnPreview } from '../../../components/try-on';
 import type { Product, Order } from '../../../types';
 
@@ -189,14 +190,19 @@ export default function ProductDetailPage() {
               <Button size="lg" onClick={handleAddToCart} className="w-full">
                 Add to Cart
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                onClick={() => setTryOnOpen(true)}
-                className="w-full mt-2 border-accent-500 text-accent-600 hover:bg-accent-50"
-              >
-                👤 Try It On
-              </Button>
+              <div className="flex gap-2 mt-2">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={() => setTryOnOpen(true)}
+                  className="flex-1 border-accent-500 text-accent-600 hover:bg-accent-50"
+                >
+                  👤 Try It On
+                </Button>
+                <div className="flex items-center justify-center bg-neutral-100 rounded-lg px-3 border border-neutral-200">
+                  <WishlistButton productId={product.id} size="lg" />
+                </div>
+              </div>
             </div>
 
             {/* Custom design */}

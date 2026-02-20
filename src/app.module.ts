@@ -18,6 +18,8 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { UploadModule } from './upload/upload.module';
 import { HeroBannersModule } from './hero-banners/hero-banners.module';
 import { AdminModule } from './admin/admin.module';
+import { WishlistModule } from './wishlist/wishlist.module';
+import { WishlistItem } from './wishlist/entities/wishlist-item.entity';
 import { User } from './users/entities/user.entity';
 import { Product } from './products/entities/product.entity';
 import { Fabric } from './fabrics/entities/fabric.entity';
@@ -47,7 +49,7 @@ const isProduction = process.env.NODE_ENV === 'production';
       url: process.env.DATABASE_URL,
       entities: [
         User, Product, Fabric, Measurement, Order, FabricSellerOrder, DesignerOrder,
-        PlatformSettings, TaxConfiguration, ShippingCarrier, PaymentGateway, Payment, Payout, HeroBanner, Notification,
+        PlatformSettings, TaxConfiguration, ShippingCarrier, PaymentGateway, Payment, Payout, HeroBanner, Notification, WishlistItem,
       ],
       synchronize: process.env.AUTO_SYNC === 'true' || !isProduction,
       ssl: isProduction,
@@ -70,6 +72,7 @@ const isProduction = process.env.NODE_ENV === 'production';
     UploadModule,
     HeroBannersModule,
     AdminModule,
+    WishlistModule,
   ],
   controllers: [AppController],
   providers: [AppService],
