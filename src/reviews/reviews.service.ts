@@ -56,7 +56,7 @@ export class ReviewsService {
       images: dto.images ?? [],
     });
 
-    const saved = await this.reviewRepo.save(review) as Review;
+    const saved = await this.reviewRepo.save(review);
     return saved;
   }
 
