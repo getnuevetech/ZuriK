@@ -54,6 +54,7 @@ export function withRole<P extends object>(
 export function useRequireRole(allowedRoles: string[]) {
   const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
+  const rolesKey = allowedRoles.join(',');
 
   useEffect(() => {
     if (isLoading) return;
@@ -61,10 +62,10 @@ export function useRequireRole(allowedRoles: string[]) {
       router.push('/login');
       return;
     }
-    if (user && !allowedRoles.includes(user.role)) {
+    if (user && !rolesKey.split(',').includes(user.role)) {
       router.push('/403');
     }
-  }, [isLoading, isAuthenticated, user, router, allowedRoles]);
+  }, [isLoading, isAuthenticated, user, router, rolesKey]);
 
   return { user, isAuthenticated, isLoading };
 }

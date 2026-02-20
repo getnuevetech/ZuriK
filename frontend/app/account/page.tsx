@@ -167,7 +167,7 @@ export default function AccountPage() {
               />
               <div className="flex items-center gap-3">
                 <Badge variant="default">
-                  {user.role.replace('_', ' ')}
+                  {user.role.replace(/_/g, ' ')}
                 </Badge>
               </div>
               <Button type="submit" loading={profileSaving}>

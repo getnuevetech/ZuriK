@@ -295,7 +295,7 @@ export const analyticsApi = {
   },
 };
 
-// Re-export HeroBanner for backwards compatibility
+// Re-export HeroBanner type to support existing imports from this module
 export type { HeroBanner } from '../types';
 
 export default api;

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useRequireRole } from '../../../../lib/with-role';
 import { usersApi } from '../../../../lib/api';
 import { useToast } from '../../../../components/ui/Toast';
@@ -55,14 +55,14 @@ export default function AdminUsersPage() {
   const [addSaving, setAddSaving] = useState(false);
   const [changingRole, setChangingRole] = useState<string | null>(null);
 
-  const loadUsers = () => {
+  const loadUsers = useCallback(() => {
     usersApi.list(roleFilter ? { role: roleFilter } : undefined)
       .then(setUsers)
       .catch(() => {})
       .finally(() => setLoading(false));
-  };
+  }, [roleFilter]);
 
-  useEffect(() => { loadUsers(); }, [roleFilter]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { loadUsers(); }, [loadUsers]);
 
   const handleToggleActive = async (u: User) => {
     try {
