@@ -2,11 +2,14 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  Logger,
 } from '@nestjs/common';
-import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
-import { Repository, DataSource } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Order, OrderStatus } from './entities/order.entity';
-import { UserRole } from '../user/user.entity';
+import { UserRole, User } from '../user/user.entity';
+import { Product } from '../products/entities/product.entity';
+import { Fabric } from '../fabrics/entities/fabric.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { CalculateOrderDto } from './dto/calculate-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
@@ -19,14 +22,20 @@ const PAYOUT_RATIO = 0.9;
 
 @Injectable()
 export class OrdersService {
+  private readonly logger = new Logger(OrdersService.name);
+
   constructor(
     @InjectRepository(Order)
     private readonly orderRepo: Repository<Order>,
+    @InjectRepository(Product)
+    private readonly productRepo: Repository<Product>,
+    @InjectRepository(Fabric)
+    private readonly fabricRepo: Repository<Fabric>,
+    @InjectRepository(User)
+    private readonly userRepo: Repository<User>,
     private readonly notificationsService: NotificationsService,
     private readonly settingsService: SettingsService,
     private readonly taxesService: TaxesService,
-    @InjectDataSource()
-    private readonly dataSource: DataSource,
   ) {}
 
   private generateOrderNumber(): string {
@@ -37,8 +46,8 @@ export class OrdersService {
   }
 
   async calculateOrder(dto: CalculateOrderDto): Promise<object> {
-    const product = await this.dataSource.getRepository('Product').findOne({ where: { id: dto.designId } });
-    const fabric = await this.dataSource.getRepository('Fabric').findOne({ where: { id: dto.fabricId } });
+    const product = await this.productRepo.findOne({ where: { id: dto.designId } });
+    const fabric = await this.fabricRepo.findOne({ where: { id: dto.fabricId } });
 
     if (!product) throw new NotFoundException(`Design ${dto.designId} not found`);
     if (!fabric) throw new NotFoundException(`Fabric ${dto.fabricId} not found`);
@@ -77,13 +86,13 @@ export class OrdersService {
   }
 
   async createOrder(customerId: string, dto: CreateOrderDto): Promise<Order> {
-    const product = await this.dataSource.getRepository('Product').findOne({
+    const product = await this.productRepo.findOne({
       where: { id: dto.designId },
       relations: ['designer'],
     });
     if (!product) throw new NotFoundException(`Design ${dto.designId} not found`);
 
-    const fabric = await this.dataSource.getRepository('Fabric').findOne({
+    const fabric = await this.fabricRepo.findOne({
       where: { id: dto.fabricId },
       relations: ['seller'],
     });
@@ -108,7 +117,7 @@ export class OrdersService {
     const platformRevenue = platformFee + (designPrice * (1 - PAYOUT_RATIO)) + (fabricPrice * (1 - PAYOUT_RATIO));
 
     // Find available QA
-    const qaUser = await this.dataSource.getRepository('User').findOne({
+    const qaUser = await this.userRepo.findOne({
       where: { role: UserRole.QA, isActive: true },
     });
 
@@ -146,8 +155,8 @@ export class OrdersService {
       status: OrderStatus.PENDING_PAYMENT,
     }));
 
-    // Send notifications
-    const customer = await this.dataSource.getRepository('User').findOne({ where: { id: customerId } });
+    // Send notifications (non-critical)
+    const customer = await this.userRepo.findOne({ where: { id: customerId } });
 
     try {
       if (customer) await this.notificationsService.sendOrderConfirmation(order, customer);
@@ -155,7 +164,7 @@ export class OrdersService {
       if (fabric.seller) await this.notificationsService.notifyFabricSeller(order, fabric.seller);
       if (qaUser) await this.notificationsService.notifyQA(order, qaUser);
     } catch (e) {
-      // Notifications are non-critical
+      this.logger.warn(`Failed to send order notifications for ${order.orderNumber}: ${e.message}`);
     }
 
     return order;
@@ -309,7 +318,7 @@ export class OrdersService {
 
     const savedOrder = await this.orderRepo.save(order);
 
-    // Send notifications
+    // Send notifications (non-critical)
     try {
       if (status === 'SHIPPED' || status === 'SHIPPED_TO_CUSTOMER') {
         if (order.customer) {
@@ -320,7 +329,7 @@ export class OrdersService {
         await this.notificationsService.sendDeliveryConfirmation(savedOrder, order.customer);
       }
     } catch (e) {
-      // Non-critical
+      this.logger.warn(`Failed to send status update notifications for ${orderId}: ${e.message}`);
     }
 
     return savedOrder;
@@ -341,7 +350,9 @@ export class OrdersService {
       if (order.customer) {
         await this.notificationsService.sendQAApproval(savedOrder, order.customer);
       }
-    } catch (e) {}
+    } catch (e) {
+      this.logger.warn(`Failed to send QA approval notification for ${orderId}: ${e.message}`);
+    }
 
     return savedOrder;
   }
@@ -365,7 +376,9 @@ export class OrdersService {
         order.fabric?.seller,
         reason,
       );
-    } catch (e) {}
+    } catch (e) {
+      this.logger.warn(`Failed to send QA rejection notifications for ${orderId}: ${e.message}`);
+    }
 
     return savedOrder;
   }

@@ -13,7 +13,7 @@ import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
-const imageFilter = (req: any, file: Express.Multer.File, callback: Function) => {
+const imageFilter = (req: any, file: Express.Multer.File, callback: (error: Error | null, acceptFile: boolean) => void) => {
   if (!file.mimetype.match(/\/(jpg|jpeg|png|webp)$/)) {
     return callback(new BadRequestException('Only JPG, PNG, WebP files allowed'), false);
   }

@@ -142,7 +142,4 @@ export class Order {
 
   @Column({ nullable: true })
   qaRejectedAt: Date;
-
-  // Legacy relation name
-  measurements: any;
 }

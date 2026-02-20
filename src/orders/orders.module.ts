@@ -6,10 +6,13 @@ import { OrdersController, QaController } from './orders.controller';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { SettingsModule } from '../settings/settings.module';
 import { TaxesModule } from '../taxes/taxes.module';
+import { Product } from '../products/entities/product.entity';
+import { Fabric } from '../fabrics/entities/fabric.entity';
+import { User } from '../user/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Order]),
+    TypeOrmModule.forFeature([Order, Product, Fabric, User]),
     NotificationsModule,
     SettingsModule,
     TaxesModule,
