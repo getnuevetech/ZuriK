@@ -33,6 +33,10 @@ interface OrderDetail extends Order {
   tax?: number;
 }
 
+function formatOrderType(orderType: string): string {
+  return orderType.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 export default function AdminOrderDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
@@ -118,7 +122,7 @@ export default function AdminOrderDetailPage() {
           <div>
             <h2 className="text-xl font-semibold text-neutral-900">#{order.orderNumber}</h2>
             <p className="text-sm text-neutral-500 capitalize">
-              {order.orderType.replace(/_/g, ' ').toLowerCase()}
+              {formatOrderType(order.orderType)}
             </p>
           </div>
           <StatusBadge status={order.status} />

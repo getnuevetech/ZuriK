@@ -44,6 +44,10 @@ interface OrderWithCustomer extends Order {
   customer?: { firstName?: string; lastName?: string; email?: string };
 }
 
+function formatOrderType(orderType: string): string {
+  return orderType.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<OrderWithCustomer[]>([]);
   const [total, setTotal] = useState(0);
@@ -90,8 +94,7 @@ export default function AdminOrdersPage() {
     {
       key: 'orderType',
       header: 'Type',
-      render: (row: Order) =>
-        row.orderType.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()),
+      render: (row: Order) => formatOrderType(row.orderType),
     },
     {
       key: 'status',

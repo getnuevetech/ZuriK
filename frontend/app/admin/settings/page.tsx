@@ -30,7 +30,7 @@ export default function AdminSettingsPage() {
         const setting = Array.isArray(data) ? data[0] : data;
         if (setting) {
           setSettings(setting);
-          setPercentageFee(String(setting.percentageFee ?? ''));
+          setPercentageFee(String(setting.percentageFee ?? 0));
           setIsActive(setting.isActive ?? true);
         }
       })
@@ -50,7 +50,7 @@ export default function AdminSettingsPage() {
       const setting = Array.isArray(updated) ? updated[0] : updated;
       if (setting) {
         setSettings(setting);
-        setPercentageFee(String(setting.percentageFee ?? ''));
+        setPercentageFee(String(setting.percentageFee ?? 0));
         setIsActive(setting.isActive ?? true);
       }
       toast('success', 'Settings saved');
