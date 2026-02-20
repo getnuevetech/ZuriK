@@ -33,6 +33,7 @@ export default function DataTable<T = Record<string, unknown>>({
   onSort,
   pagination,
 }: DataTableProps<T>) {
+  // Tracks current sort UI state; actual sorting is delegated to the parent via onSort.
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
