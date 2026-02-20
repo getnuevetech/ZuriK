@@ -11,6 +11,7 @@ const ADMIN_NAV_ITEMS = [
   { href: '/admin/users', label: 'Users', icon: '👥' },
   { href: '/admin/orders', label: 'Orders', icon: '📦' },
   { href: '/admin/payments', label: 'Payments', icon: '💳' },
+  { href: '/admin/homepage', label: 'Homepage', icon: '🏠' },
   { href: '/admin/settings', label: 'Settings', icon: '⚙️' },
 ];
 
