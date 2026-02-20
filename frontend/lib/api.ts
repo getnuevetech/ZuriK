@@ -299,6 +299,28 @@ export const analyticsApi = {
 // Re-export HeroBanner type to support existing imports from this module
 export type { HeroBanner } from '../types';
 
+// --- Reviews API ---
+export const reviewsApi = {
+  getProductReviews: (productId: string, params?: { page?: number; limit?: number; sort?: string }) =>
+    api.get(`/products/${productId}/reviews`, { params }),
+  getRatingSummary: (productId: string) =>
+    api.get(`/products/${productId}/reviews/summary`),
+  createReview: (productId: string, data: { rating: number; title?: string; comment: string; images?: string[] }) =>
+    api.post(`/products/${productId}/reviews`, data),
+  updateReview: (reviewId: string, data: Partial<{ rating: number; title: string; comment: string; images: string[] }>) =>
+    api.patch(`/reviews/${reviewId}`, data),
+  deleteReview: (reviewId: string) =>
+    api.delete(`/reviews/${reviewId}`),
+  markHelpful: (reviewId: string) =>
+    api.post(`/reviews/${reviewId}/helpful`),
+  getMyReviews: (params?: { page?: number; limit?: number }) =>
+    api.get('/reviews/my', { params }),
+  adminGetReviews: (params?: { status?: string; productId?: string; userId?: string; page?: number; limit?: number }) =>
+    api.get('/admin/reviews', { params }),
+  adminModerateReview: (reviewId: string, data: { status: string; adminNote?: string }) =>
+    api.patch(`/admin/reviews/${reviewId}/moderate`, data),
+};
+
 // --- Payments API ---
 export const paymentsApi = {
   initiate: (orderId: string, provider: PaymentProvider, callbackUrl?: string): Promise<PaymentInitiateResponse> =>
@@ -370,6 +392,54 @@ export const adminApi = {
 };
 
 export default api;
+
+// --- Homepage API ---
+export const homepageApi = {
+  // Public endpoints
+  getHomepage: () => api.get('/homepage').then((r) => r.data),
+  getTheme: () => api.get('/homepage/theme').then((r) => r.data),
+  getFeatured: () => api.get('/homepage/featured').then((r) => r.data),
+  getCountries: () => api.get('/homepage/countries').then((r) => r.data),
+  getCollections: () => api.get('/homepage/collections').then((r) => r.data),
+
+  // Admin — Featured Sections
+  adminGetFeatured: () => api.get('/homepage/admin/featured').then((r) => r.data),
+  adminCreateFeatured: (data: Record<string, unknown>) =>
+    api.post('/homepage/admin/featured', data).then((r) => r.data),
+  adminUpdateFeatured: (id: string, data: Record<string, unknown>) =>
+    api.patch(`/homepage/admin/featured/${id}`, data).then((r) => r.data),
+  adminDeleteFeatured: (id: string) =>
+    api.delete(`/homepage/admin/featured/${id}`).then((r) => r.data),
+
+  // Admin — Country Heroes
+  adminGetCountries: () => api.get('/homepage/admin/countries').then((r) => r.data),
+  adminCreateCountry: (data: Record<string, unknown>) =>
+    api.post('/homepage/admin/countries', data).then((r) => r.data),
+  adminUpdateCountry: (id: string, data: Record<string, unknown>) =>
+    api.patch(`/homepage/admin/countries/${id}`, data).then((r) => r.data),
+  adminDeleteCountry: (id: string) =>
+    api.delete(`/homepage/admin/countries/${id}`).then((r) => r.data),
+
+  // Admin — Collections
+  adminGetCollections: () => api.get('/homepage/admin/collections').then((r) => r.data),
+  adminCreateCollection: (data: Record<string, unknown>) =>
+    api.post('/homepage/admin/collections', data).then((r) => r.data),
+  adminUpdateCollection: (id: string, data: Record<string, unknown>) =>
+    api.patch(`/homepage/admin/collections/${id}`, data).then((r) => r.data),
+  adminDeleteCollection: (id: string) =>
+    api.delete(`/homepage/admin/collections/${id}`).then((r) => r.data),
+
+  // Admin — Theme
+  adminGetTheme: () => api.get('/homepage/admin/theme').then((r) => r.data),
+  adminUpdateTheme: (data: { activeTheme: string }) =>
+    api.patch('/homepage/admin/theme', data).then((r) => r.data),
+  adminGetThemePresets: () => api.get('/homepage/admin/theme/presets').then((r) => r.data),
+
+  // Admin — Layout
+  adminGetLayout: () => api.get('/homepage/admin/layout').then((r) => r.data),
+  adminUpdateLayout: (sections: Record<string, unknown>[]) =>
+    api.put('/homepage/admin/layout', { sections }).then((r) => r.data),
+};
 
 // --- Wishlist API ---
 export const wishlistApi = {

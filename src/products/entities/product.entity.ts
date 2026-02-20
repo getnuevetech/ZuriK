@@ -36,6 +36,12 @@ export class Product {
   @Column({ default: true })
   isActive: boolean;
 
+  @Column('decimal', { precision: 3, scale: 1, default: 0 })
+  averageRating: number;
+
+  @Column({ default: 0 })
+  totalReviews: number;
+
   @CreateDateColumn()
   createdAt: Date;
 
