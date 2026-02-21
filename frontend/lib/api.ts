@@ -503,6 +503,35 @@ export const homepageApi = {
     api.patch(`/homepage/admin/promo-banners/${id}`, data).then((r) => r.data),
   adminDeletePromoBanner: (id: string) =>
     api.delete(`/homepage/admin/promo-banners/${id}`).then((r) => r.data),
+
+  // Public — Shop by Country / Trending
+  getShopByCountry: () => api.get('/homepage/shop-by-country').then((r) => r.data),
+  getTrending: (limit?: number) =>
+    api.get('/homepage/trending', { params: { limit } }).then((r) => r.data),
+
+  // Public — Collection Posts
+  getCollectionPosts: () => api.get('/homepage/collection-posts').then((r) => r.data),
+
+  // Public — Heritage Stories
+  getHeritageStories: () => api.get('/homepage/heritage-stories').then((r) => r.data),
+
+  // Admin — Collection Posts
+  adminGetCollectionPosts: () => api.get('/homepage/admin/collection-posts').then((r) => r.data),
+  adminCreateCollectionPost: (data: Record<string, unknown>) =>
+    api.post('/homepage/admin/collection-posts', data).then((r) => r.data),
+  adminUpdateCollectionPost: (id: string, data: Record<string, unknown>) =>
+    api.patch(`/homepage/admin/collection-posts/${id}`, data).then((r) => r.data),
+  adminDeleteCollectionPost: (id: string) =>
+    api.delete(`/homepage/admin/collection-posts/${id}`).then((r) => r.data),
+
+  // Admin — Heritage Stories
+  adminGetHeritageStories: () => api.get('/homepage/admin/heritage-stories').then((r) => r.data),
+  adminCreateHeritageStory: (data: Record<string, unknown>) =>
+    api.post('/homepage/admin/heritage-stories', data).then((r) => r.data),
+  adminUpdateHeritageStory: (id: string, data: Record<string, unknown>) =>
+    api.patch(`/homepage/admin/heritage-stories/${id}`, data).then((r) => r.data),
+  adminDeleteHeritageStory: (id: string) =>
+    api.delete(`/homepage/admin/heritage-stories/${id}`).then((r) => r.data),
 };
 
 // --- Wishlist API ---

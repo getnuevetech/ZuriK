@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { productsApi } from '../../lib/api';
+import { homepageApi } from '../../lib/api';
 import { ProductCard } from '../products/ProductCard';
 import { Spinner } from '../ui/Spinner';
 import type { Product } from '../../types';
@@ -13,8 +13,8 @@ export function TrendingProducts() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    productsApi.list()
-      .then((res) => setProducts(res.items.slice(0, 10)))
+    homepageApi.getTrending(10)
+      .then((data: Product[]) => setProducts(data))
       .catch(() => setProducts([]))
       .finally(() => setLoading(false));
   }, []);
