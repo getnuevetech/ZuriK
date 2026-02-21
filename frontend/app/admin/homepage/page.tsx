@@ -95,7 +95,7 @@ export default function AdminHomepagePage() {
 
   return (
     <div className="space-y-6">
-      <AdminPageHeader title="Homepage Management" />
+      <AdminPageHeader title="Homepage Management" breadcrumbs={[{ label: 'Admin', href: '/admin' }, { label: 'Homepage' }]} />
 
       {/* Quick links */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">

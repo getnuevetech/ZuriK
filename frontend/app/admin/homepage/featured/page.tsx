@@ -117,7 +117,7 @@ export default function AdminFeaturedPage() {
 
   return (
     <div className="space-y-6">
-      <AdminPageHeader title="Featured Product Sections" />
+      <AdminPageHeader title="Featured Product Sections" breadcrumbs={[{ label: 'Admin', href: '/admin' }, { label: 'Homepage', href: '/admin/homepage' }, { label: 'Featured Sections' }]} />
 
       <div className="flex justify-end">
         <button

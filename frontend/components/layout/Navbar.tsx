@@ -133,6 +133,12 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
                         <div className="text-xs text-neutral-400 font-light">Your body, your fabric, your style</div>
                       </div>
                     </Link>
+                    <Link href="/products/compare" className="flex items-center gap-3 px-3 py-2.5 hover:bg-neutral-50 transition-colors" onClick={() => setShopOpen(false)}>
+                      <div>
+                        <div className="font-medium text-sm">Compare Products</div>
+                        <div className="text-xs text-neutral-400 font-light">Compare styles side by side</div>
+                      </div>
+                    </Link>
                   </div>
                   <div className="border-t border-neutral-100 mt-1 pt-1 px-1">
                     <div className="px-3 py-1.5 text-xs font-semibold text-neutral-400 uppercase tracking-wider">Shop by Country</div>
@@ -173,7 +179,7 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
                     user.role === 'designer' ? '/dashboard/designer'
                     : user.role === 'fabric_seller' ? '/dashboard/fabric-seller'
                     : user.role === 'qa' ? '/dashboard/qa'
-                    : user.role === 'admin' ? '/dashboard/admin'
+                    : user.role === 'admin' ? '/admin'
                     : '/account'
                   }
                   className="text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors px-4 py-2"
@@ -241,6 +247,8 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
                     </div>
                     <Link href="/profile" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>Profile</Link>
                     <Link href="/orders" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>My Orders</Link>
+                    <Link href="/wishlist" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>Wishlist</Link>
+                    <Link href="/products/compare" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>Compare</Link>
                     <Link href="/account/addresses" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>Addresses</Link>
                     {user.role === 'customer' && (
                       <Link href="/become-seller" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>Become a Seller</Link>
@@ -253,7 +261,7 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
                         user.role === 'designer' ? '/dashboard/designer'
                         : user.role === 'fabric_seller' ? '/dashboard/fabric-seller'
                         : user.role === 'qa' ? '/dashboard/qa'
-                        : user.role === 'admin' ? '/dashboard/admin'
+                        : user.role === 'admin' ? '/admin'
                         : '/account'
                       }
                       className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors"
@@ -326,7 +334,7 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
                     user.role === 'designer' ? '/dashboard/designer'
                     : user.role === 'fabric_seller' ? '/dashboard/fabric-seller'
                     : user.role === 'qa' ? '/dashboard/qa'
-                    : user.role === 'admin' ? '/dashboard/admin'
+                    : user.role === 'admin' ? '/admin'
                     : '/account'
                   }
                   className="block px-3 py-2.5 text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors"

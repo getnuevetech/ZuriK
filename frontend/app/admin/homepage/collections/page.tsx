@@ -140,7 +140,7 @@ export default function AdminCollectionsPage() {
 
   return (
     <div className="space-y-6">
-      <AdminPageHeader title="Collection Displays" />
+      <AdminPageHeader title="Collection Displays" breadcrumbs={[{ label: 'Admin', href: '/admin' }, { label: 'Homepage', href: '/admin/homepage' }, { label: 'Collections' }]} />
 
       <div className="flex justify-end">
         <button

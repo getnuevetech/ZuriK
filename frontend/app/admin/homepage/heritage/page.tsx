@@ -139,7 +139,7 @@ export default function AdminHeritageStoriesPage() {
 
   return (
     <div className="space-y-6">
-      <AdminPageHeader title="Heritage Stories" />
+      <AdminPageHeader title="Heritage Stories" breadcrumbs={[{ label: 'Admin', href: '/admin' }, { label: 'Homepage', href: '/admin/homepage' }, { label: 'Heritage' }]} />
 
       <div className="flex justify-end">
         <button

@@ -77,7 +77,7 @@ export default function AdminThemePage() {
 
   return (
     <div className="space-y-6">
-      <AdminPageHeader title="Theme Settings" />
+      <AdminPageHeader title="Theme Settings" breadcrumbs={[{ label: 'Admin', href: '/admin' }, { label: 'Homepage', href: '/admin/homepage' }, { label: 'Theme' }]} />
 
       {/* Theme preset selector */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

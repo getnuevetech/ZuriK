@@ -108,7 +108,7 @@ export default function AdminSellerApplicationsPage() {
 
   return (
     <div className="space-y-6">
-      <AdminPageHeader title="Seller Applications" />
+      <AdminPageHeader title="Seller Applications" breadcrumbs={[{ label: 'Admin', href: '/admin' }, { label: 'Seller Applications' }]} />
 
       <div className="flex gap-2">
         {['', 'pending', 'approved', 'rejected'].map((s) => (

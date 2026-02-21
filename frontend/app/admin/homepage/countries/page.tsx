@@ -128,7 +128,7 @@ export default function AdminCountriesPage() {
 
   return (
     <div className="space-y-6">
-      <AdminPageHeader title="Country Category Heroes" />
+      <AdminPageHeader title="Country Category Heroes" breadcrumbs={[{ label: 'Admin', href: '/admin' }, { label: 'Homepage', href: '/admin/homepage' }, { label: 'Countries' }]} />
 
       <div className="flex justify-end">
         <button

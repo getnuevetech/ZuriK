@@ -135,7 +135,7 @@ export default function AdminCollectionPostsPage() {
 
   return (
     <div className="space-y-6">
-      <AdminPageHeader title="Collection Stories" />
+      <AdminPageHeader title="Collection Stories" breadcrumbs={[{ label: 'Admin', href: '/admin' }, { label: 'Homepage', href: '/admin/homepage' }, { label: 'Collection Posts' }]} />
 
       <div className="flex justify-end">
         <button
