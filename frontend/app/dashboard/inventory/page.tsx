@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../../../lib/auth-context';
+import { useRequireRole } from '../../../lib/with-role';
 import { productsApi, fabricsApi } from '../../../lib/api';
 import type { Product } from '../../../types/product';
 import type { Fabric } from '../../../types/fabric';
@@ -9,6 +9,7 @@ import { useToast } from '../../../components/ui/Toast';
 import { Badge } from '../../../components/ui/Badge';
 import { Card, CardBody, CardHeader } from '../../../components/ui/Card';
 import { Spinner } from '../../../components/ui/Spinner';
+import { DashboardLayout } from '../../../components/dashboard/DashboardLayout';
 
 type StockStatus = 'in-stock' | 'low-stock' | 'out-of-stock';
 
@@ -39,7 +40,7 @@ interface InventoryItem {
 }
 
 export default function InventoryPage() {
-  const { user } = useAuth();
+  const { user, isLoading } = useRequireRole(['designer', 'fabric_seller']);
   const { toast } = useToast();
 
   const [items, setItems] = useState<InventoryItem[]>([]);
@@ -51,6 +52,20 @@ export default function InventoryPage() {
 
   const isDesigner = user?.role === 'designer';
   const isFabricSeller = user?.role === 'fabric_seller';
+
+  const sidebarItems = isDesigner
+    ? [
+        { href: '/dashboard/designer', label: 'Overview', icon: '📊' },
+        { href: '/dashboard/designer/products', label: 'My Products', icon: '👗' },
+        { href: '/dashboard/designer/orders', label: 'Orders', icon: '📦' },
+        { href: '/dashboard/inventory', label: 'Inventory', icon: '📋' },
+      ]
+    : [
+        { href: '/dashboard/fabric-seller', label: 'Overview', icon: '📊' },
+        { href: '/dashboard/fabric-seller/fabrics', label: 'My Fabrics', icon: '🧵' },
+        { href: '/dashboard/fabric-seller/orders', label: 'Orders', icon: '📦' },
+        { href: '/dashboard/inventory', label: 'Inventory', icon: '📋' },
+      ];
 
   const fetchInventory = useCallback(async () => {
     setLoading(true);
@@ -130,14 +145,12 @@ export default function InventoryPage() {
     }
   }
 
-  if (!isDesigner && !isFabricSeller) {
-    return <div className="text-center py-20 text-neutral-500">Access denied. Only sellers can view inventory.</div>;
+  if (isLoading || !user) {
+    return <div className="min-h-screen flex items-center justify-center"><Spinner size="lg" /></div>;
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
-      <h1 className="text-3xl font-bold text-neutral-900 mb-6">Inventory Management</h1>
-
+    <DashboardLayout sidebarItems={sidebarItems} userRole={user.role} title="Inventory Management">
       {lowStockItems.length > 0 && (
         <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
           <h2 className="font-semibold text-amber-800 mb-2">⚠️ Low Stock Alert ({lowStockItems.length} item{lowStockItems.length > 1 ? 's' : ''})</h2>
@@ -235,6 +248,6 @@ export default function InventoryPage() {
           </CardBody>
         </Card>
       )}
-    </div>
+    </DashboardLayout>
   );
 }
