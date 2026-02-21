@@ -8,6 +8,7 @@ import { useToast } from '../../components/ui/Toast';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Card, CardBody } from '../../components/ui/Card';
+import { GoogleSignInButton } from '../../components/auth/GoogleSignInButton';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -58,6 +59,17 @@ export default function LoginPage() {
 
         <Card>
           <CardBody className="p-8">
+            <GoogleSignInButton mode="signin" />
+
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-neutral-200" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-white text-neutral-500">or sign in with email</span>
+              </div>
+            </div>
+
             <form onSubmit={handleSubmit} className="space-y-5" noValidate>
               <Input
                 label="Email address"

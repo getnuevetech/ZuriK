@@ -8,6 +8,7 @@ import { useToast } from '../../components/ui/Toast';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Card, CardBody } from '../../components/ui/Card';
+import { GoogleSignInButton } from '../../components/auth/GoogleSignInButton';
 
 type Role = 'customer' | 'designer' | 'fabric_seller';
 
@@ -73,6 +74,17 @@ export default function RegisterPage() {
 
         <Card>
           <CardBody className="p-8">
+            <GoogleSignInButton mode="signup" />
+
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-neutral-200" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-white text-neutral-500">or create account with email</span>
+              </div>
+            </div>
+
             <form onSubmit={handleSubmit} className="space-y-6" noValidate>
               {/* Role selection */}
               <div>
