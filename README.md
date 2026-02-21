@@ -98,3 +98,7 @@ Swagger docs available at `http://localhost:3000/docs` after starting the server
 - **Phase 3** 🔜 — Orders & Payments
 - **Phase 4** 🔜 — QA Workflow
 - **Phase 5** 🔜 — Notifications & Admin Dashboard
+
+## 📄 License
+
+This project is licensed under the [MIT License](./LICENSE).
