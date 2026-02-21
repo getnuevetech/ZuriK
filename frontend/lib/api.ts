@@ -12,7 +12,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 export interface LoginPayload { email: string; password: string; }
 export interface RegisterPayload { email: string; password: string; firstName: string; lastName: string; role?: string; }
 export interface AuthResponse { accessToken: string; refreshToken: string; user: UserProfile; }
-export interface UserProfile { id: string; email: string; firstName: string; lastName: string; role: string; }
+export interface UserProfile { id: string; email: string; firstName: string; lastName: string; role: string; avatarUrl?: string; provider?: string; }
 export interface RefreshResponse { accessToken: string; refreshToken: string; }
 
 export interface PaginatedResponse<T> {

@@ -40,10 +40,53 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
+    if (!user.password) {
+      throw new UnauthorizedException(
+        'This account uses Google sign-in. Please use the "Continue with Google" button.',
+      );
+    }
     const valid = await bcrypt.compare(dto.password, user.password);
     if (!valid) {
       throw new UnauthorizedException('Invalid credentials');
     }
+    const tokens = await this.generateTokens(user);
+    const { password: _pw, refreshToken: _rt, ...userWithoutSecrets } = user;
+    return { user: userWithoutSecrets, ...tokens };
+  }
+
+  async googleLogin(googleUser: {
+    googleId: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    avatarUrl?: string;
+  }) {
+    let user = await this.userRepo.findOne({ where: { googleId: googleUser.googleId } });
+
+    if (!user) {
+      user = await this.userRepo.findOne({ where: { email: googleUser.email } });
+
+      if (user) {
+        user.googleId = googleUser.googleId;
+        if (!user.avatarUrl && googleUser.avatarUrl) {
+          user.avatarUrl = googleUser.avatarUrl;
+        }
+        await this.userRepo.save(user);
+      } else {
+        user = this.userRepo.create({
+          email: googleUser.email,
+          firstName: googleUser.firstName,
+          lastName: googleUser.lastName,
+          googleId: googleUser.googleId,
+          avatarUrl: googleUser.avatarUrl || undefined,
+          provider: 'google',
+          role: UserRole.CUSTOMER,
+          isActive: true,
+        });
+        await this.userRepo.save(user);
+      }
+    }
+
     const tokens = await this.generateTokens(user);
     const { password: _pw, refreshToken: _rt, ...userWithoutSecrets } = user;
     return { user: userWithoutSecrets, ...tokens };
