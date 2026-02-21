@@ -16,7 +16,9 @@ import { PriceDisplay } from '../../components/common/PriceDisplay';
 import { EmptyState } from '../../components/common/EmptyState';
 import { PaymentMethodSelector } from '../../components/payments/PaymentMethodSelector';
 import { ShippingAddressForm, type ShippingAddress } from '../../components/payments/ShippingAddressForm';
+import { CouponInput } from '../../components/checkout/CouponInput';
 import type { PaymentProvider } from '../../types/payment';
+import type { Coupon } from '../../lib/api';
 
 type Step = 'review' | 'shipping' | 'payment' | 'confirm';
 
@@ -49,6 +51,8 @@ export default function CheckoutPage() {
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>(EMPTY_ADDRESS);
   const [paymentProvider, setPaymentProvider] = useState<PaymentProvider>('PAYSTACK');
   const [loading, setLoading] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [couponDiscount, setCouponDiscount] = useState(0);
 
   useEffect(() => {
     if (authLoading) return;
@@ -206,17 +210,34 @@ export default function CheckoutPage() {
 
           <Card className="mb-6">
             <CardBody className="space-y-3">
+              <CouponInput
+                orderTotal={cartTotal}
+                onCouponApplied={(coupon, discount) => {
+                  setAppliedCoupon(coupon);
+                  setCouponDiscount(discount);
+                }}
+                onCouponRemoved={() => {
+                  setAppliedCoupon(null);
+                  setCouponDiscount(0);
+                }}
+              />
               <div className="flex justify-between text-sm text-neutral-600">
                 <span>Subtotal ({cartItems.reduce((s, i) => s + i.quantity, 0)} items)</span>
                 <PriceDisplay amount={cartTotal} />
               </div>
+              {appliedCoupon && couponDiscount > 0 && (
+                <div className="flex justify-between text-sm text-green-600">
+                  <span>Discount ({appliedCoupon.code})</span>
+                  <span>−₦{couponDiscount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                </div>
+              )}
               <div className="flex justify-between text-sm text-neutral-600">
                 <span>Platform fee</span>
                 <span className="text-green-600">Included</span>
               </div>
               <div className="flex justify-between font-bold text-lg border-t border-neutral-200 pt-2">
                 <span>Total</span>
-                <PriceDisplay amount={cartTotal} />
+                <PriceDisplay amount={Math.max(0, cartTotal - couponDiscount)} />
               </div>
             </CardBody>
           </Card>
@@ -261,9 +282,15 @@ export default function CheckoutPage() {
                   <PriceDisplay amount={item.price * item.quantity} className="font-medium" />
                 </div>
               ))}
+              {appliedCoupon && couponDiscount > 0 && (
+                <div className="py-2 flex justify-between text-green-600">
+                  <span>Discount ({appliedCoupon.code})</span>
+                  <span>−₦{couponDiscount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                </div>
+              )}
               <div className="pt-2 flex justify-between font-bold">
                 <span>Total</span>
-                <PriceDisplay amount={cartTotal} />
+                <PriceDisplay amount={Math.max(0, cartTotal - couponDiscount)} />
               </div>
             </CardBody>
           </Card>

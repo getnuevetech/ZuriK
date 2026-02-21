@@ -513,5 +513,53 @@ export const comparisonApi = {
     api.post<Product[]>('/comparisons/products', { productIds }).then((r) => r.data),
 };
 
+// --- Coupons ---
+export interface Coupon {
+  id: string;
+  code: string;
+  discountType: 'percentage' | 'fixed';
+  discountValue: number;
+  minimumOrderAmount: number | null;
+  maximumDiscount: number | null;
+  startDate: string | null;
+  expiryDate: string | null;
+  usageLimit: number | null;
+  usageCount: number;
+  perUserLimit: number | null;
+  isActive: boolean;
+  description: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CouponValidationResult {
+  valid: boolean;
+  coupon?: Coupon;
+  discountAmount?: number;
+  message?: string;
+}
+
+export const couponsApi = {
+  // Admin
+  create: (data: Partial<Coupon>): Promise<Coupon> =>
+    api.post<Coupon>('/coupons', data).then((r) => r.data),
+  list: (params?: Record<string, string>): Promise<{ data: Coupon[]; total: number }> =>
+    api.get('/coupons', { params }).then((r) => r.data),
+  getOne: (id: string): Promise<Coupon> =>
+    api.get<Coupon>(`/coupons/${id}`).then((r) => r.data),
+  update: (id: string, data: Partial<Coupon>): Promise<Coupon> =>
+    api.patch<Coupon>(`/coupons/${id}`, data).then((r) => r.data),
+  remove: (id: string): Promise<void> =>
+    api.delete(`/coupons/${id}`).then(() => undefined),
+  getUsage: (id: string): Promise<unknown> =>
+    api.get(`/coupons/${id}/usage`).then((r) => r.data),
+
+  // Customer
+  validate: (code: string, orderTotal: number): Promise<CouponValidationResult> =>
+    api.post<CouponValidationResult>('/coupons/validate', { code, orderTotal }).then((r) => r.data),
+  apply: (code: string, orderId: string, orderTotal: number): Promise<{ discountAmount: number }> =>
+    api.post('/coupons/apply', { code, orderId, orderTotal }).then((r) => r.data),
+};
+
 export default api;
 
