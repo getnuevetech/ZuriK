@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Input } from '../ui/Input';
-import { Button } from '../ui/Button';
 
 export function Newsletter() {
   const [email, setEmail] = useState('');
@@ -23,40 +21,42 @@ export function Newsletter() {
   };
 
   return (
-    <section className="py-20 px-4 bg-gradient-to-br from-secondary-600 to-accent-700" aria-labelledby="newsletter-heading">
+    <section className="py-32 px-4 bg-neutral-900" aria-labelledby="newsletter-heading">
       <div className="max-w-2xl mx-auto text-center">
-        <div className="text-4xl mb-4">✉️</div>
-        <h2 id="newsletter-heading" className="font-heading text-4xl font-bold text-white mb-4">
-          Join the African Fashion Movement
+        <p className="text-xs font-semibold text-secondary-400 uppercase tracking-[0.2em] mb-6">Stay Connected</p>
+        <h2 id="newsletter-heading" className="font-heading text-4xl sm:text-5xl font-bold text-white tracking-tight mb-4">
+          Join the Movement
         </h2>
-        <p className="text-white/80 text-lg mb-10">
-          Get exclusive access to new designs, fabrics, and designer collections
+        <p className="text-white/50 text-base font-light mb-12 max-w-sm mx-auto">
+          Exclusive access to new designs, fabrics, and designer collections
         </p>
 
         {submitted ? (
-          <div className="bg-white/20 rounded-2xl px-8 py-6 text-white">
-            <div className="text-3xl mb-2">🎉</div>
-            <p className="text-xl font-semibold">Thanks for subscribing!</p>
-            <p className="text-white/80 mt-1">You&apos;re now part of the movement. Watch your inbox.</p>
+          <div className="border border-white/20 px-8 py-8 text-white">
+            <p className="text-lg font-semibold mb-1">Thanks for subscribing.</p>
+            <p className="text-white/50 text-sm font-light">Watch your inbox for curated African fashion.</p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-            <Input
+          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-0 max-w-md mx-auto">
+            <input
               type="email"
-              placeholder="Enter your email address"
+              placeholder="Your email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="flex-1 bg-white/10 border-white/30 text-white placeholder:text-white/60 focus:border-white focus:ring-white/30"
+              className="flex-1 bg-transparent border border-white/20 text-white placeholder:text-white/30 px-5 py-3.5 text-sm focus:outline-none focus:border-white/60 transition-colors"
               aria-label="Email address"
             />
-            <Button type="submit" variant="ghost" className="bg-white text-accent-700 hover:bg-neutral-100 font-semibold whitespace-nowrap">
+            <button
+              type="submit"
+              className="bg-white text-neutral-900 px-8 py-3.5 text-sm font-semibold uppercase tracking-widest hover:bg-neutral-100 transition-colors whitespace-nowrap"
+            >
               Subscribe
-            </Button>
+            </button>
           </form>
         )}
 
-        <p className="text-white/50 text-xs mt-4">No spam, ever. Unsubscribe at any time.</p>
+        <p className="text-white/25 text-xs mt-6 font-light">No spam, ever. Unsubscribe at any time.</p>
       </div>
     </section>
   );
