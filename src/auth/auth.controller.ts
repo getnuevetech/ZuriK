@@ -101,6 +101,7 @@ export class AuthController {
     return this.authService.forgotPassword(dto.email);
   }
 
+  @Throttle({ short: { limit: 3, ttl: 60000 } })
   @Post('reset-password')
   @ApiOperation({ summary: 'Reset password using token from email' })
   @ApiResponse({ status: 200, description: 'Password reset successful' })
@@ -109,6 +110,7 @@ export class AuthController {
     return this.authService.resetPassword(dto.token, dto.newPassword);
   }
 
+  @Throttle({ short: { limit: 5, ttl: 60000 } })
   @Post('verify-email')
   @ApiOperation({ summary: 'Verify email address using token' })
   @ApiResponse({ status: 200, description: 'Email verified successfully' })

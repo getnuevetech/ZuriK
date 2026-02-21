@@ -198,6 +198,8 @@ export class AuthService {
     user.password = await bcrypt.hash(newPassword, 10);
     user.passwordResetToken = null;
     user.passwordResetExpires = null;
+    user.failedLoginAttempts = 0;
+    user.lockedUntil = null;
     await this.userRepo.save(user);
 
     return { message: 'Password has been reset successfully. You can now log in.' };
