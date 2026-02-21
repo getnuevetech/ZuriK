@@ -5,6 +5,7 @@ import { CountryHero } from './entities/country-hero.entity';
 import { CollectionDisplay } from './entities/collection-display.entity';
 import { ThemeSettings } from './entities/theme-settings.entity';
 import { HomepageLayout } from './entities/homepage-layout.entity';
+import { PromoBanner } from './entities/promo-banner.entity';
 import { Product } from '../products/entities/product.entity';
 import { Order } from '../orders/entities/order.entity';
 import { HomepageService } from './homepage.service';
@@ -18,6 +19,7 @@ import { HomepageController } from './homepage.controller';
       CollectionDisplay,
       ThemeSettings,
       HomepageLayout,
+      PromoBanner,
       Product,
       Order,
     ]),

@@ -6,6 +6,7 @@ import { CountryHero } from './entities/country-hero.entity';
 import { CollectionDisplay } from './entities/collection-display.entity';
 import { ThemeSettings, ThemeKey } from './entities/theme-settings.entity';
 import { HomepageLayout } from './entities/homepage-layout.entity';
+import { PromoBanner } from './entities/promo-banner.entity';
 import { Product } from '../products/entities/product.entity';
 import { Order } from '../orders/entities/order.entity';
 import { CreateFeaturedSectionDto } from './dto/create-featured-section.dto';
@@ -16,6 +17,8 @@ import { CreateCollectionDisplayDto } from './dto/create-collection-display.dto'
 import { UpdateCollectionDisplayDto } from './dto/update-collection-display.dto';
 import { UpdateThemeDto } from './dto/update-theme.dto';
 import { UpdateHomepageLayoutDto } from './dto/update-homepage-layout.dto';
+import { CreatePromoBannerDto } from './dto/create-promo-banner.dto';
+import { UpdatePromoBannerDto } from './dto/update-promo-banner.dto';
 import { THEME_PRESETS } from './theme-presets.config';
 
 @Injectable()
@@ -31,6 +34,8 @@ export class HomepageService {
     private themeRepo: Repository<ThemeSettings>,
     @InjectRepository(HomepageLayout)
     private layoutRepo: Repository<HomepageLayout>,
+    @InjectRepository(PromoBanner)
+    private promoBannerRepo: Repository<PromoBanner>,
     @InjectRepository(Product)
     private productRepo: Repository<Product>,
     @InjectRepository(Order)
@@ -235,5 +240,36 @@ export class HomepageService {
       ),
     );
     return this.getHomepageLayout();
+  }
+
+  // ─── Promo Banners ────────────────────────────────────────────────────────────
+
+  async createPromoBanner(dto: CreatePromoBannerDto): Promise<PromoBanner> {
+    const banner = this.promoBannerRepo.create(dto);
+    return this.promoBannerRepo.save(banner);
+  }
+
+  async updatePromoBanner(id: string, dto: UpdatePromoBannerDto): Promise<PromoBanner> {
+    const banner = await this.promoBannerRepo.findOne({ where: { id } });
+    if (!banner) throw new NotFoundException('Promo banner not found');
+    Object.assign(banner, dto);
+    return this.promoBannerRepo.save(banner);
+  }
+
+  async deletePromoBanner(id: string): Promise<void> {
+    const banner = await this.promoBannerRepo.findOne({ where: { id } });
+    if (!banner) throw new NotFoundException('Promo banner not found');
+    await this.promoBannerRepo.remove(banner);
+  }
+
+  async getPromoBanners(): Promise<PromoBanner[]> {
+    return this.promoBannerRepo.find({ order: { displayOrder: 'ASC' } });
+  }
+
+  async getActivePromoBanners(): Promise<PromoBanner[]> {
+    return this.promoBannerRepo.find({
+      where: { isActive: true },
+      order: { displayOrder: 'ASC' },
+    });
   }
 }
