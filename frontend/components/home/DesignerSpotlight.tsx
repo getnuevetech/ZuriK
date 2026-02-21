@@ -15,11 +15,6 @@ interface DesignerInfo {
   productCount: number;
 }
 
-const COUNTRY_FLAGS: Record<string, string> = {
-  Nigeria: '🇳🇬', Ghana: '🇬🇭', Kenya: '🇰🇪', 'South Africa': '🇿🇦',
-  Senegal: '🇸🇳', Ethiopia: '🇪🇹', Cameroon: '🇨🇲', Tanzania: '🇹🇿',
-};
-
 function getInitials(name: string): string {
   return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
 }
@@ -45,6 +40,13 @@ function extractDesigners(products: Product[]): DesignerInfo[] {
   return Array.from(map.values()).slice(0, 6);
 }
 
+const PLACEHOLDER_DESIGNERS = [
+  { initials: 'AO', name: 'Amara Okafor', country: 'Nigeria' },
+  { initials: 'KM', name: 'Kwame Mensah', country: 'Ghana' },
+  { initials: 'NJ', name: 'Nia Johari', country: 'Kenya' },
+  { initials: 'FS', name: 'Fatou Sow', country: 'Senegal' },
+];
+
 export function DesignerSpotlight() {
   const [designers, setDesigners] = useState<DesignerInfo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,20 +59,20 @@ export function DesignerSpotlight() {
   }, []);
 
   return (
-    <section className="py-20 px-4 bg-neutral-50" aria-labelledby="designer-spotlight-heading">
+    <section className="py-24 px-4 bg-white" aria-labelledby="designer-spotlight-heading">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-12 gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-14 gap-4">
           <div>
-            <h2 id="designer-spotlight-heading" className="font-heading text-4xl font-bold text-neutral-900 mb-2">
+            <p className="text-xs font-semibold text-neutral-400 uppercase tracking-[0.2em] mb-3">The Makers</p>
+            <h2 id="designer-spotlight-heading" className="font-heading text-4xl font-bold text-neutral-900 tracking-tight">
               The Artisans Behind Your Style
             </h2>
-            <p className="text-neutral-500 text-lg">Meet the designers keeping African fashion traditions alive</p>
           </div>
           <Link
             href="/designers"
-            className="inline-flex items-center gap-2 border border-neutral-300 hover:border-primary-400 text-neutral-700 hover:text-primary-700 font-medium px-5 py-2.5 rounded-xl transition-colors whitespace-nowrap"
+            className="text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors underline underline-offset-4 whitespace-nowrap"
           >
-            View All Designers →
+            View All Designers
           </Link>
         </div>
 
@@ -79,40 +81,31 @@ export function DesignerSpotlight() {
             <Spinner size="lg" />
           </div>
         ) : designers.length === 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {[
-              { initials: 'AO', name: 'Amara Okafor', country: 'Nigeria' },
-              { initials: 'KM', name: 'Kwame Mensah', country: 'Ghana' },
-              { initials: 'NJ', name: 'Nia Johari', country: 'Kenya' },
-              { initials: 'FS', name: 'Fatou Sow', country: 'Senegal' },
-            ].map((d, i) => (
-              <div key={i} className="p-5 bg-white rounded-2xl border border-neutral-100 text-center shadow-card hover:shadow-card-hover transition-shadow">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary-400 to-accent-500 mx-auto mb-3 flex items-center justify-center text-white font-heading font-bold text-xl">
-                  {d.initials}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {PLACEHOLDER_DESIGNERS.map((d, i) => (
+              <div key={i} className="text-center">
+                <div className="w-20 h-20 bg-neutral-100 mx-auto mb-4 flex items-center justify-center">
+                  <span className="font-bold text-neutral-600 text-lg">{d.initials}</span>
                 </div>
-                <div className="font-semibold text-neutral-800">{d.name}</div>
-                <div className="text-sm text-neutral-500 mt-1">
-                  {COUNTRY_FLAGS[d.country] || '🌍'} {d.country}
-                </div>
+                <div className="font-medium text-neutral-900 text-sm">{d.name}</div>
+                <div className="text-xs text-neutral-400 mt-0.5 font-light">{d.country}</div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {designers.map((d) => (
               <Link
                 key={d.id}
                 href={`/designers/${d.id}`}
-                className="p-5 bg-white rounded-2xl border border-neutral-100 text-center shadow-card hover:shadow-card-hover transition-shadow group"
+                className="group text-center"
               >
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary-400 to-accent-500 mx-auto mb-3 flex items-center justify-center text-white font-heading font-bold text-xl group-hover:scale-110 transition-transform">
-                  {d.initials}
+                <div className="w-20 h-20 bg-neutral-100 group-hover:bg-neutral-200 mx-auto mb-4 flex items-center justify-center transition-colors">
+                  <span className="font-bold text-neutral-600 text-lg">{d.initials}</span>
                 </div>
-                <div className="font-semibold text-neutral-800">{d.name}</div>
-                <div className="text-sm text-neutral-500 mt-1">
-                  {COUNTRY_FLAGS[d.country] || '🌍'} {d.country}
-                </div>
-                <div className="text-xs text-primary-500 mt-1">{d.productCount} design{d.productCount !== 1 ? 's' : ''}</div>
+                <div className="font-medium text-neutral-900 text-sm">{d.name}</div>
+                <div className="text-xs text-neutral-400 mt-0.5 font-light">{d.country}</div>
+                <div className="text-xs text-neutral-400 mt-0.5 font-light">{d.productCount} design{d.productCount !== 1 ? 's' : ''}</div>
               </Link>
             ))}
           </div>
