@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ordersApi, paymentsApi } from '../../lib/api';
+import { ordersApi, paymentsApi, shippingApi, type ShippingMethod } from '../../lib/api';
 import { useAuth } from '../../lib/auth-context';
 import { useCart } from '../../lib/cart-context';
 import { useToast } from '../../components/ui/Toast';
@@ -17,6 +17,7 @@ import { EmptyState } from '../../components/common/EmptyState';
 import { PaymentMethodSelector } from '../../components/payments/PaymentMethodSelector';
 import { ShippingAddressForm, type ShippingAddress } from '../../components/payments/ShippingAddressForm';
 import { CouponInput } from '../../components/checkout/CouponInput';
+import { ShippingMethodSelector } from '../../components/checkout/ShippingMethodSelector';
 import type { PaymentProvider } from '../../types/payment';
 import type { Coupon } from '../../lib/api';
 
@@ -53,6 +54,7 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
   const [couponDiscount, setCouponDiscount] = useState(0);
+  const [selectedShippingMethod, setSelectedShippingMethod] = useState<ShippingMethod | null>(null);
 
   useEffect(() => {
     if (authLoading) return;
@@ -78,10 +80,16 @@ export default function CheckoutPage() {
   }
 
   const currentStepIndex = STEPS.findIndex((s) => s.key === step);
+  const shippingCost = selectedShippingMethod?.effectiveCost ?? selectedShippingMethod?.basePrice ?? 0;
+  const orderTotal = Math.max(0, cartTotal - couponDiscount + Number(shippingCost));
 
   const validateShipping = (): boolean => {
     if (!shippingAddress.fullName || !shippingAddress.addressLine1 || !shippingAddress.city || !shippingAddress.country) {
       toast('error', 'Please fill in all required shipping fields');
+      return false;
+    }
+    if (!selectedShippingMethod) {
+      toast('error', 'Please select a shipping method');
       return false;
     }
     return true;
@@ -232,12 +240,24 @@ export default function CheckoutPage() {
                 </div>
               )}
               <div className="flex justify-between text-sm text-neutral-600">
+                <span>Shipping</span>
+                {selectedShippingMethod ? (
+                  selectedShippingMethod.effectiveCost === 0 ? (
+                    <span className="text-green-600 font-medium">FREE</span>
+                  ) : (
+                    <PriceDisplay amount={selectedShippingMethod.effectiveCost ?? selectedShippingMethod.basePrice} />
+                  )
+                ) : (
+                  <span className="text-neutral-400">Select a shipping method</span>
+                )}
+              </div>
+              <div className="flex justify-between text-sm text-neutral-600">
                 <span>Platform fee</span>
                 <span className="text-green-600">Included</span>
               </div>
               <div className="flex justify-between font-bold text-lg border-t border-neutral-200 pt-2">
                 <span>Total</span>
-                <PriceDisplay amount={Math.max(0, cartTotal - couponDiscount)} />
+                <PriceDisplay amount={orderTotal} />
               </div>
             </CardBody>
           </Card>
@@ -246,14 +266,29 @@ export default function CheckoutPage() {
 
       {/* Step: Shipping */}
       {step === 'shipping' && (
-        <Card className="mb-6">
-          <CardHeader>
-            <h2 className="font-heading text-xl font-semibold text-neutral-800">Shipping Address</h2>
-          </CardHeader>
-          <CardBody>
-            <ShippingAddressForm value={shippingAddress} onChange={setShippingAddress} />
-          </CardBody>
-        </Card>
+        <>
+          <Card className="mb-6">
+            <CardHeader>
+              <h2 className="font-heading text-xl font-semibold text-neutral-800">Shipping Address</h2>
+            </CardHeader>
+            <CardBody>
+              <ShippingAddressForm value={shippingAddress} onChange={setShippingAddress} />
+            </CardBody>
+          </Card>
+          <Card className="mb-6">
+            <CardHeader>
+              <h2 className="font-heading text-xl font-semibold text-neutral-800">Shipping Method</h2>
+            </CardHeader>
+            <CardBody>
+              <ShippingMethodSelector
+                country={shippingAddress.country || undefined}
+                orderTotal={cartTotal - couponDiscount}
+                selectedMethodId={selectedShippingMethod?.id}
+                onSelect={setSelectedShippingMethod}
+              />
+            </CardBody>
+          </Card>
+        </>
       )}
 
       {/* Step: Payment */}
@@ -288,9 +323,19 @@ export default function CheckoutPage() {
                   <span>−₦{couponDiscount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
               )}
+              {selectedShippingMethod && (
+                <div className="py-2 flex justify-between text-sm text-neutral-600">
+                  <span>Shipping ({selectedShippingMethod.name})</span>
+                  {selectedShippingMethod.effectiveCost === 0 ? (
+                    <span className="text-green-600 font-medium">FREE</span>
+                  ) : (
+                    <PriceDisplay amount={selectedShippingMethod.effectiveCost ?? selectedShippingMethod.basePrice} className="font-medium" />
+                  )}
+                </div>
+              )}
               <div className="pt-2 flex justify-between font-bold">
                 <span>Total</span>
-                <PriceDisplay amount={Math.max(0, cartTotal - couponDiscount)} />
+                <PriceDisplay amount={orderTotal} />
               </div>
             </CardBody>
           </Card>

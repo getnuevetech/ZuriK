@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ordersApi, paymentsApi } from '../../../lib/api';
+import { ordersApi, paymentsApi, shippingApi, type ShipmentTracking } from '../../../lib/api';
 import { useAuth } from '../../../lib/auth-context';
 import { useToast } from '../../../components/ui/Toast';
 import { Spinner } from '../../../components/ui/Spinner';
@@ -12,6 +12,7 @@ import { Button } from '../../../components/ui/Button';
 import { Card, CardBody, CardHeader } from '../../../components/ui/Card';
 import { OrderStatusBadge } from '../../../components/orders/OrderStatusBadge';
 import { OrderStatusTimeline } from '../../../components/orders/OrderStatusTimeline';
+import { OrderTrackingTimeline } from '../../../components/orders/OrderTrackingTimeline';
 import { Breadcrumbs } from '../../../components/common/Breadcrumbs';
 import { PriceDisplay } from '../../../components/common/PriceDisplay';
 import { PaymentHistory } from '../../../components/payments/PaymentHistory';
@@ -32,6 +33,7 @@ export default function OrderDetailPage() {
 
   const [order, setOrder] = useState<Order | null>(null);
   const [payments, setPayments] = useState<Payment[]>([]);
+  const [shipment, setShipment] = useState<ShipmentTracking | null>(null);
   const [loading, setLoading] = useState(true);
   const [paymentLoading, setPaymentLoading] = useState(false);
 
@@ -46,10 +48,12 @@ export default function OrderDetailPage() {
       Promise.all([
         ordersApi.getOrder(orderId),
         paymentsApi.getByOrder(orderId).catch(() => []),
+        shippingApi.getOrderTracking(orderId).catch(() => null),
       ])
-        .then(([orderData, paymentData]) => {
+        .then(([orderData, paymentData, shipmentData]) => {
           setOrder(orderData);
           setPayments(paymentData);
+          setShipment(shipmentData);
         })
         .catch(() => toast('error', 'Failed to load order'))
         .finally(() => setLoading(false));
@@ -113,6 +117,34 @@ export default function OrderDetailPage() {
         <CardHeader><h2 className="font-heading text-lg font-semibold text-neutral-800">Order Progress</h2></CardHeader>
         <CardBody className="overflow-x-auto">
           <OrderStatusTimeline currentStatus={order.status} />
+        </CardBody>
+      </Card>
+
+      {/* Shipment tracking */}
+      <Card className="mb-6">
+        <CardHeader>
+          <h2 className="font-heading text-lg font-semibold text-neutral-800">Shipping &amp; Tracking</h2>
+        </CardHeader>
+        <CardBody>
+          {shipment ? (
+            <div className="space-y-2">
+              <div className="flex items-center gap-4 text-sm flex-wrap mb-4">
+                <div>
+                  <span className="text-neutral-500">Method: </span>
+                  <span className="font-medium">{shipment.shippingMethod?.name}</span>
+                </div>
+                <div>
+                  <span className="text-neutral-500">Cost: </span>
+                  <PriceDisplay amount={shipment.shippingCost} className="font-medium" />
+                </div>
+              </div>
+              <OrderTrackingTimeline shipment={shipment} />
+            </div>
+          ) : (
+            <p className="text-sm text-neutral-500 flex items-center gap-2">
+              <span>⏳</span> Preparing your order — shipping details will appear here once dispatched.
+            </p>
+          )}
         </CardBody>
       </Card>
 
