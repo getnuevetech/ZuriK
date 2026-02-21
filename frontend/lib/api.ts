@@ -626,8 +626,11 @@ export const shippingApi = {
     api.patch<ShipmentTracking>(`/shipping/shipments/${id}/status`, data).then((r) => r.data),
   assignTracking: (id: string, data: { trackingNumber: string; carrier: string; carrierTrackingUrl?: string }): Promise<ShipmentTracking> =>
     api.patch<ShipmentTracking>(`/shipping/shipments/${id}/tracking`, data).then((r) => r.data),
-  listShipments: (page = 1, limit = 20): Promise<{ items: ShipmentTracking[]; total: number }> =>
-    api.get<{ items: ShipmentTracking[]; total: number }>(`/shipping/shipments?page=${page}&limit=${limit}`).then((r) => r.data),
+  listShipments: (page = 1, limit = 20, status?: string): Promise<{ items: ShipmentTracking[]; total: number }> => {
+    const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+    if (status) params.append('status', status);
+    return api.get<{ items: ShipmentTracking[]; total: number }>(`/shipping/shipments?${params}`).then((r) => r.data);
+  },
 };
 
 export default api;

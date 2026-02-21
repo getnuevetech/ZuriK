@@ -45,6 +45,11 @@ export default function AdminShipmentsPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [statusFilter, setStatusFilter] = useState('');
+
+  const handleStatusFilter = (value: string) => {
+    setStatusFilter(value);
+    setPage(1);
+  };
   const [statusModal, setStatusModal] = useState<ShipmentTracking | null>(null);
   const [trackingModal, setTrackingModal] = useState<ShipmentTracking | null>(null);
   const [statusForm, setStatusForm] = useState<UpdateStatusForm>({ status: '', description: '', location: '' });
@@ -56,10 +61,9 @@ export default function AdminShipmentsPage() {
   const fetchShipments = useCallback(() => {
     setLoading(true);
     shippingApi
-      .listShipments(page, limit)
+      .listShipments(page, limit, statusFilter || undefined)
       .then((res) => {
-        const items = statusFilter ? res.items.filter((s) => s.status === statusFilter) : res.items;
-        setShipments(items);
+        setShipments(res.items);
         setTotal(res.total);
         setTotalPages(Math.ceil(res.total / limit));
       })
@@ -158,7 +162,7 @@ export default function AdminShipmentsPage() {
           label="Filter by Status"
           value={statusFilter}
           options={STATUS_OPTIONS}
-          onChange={setStatusFilter}
+          onChange={handleStatusFilter}
         />
       </div>
 

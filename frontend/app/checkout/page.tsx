@@ -80,10 +80,16 @@ export default function CheckoutPage() {
   }
 
   const currentStepIndex = STEPS.findIndex((s) => s.key === step);
+  const shippingCost = selectedShippingMethod?.effectiveCost ?? selectedShippingMethod?.basePrice ?? 0;
+  const orderTotal = Math.max(0, cartTotal - couponDiscount + Number(shippingCost));
 
   const validateShipping = (): boolean => {
     if (!shippingAddress.fullName || !shippingAddress.addressLine1 || !shippingAddress.city || !shippingAddress.country) {
       toast('error', 'Please fill in all required shipping fields');
+      return false;
+    }
+    if (!selectedShippingMethod) {
+      toast('error', 'Please select a shipping method');
       return false;
     }
     return true;
@@ -251,7 +257,7 @@ export default function CheckoutPage() {
               </div>
               <div className="flex justify-between font-bold text-lg border-t border-neutral-200 pt-2">
                 <span>Total</span>
-                <PriceDisplay amount={Math.max(0, cartTotal - couponDiscount + (selectedShippingMethod?.effectiveCost ?? selectedShippingMethod?.basePrice ?? 0))} />
+                <PriceDisplay amount={orderTotal} />
               </div>
             </CardBody>
           </Card>
@@ -329,7 +335,7 @@ export default function CheckoutPage() {
               )}
               <div className="pt-2 flex justify-between font-bold">
                 <span>Total</span>
-                <PriceDisplay amount={Math.max(0, cartTotal - couponDiscount + (selectedShippingMethod?.effectiveCost ?? selectedShippingMethod?.basePrice ?? 0))} />
+                <PriceDisplay amount={orderTotal} />
               </div>
             </CardBody>
           </Card>

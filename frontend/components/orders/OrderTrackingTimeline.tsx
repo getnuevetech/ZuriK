@@ -58,7 +58,7 @@ export function OrderTrackingTimeline({ shipment }: OrderTrackingTimelineProps) 
                   </span>
                 </div>
                 {idx < PROGRESS_STEPS.length - 1 && (
-                  <div className={`h-0.5 flex-1 mx-1 mt-[-0.75rem] sm:mt-[-1.5rem] transition-colors ${idx < currentStepIdx ? 'bg-indigo-600' : 'bg-neutral-200'}`} />
+                  <div className={`flex-1 h-0.5 self-start mt-3 mx-1 transition-colors ${idx < currentStepIdx ? 'bg-indigo-600' : 'bg-neutral-200'}`} />
                 )}
               </React.Fragment>
             );

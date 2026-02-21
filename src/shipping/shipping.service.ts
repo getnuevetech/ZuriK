@@ -53,14 +53,14 @@ export class ShippingService {
   }
 
   async findAllMethods(activeOnly?: boolean, country?: string): Promise<ShippingMethod[]> {
-    const qb = this.methodRepo.createQueryBuilder('m').orderBy('m.sortOrder', 'ASC');
-    if (activeOnly) qb.andWhere('m.isActive = :active', { active: true });
-    if (country) {
-      qb.andWhere('(m.supportedCountries IS NULL OR m.supportedCountries LIKE :country)', {
-        country: `%${country}%`,
-      });
-    }
-    return qb.getMany();
+    const methods = await this.methodRepo.find({
+      where: activeOnly ? { isActive: true } : undefined,
+      order: { sortOrder: 'ASC' },
+    });
+    if (!country) return methods;
+    return methods.filter(
+      (m) => !m.supportedCountries || m.supportedCountries.some((c) => c.toUpperCase() === country.toUpperCase()),
+    );
   }
 
   async findMethodById(id: string): Promise<ShippingMethod> {
@@ -126,8 +126,10 @@ export class ShippingService {
     return this.shipmentRepo.save(shipment);
   }
 
-  async listShipments(page = 1, limit = 20): Promise<{ items: ShipmentTracking[]; total: number }> {
+  async listShipments(page = 1, limit = 20, status?: string): Promise<{ items: ShipmentTracking[]; total: number }> {
+    const where = status ? { status } : undefined;
     const [items, total] = await this.shipmentRepo.findAndCount({
+      where,
       order: { createdAt: 'DESC' },
       skip: (page - 1) * limit,
       take: limit,

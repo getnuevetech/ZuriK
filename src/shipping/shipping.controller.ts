@@ -99,8 +99,9 @@ export class ShippingController {
   listShipments(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
+    @Query('status') status?: string,
   ) {
-    return this.shippingService.listShipments(page ? Number(page) : 1, limit ? Number(limit) : 20);
+    return this.shippingService.listShipments(page ? Number(page) : 1, limit ? Number(limit) : 20, status);
   }
 
   @Patch('shipments/:id/status')
