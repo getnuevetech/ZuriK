@@ -59,6 +59,9 @@ All with password: `Password123!`
 - `npm run start:dev` — Start development server with hot reload
 - `npm run seed` — Seed database (development)
 - `npm run seed:prod` — Seed database (production)
+- `npm run typeorm:generate -- src/database/migrations/MigrationName` — Generate a new migration
+- `npm run typeorm:run` — Run pending migrations
+- `npm run typeorm:revert` — Revert the last migration
 
 ## 🔑 Environment Variables
 
@@ -70,8 +73,26 @@ JWT_ACCESS_SECRET=your-access-secret
 JWT_REFRESH_SECRET=your-refresh-secret
 NODE_ENV=development
 PORT=3000
-AUTO_SYNC=true
 ```
+
+## 🗄️ Database Migrations
+
+Schema synchronisation (`synchronize`) is **disabled in production** (`NODE_ENV=production`).
+In development it remains enabled for convenience. For production deployments always use migrations:
+
+```bash
+# Generate a new migration after changing entities
+npm run typeorm:generate -- src/database/migrations/DescriptiveName
+
+# Apply all pending migrations
+npm run typeorm:run
+
+# Revert the last applied migration
+npm run typeorm:revert
+```
+
+Migration files are stored in `src/database/migrations/` and should be committed to version control.
+The DataSource configuration lives in `src/database/typeorm.config.ts`.
 
 ## 📚 API Documentation
 
