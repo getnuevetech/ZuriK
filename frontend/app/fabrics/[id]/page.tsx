@@ -12,6 +12,8 @@ import { Badge } from '../../../components/ui/Badge';
 import { Spinner } from '../../../components/ui/Spinner';
 import { Breadcrumbs } from '../../../components/common/Breadcrumbs';
 import { PriceDisplay } from '../../../components/common/PriceDisplay';
+import { ShareButton } from '../../../components/common/ShareButton';
+import { getShareUrl } from '../../../lib/share-utils';
 import { FabricCard } from '../../../components/fabrics/FabricCard';
 import type { Fabric } from '../../../types';
 
@@ -134,6 +136,15 @@ export default function FabricDetailPage() {
         {/* Fabric info */}
         <div>
           <h1 className="font-heading text-3xl font-bold text-neutral-900 mb-3">{fabric.name}</h1>
+          <div className="flex items-center gap-2 mb-3">
+            <ShareButton
+              url={getShareUrl(`/fabrics/${fabric.id}`)}
+              title={fabric.name}
+              description={fabric.description}
+              image={images[0]}
+              type="fabric"
+            />
+          </div>
           <div className="flex items-center gap-2 mb-4 flex-wrap">
             {fabric.material && <Badge variant="primary">{fabric.material}</Badge>}
             {fabric.pattern && <Badge variant="secondary">{fabric.pattern}</Badge>}

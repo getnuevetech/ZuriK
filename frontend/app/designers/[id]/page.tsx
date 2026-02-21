@@ -13,6 +13,8 @@ import { Spinner } from '../../../components/ui/Spinner';
 import { Breadcrumbs } from '../../../components/common/Breadcrumbs';
 import { ProductCard } from '../../../components/products/ProductCard';
 import { EmptyState } from '../../../components/common/EmptyState';
+import { ShareButton } from '../../../components/common/ShareButton';
+import { getShareUrl } from '../../../lib/share-utils';
 import { getUserDisplayName } from '../../../lib/utils';
 import type { Product, Designer } from '../../../types';
 
@@ -80,6 +82,13 @@ export default function DesignerProfilePage() {
         <Avatar name={designerName} size="xl" className="flex-shrink-0 w-24 h-24 text-2xl" />
         <div className="flex-1 text-center sm:text-left">
           <h1 className="font-heading text-3xl font-bold text-neutral-900 mb-2">{designerName}</h1>
+          <div className="mb-3">
+            <ShareButton
+              url={getShareUrl(`/designers/${String(params?.id)}`)}
+              title={designerName}
+              type="designer"
+            />
+          </div>
           {countries.length > 0 && (
             <p className="text-neutral-500 mb-3">📍 {countries.join(', ')}</p>
           )}
