@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <ComparisonProvider>
                   <NavbarWrapper />
                   <EmailVerificationBanner />
-                  <main className="flex-1 pb-16 md:pb-0">
+                  <main className="flex-1 pb-16 md:pb-0 page-transition">
                     {children}
                   </main>
                   <Footer />

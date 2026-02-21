@@ -33,7 +33,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || loading}
         className={[
-          'inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-colors duration-150',
+          'inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-150',
+          'active:scale-95',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
           'disabled:opacity-60 disabled:cursor-not-allowed',
           variantClasses[variant],
@@ -48,6 +49,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
           </svg>
         )}
+        {loading && <span className="sr-only">Loading…</span>}
         {children}
       </button>
     );
