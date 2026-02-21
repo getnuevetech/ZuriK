@@ -49,6 +49,7 @@ export class AuthController {
     return this.authService.login(dto);
   }
 
+  @Throttle({ short: { limit: 5, ttl: 60000 } })
   @Post('refresh')
   @ApiOperation({ summary: 'Refresh an expired access token' })
   @ApiResponse({ status: 200, description: 'Tokens refreshed successfully' })

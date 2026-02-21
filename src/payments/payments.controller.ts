@@ -19,6 +19,7 @@ import { UserRole } from '../users/entities/user.entity';
 import { PaymentsService } from './payments.service';
 import { CreateGatewayDto } from './dto/create-gateway.dto';
 import { InitiatePaymentDto } from './dto/initiate-payment.dto';
+import { RequestWithUser } from '../auth/auth.types';
 
 // ── Admin gateway management ─────────────────────────────────────────────────
 
@@ -76,8 +77,11 @@ export class CustomerPaymentsController {
 
   @Get('order/:orderId')
   @UseGuards(JwtAuthGuard)
-  getByOrder(@Param('orderId') orderId: string) {
-    return this.paymentsService.getPaymentsByOrder(orderId);
+  getByOrder(
+    @Param('orderId') orderId: string,
+    @Req() req: RequestWithUser,
+  ) {
+    return this.paymentsService.getPaymentsByOrder(orderId, req.user.id, req.user.role);
   }
 
   @Get('payouts')
