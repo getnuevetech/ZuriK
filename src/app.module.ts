@@ -31,6 +31,10 @@ import { CouponsModule } from './coupons/coupons.module';
 import { SellerApprovalModule } from './seller-approval/seller-approval.module';
 import { CartModule } from './cart/cart.module';
 import { AddressesModule } from './addresses/addresses.module';
+import { AbandonedCartModule } from './abandoned-cart/abandoned-cart.module';
+import { ReviewPromptsModule } from './review-prompts/review-prompts.module';
+import { StockAlertsModule } from './stock-alerts/stock-alerts.module';
+import { LoyaltyModule } from './loyalty/loyalty.module';
 import { Coupon } from './coupons/entities/coupon.entity';
 import { CouponUsage } from './coupons/entities/coupon-usage.entity';
 import { WishlistItem } from './wishlist/entities/wishlist-item.entity';
@@ -62,6 +66,10 @@ import { Review } from './reviews/entities/review.entity';
 import { SellerApplication } from './seller-approval/entities/seller-application.entity';
 import { CartItem } from './cart/entities/cart-item.entity';
 import { Address } from './addresses/entities/address.entity';
+import { AbandonedCart } from './abandoned-cart/entities/abandoned-cart.entity';
+import { ReviewPrompt } from './review-prompts/entities/review-prompt.entity';
+import { StockAlert } from './stock-alerts/entities/stock-alert.entity';
+import { LoyaltyTransaction } from './loyalty/entities/loyalty-transaction.entity';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -90,6 +98,10 @@ const isProduction = process.env.NODE_ENV === 'production';
         SellerApplication,
         CartItem,
         Address,
+        AbandonedCart,
+        ReviewPrompt,
+        StockAlert,
+        LoyaltyTransaction,
       ],
       synchronize: process.env.AUTO_SYNC === 'true' || !isProduction,
       ssl: isProduction,
@@ -123,6 +135,10 @@ const isProduction = process.env.NODE_ENV === 'production';
     SellerApprovalModule,
     CartModule,
     AddressesModule,
+    AbandonedCartModule,
+    ReviewPromptsModule,
+    StockAlertsModule,
+    LoyaltyModule,
   ],
   controllers: [AppController],
   providers: [

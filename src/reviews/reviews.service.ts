@@ -12,6 +12,9 @@ import { Order, OrderStatus } from '../orders/entities/order.entity';
 import { Product } from '../products/entities/product.entity';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
+import { LoyaltyService } from '../loyalty/loyalty.service';
+import { LoyaltyTransactionType } from '../loyalty/entities/loyalty-transaction.entity';
+import { ReviewPromptsService } from '../review-prompts/review-prompts.service';
 
 @Injectable()
 export class ReviewsService {
@@ -22,6 +25,8 @@ export class ReviewsService {
     private readonly orderRepo: Repository<Order>,
     @InjectRepository(Product)
     private readonly productRepo: Repository<Product>,
+    private readonly loyaltyService: LoyaltyService,
+    private readonly reviewPromptsService: ReviewPromptsService,
   ) {}
 
   async createReview(userId: string, productId: string, dto: CreateReviewDto): Promise<Review> {
@@ -57,6 +62,16 @@ export class ReviewsService {
     });
 
     const saved = await this.reviewRepo.save(review) as Review;
+
+    await this.reviewPromptsService.markReviewed(userId, productId);
+    await this.loyaltyService.earnPoints(
+      userId,
+      50,
+      LoyaltyTransactionType.EARNED_REVIEW,
+      'Points earned for submitting a review',
+      saved.id,
+    );
+
     return saved;
   }
 
