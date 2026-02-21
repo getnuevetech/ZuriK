@@ -11,8 +11,11 @@ const ADMIN_NAV_ITEMS = [
   { href: '/admin/users', label: 'Users', icon: '👥' },
   { href: '/admin/orders', label: 'Orders', icon: '📦' },
   { href: '/admin/payments', label: 'Payments', icon: '💳' },
+  { href: '/admin/seller-applications', label: 'Seller Applications', icon: '📋' },
+  { href: '/admin/coupons', label: 'Coupons', icon: '🏷️' },
+  { href: '/admin/shipping', label: 'Shipping Methods', icon: '🚚' },
+  { href: '/admin/shipments', label: 'Shipments', icon: '📬' },
   { href: '/admin/homepage', label: 'Homepage', icon: '🏠' },
-  { href: '/admin/settings', label: 'Settings', icon: '⚙️' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
