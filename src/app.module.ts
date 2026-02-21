@@ -45,6 +45,9 @@ import { DesignerOrder } from './orders/entities/designer-order.entity';
 import { PlatformSettings } from './settings/entities/platform-settings.entity';
 import { TaxConfiguration } from './taxes/entities/tax-configuration.entity';
 import { ShippingCarrier } from './shipping/entities/shipping-carrier.entity';
+import { ShippingMethod } from './shipping/entities/shipping-method.entity';
+import { ShipmentTracking } from './shipping/entities/shipment-tracking.entity';
+import { TrackingEvent } from './shipping/entities/tracking-event.entity';
 import { PaymentGateway } from './payments/entities/payment-gateway.entity';
 import { Payment } from './payments/entities/payment.entity';
 import { Payout } from './payments/entities/payout.entity';
@@ -65,7 +68,7 @@ const isProduction = process.env.NODE_ENV === 'production';
       url: process.env.DATABASE_URL,
       entities: [
         User, Product, Fabric, Measurement, Order, FabricSellerOrder, DesignerOrder,
-        PlatformSettings, TaxConfiguration, ShippingCarrier, PaymentGateway, Payment, Payout, HeroBanner, Notification, Review,
+        PlatformSettings, TaxConfiguration, ShippingCarrier, ShippingMethod, ShipmentTracking, TrackingEvent, PaymentGateway, Payment, Payout, HeroBanner, Notification, Review,
         FeaturedSection, CountryHero, CollectionDisplay, ThemeSettings, HomepageLayout,
         WishlistItem,
         RecentlyViewed,

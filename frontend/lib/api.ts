@@ -561,5 +561,75 @@ export const couponsApi = {
     api.post('/coupons/apply', { code, orderId, orderTotal }).then((r) => r.data),
 };
 
+// --- Shipping ---
+export interface ShippingMethod {
+  id: string;
+  name: string;
+  description: string | null;
+  basePrice: number;
+  freeShippingThreshold: number | null;
+  estimatedMinDays: number;
+  estimatedMaxDays: number;
+  supportedCountries: string[] | null;
+  isActive: boolean;
+  sortOrder: number;
+  effectiveCost?: number;
+}
+
+export interface TrackingEvent {
+  id: string;
+  status: string;
+  description: string;
+  location: string | null;
+  timestamp: string;
+}
+
+export interface ShipmentTracking {
+  id: string;
+  orderId: string;
+  shippingMethod: ShippingMethod;
+  trackingNumber: string | null;
+  carrier: string | null;
+  carrierTrackingUrl: string | null;
+  status: string;
+  shippingCost: number;
+  shippingAddress: string | null;
+  estimatedDeliveryDate: string | null;
+  shippedAt: string | null;
+  deliveredAt: string | null;
+  events?: TrackingEvent[];
+}
+
+export const shippingApi = {
+  // Customer
+  getAvailableMethods: (country?: string, orderTotal?: number): Promise<ShippingMethod[]> => {
+    const params = new URLSearchParams();
+    if (country) params.append('country', country);
+    if (orderTotal !== undefined) params.append('orderTotal', orderTotal.toString());
+    return api.get<ShippingMethod[]>(`/shipping/available?${params}`).then((r) => r.data);
+  },
+  getOrderTracking: (orderId: string): Promise<ShipmentTracking> =>
+    api.get<ShipmentTracking>(`/shipping/orders/${orderId}/tracking`).then((r) => r.data),
+
+  // Admin
+  createMethod: (data: Partial<ShippingMethod>): Promise<ShippingMethod> =>
+    api.post<ShippingMethod>('/shipping/methods', data).then((r) => r.data),
+  listMethods: (): Promise<ShippingMethod[]> =>
+    api.get<ShippingMethod[]>('/shipping/methods').then((r) => r.data),
+  updateMethod: (id: string, data: Partial<ShippingMethod>): Promise<ShippingMethod> =>
+    api.patch<ShippingMethod>(`/shipping/methods/${id}`, data).then((r) => r.data),
+  deleteMethod: (id: string): Promise<void> =>
+    api.delete(`/shipping/methods/${id}`).then(() => undefined),
+  createShipment: (data: { orderId: string; shippingMethodId: string; shippingCost: number; shippingAddress?: string }): Promise<ShipmentTracking> =>
+    api.post<ShipmentTracking>('/shipping/shipments', data).then((r) => r.data),
+  updateShipmentStatus: (id: string, data: { status: string; description: string; location?: string }): Promise<ShipmentTracking> =>
+    api.patch<ShipmentTracking>(`/shipping/shipments/${id}/status`, data).then((r) => r.data),
+  assignTracking: (id: string, data: { trackingNumber: string; carrier: string; carrierTrackingUrl?: string }): Promise<ShipmentTracking> =>
+    api.patch<ShipmentTracking>(`/shipping/shipments/${id}/tracking`, data).then((r) => r.data),
+  listShipments: (page = 1, limit = 20): Promise<{ items: ShipmentTracking[]; total: number }> =>
+    api.get<{ items: ShipmentTracking[]; total: number }>(`/shipping/shipments?page=${page}&limit=${limit}`).then((r) => r.data),
+};
+
 export default api;
+
 
