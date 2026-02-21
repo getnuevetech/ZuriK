@@ -103,7 +103,7 @@ const isProduction = process.env.NODE_ENV === 'production';
         StockAlert,
         LoyaltyTransaction,
       ],
-      synchronize: process.env.AUTO_SYNC === 'true' || !isProduction,
+      synchronize: !isProduction,
       ssl: isProduction,
       extra: isProduction
         ? {

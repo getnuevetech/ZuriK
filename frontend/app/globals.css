@@ -2,17 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Page transition ──────────────────────────────────────────────────────── */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+/* Applied to the <main> children via the root layout */
+.page-transition {
+  animation: fade-in-up 0.35s ease both;
+}
+
+/* Skeleton shimmer base */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #f0efef 25%,
+    #e5e4e4 50%,
+    #f0efef 75%
+  );
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.4s infinite linear;
+  border-radius: 0.375rem;
+}
+
 :root {
-  --color-primary: #4f46e5;
-  --color-primary-dark: #3730a3;
-  --color-secondary: #d97706;
-  --color-accent: #ea580c;
-  --color-neutral-bg: #fafaf9;
-  --color-text: #1c1917;
-  --color-text-muted: #78716c;
-  --color-border: #e7e5e4;
-  --font-playfair: Georgia, 'Times New Roman', serif;
-  --font-inter: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --color-primary: #1a1a1a;
+  --color-primary-dark: #0d0d0d;
+  --color-secondary: #c8a96e;
+  --color-accent: #c8a96e;
+  --color-neutral-bg: #fafafa;
+  --color-text: #1a1a1a;
+  --color-text-muted: #6b6b6b;
+  --color-border: #e5e5e5;
+  --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 @layer base {

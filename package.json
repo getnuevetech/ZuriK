@@ -8,7 +8,10 @@
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main",
     "seed": "ts-node -r tsconfig-paths/register src/database/seeds/run-seed.ts",
-    "seed:prod": "node dist/database/seeds/run-seed.js"
+    "seed:prod": "node dist/database/seeds/run-seed.js",
+    "typeorm:generate": "typeorm-ts-node-commonjs -d src/database/typeorm.config.ts migration:generate",
+    "typeorm:run": "typeorm-ts-node-commonjs -d src/database/typeorm.config.ts migration:run",
+    "typeorm:revert": "typeorm-ts-node-commonjs -d src/database/typeorm.config.ts migration:revert"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -41,7 +44,7 @@
     "typeorm": "^0.3.26"
   },
   "devDependencies": {
-    "@nestjs/cli": "^10.4.9",
+    "@nestjs/cli": "^11.0.16",
     "@types/bcrypt": "^6.0.0",
     "@types/multer": "^2.0.0",
     "@types/node": "^25.3.0",

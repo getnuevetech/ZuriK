@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { productsApi, recentlyViewedApi } from '../../lib/api';
 import { useCart } from '../../lib/cart-context';
 import { useToast } from '../../components/ui/Toast';
-import { Spinner } from '../../components/ui/Spinner';
+import { SkeletonGrid } from '../../components/ui/Skeleton';
 import { Select } from '../../components/ui/Select';
 import { ProductCard } from '../../components/products/ProductCard';
 import { RecentlyViewedCarousel } from '../../components/products/RecentlyViewedCarousel';
@@ -234,9 +234,7 @@ function ProductsContent() {
       )}
 
       {loading ? (
-        <div className="flex justify-center items-center py-20">
-          <Spinner size="lg" />
-        </div>
+        <SkeletonGrid count={8} columns="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" />
       ) : items.length === 0 ? (
         <EmptyState
           title="No products found"
@@ -265,7 +263,7 @@ function ProductsContent() {
 
 export default function ProductsPage() {
   return (
-    <Suspense fallback={<div className="flex justify-center py-20"><Spinner size="lg" /></div>}>
+    <Suspense fallback={<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"><SkeletonGrid count={8} columns="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" /></div>}>
       <ProductsContent />
     </Suspense>
   );

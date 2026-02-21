@@ -59,6 +59,9 @@ All with password: `Password123!`
 - `npm run start:dev` — Start development server with hot reload
 - `npm run seed` — Seed database (development)
 - `npm run seed:prod` — Seed database (production)
+- `npm run typeorm:generate -- src/database/migrations/MigrationName` — Generate a new migration
+- `npm run typeorm:run` — Run pending migrations
+- `npm run typeorm:revert` — Revert the last migration
 
 ## 🔑 Environment Variables
 
@@ -70,27 +73,26 @@ JWT_ACCESS_SECRET=your-access-secret
 JWT_REFRESH_SECRET=your-refresh-secret
 NODE_ENV=development
 PORT=3000
-AUTO_SYNC=true
 ```
 
-## 🔒 Database SSL in Production
+## 🗄️ Database Migrations
 
-When `NODE_ENV=production`, SSL is required for all database connections and certificate validation is **always enforced** (`rejectUnauthorized: true`). This protects against man-in-the-middle attacks.
-
-### Managed databases (Railway, AWS RDS, etc.)
-
-If your database uses a private CA (common with Railway Postgres, AWS RDS, and similar services), set the `DATABASE_CA_CERT` environment variable to the PEM-encoded CA certificate:
+Schema synchronisation (`synchronize`) is **disabled in production** (`NODE_ENV=production`).
+In development it remains enabled for convenience. For production deployments always use migrations:
 
 ```bash
-# Single-line value — replace actual newlines with \n
-DATABASE_CA_CERT="-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----"
+# Generate a new migration after changing entities
+npm run typeorm:generate -- src/database/migrations/DescriptiveName
+
+# Apply all pending migrations
+npm run typeorm:run
+
+# Revert the last applied migration
+npm run typeorm:revert
 ```
 
-**Railway**: Download the CA cert from your Railway Postgres service dashboard under *Connect → SSL Certificates*, then set the variable in your Railway service environment.
-
-**AWS RDS**: Download the appropriate regional bundle from https://truststore.pki.rds.amazonaws.com and set `DATABASE_CA_CERT` to its contents.
-
-If `DATABASE_CA_CERT` is not set, the connection uses the system's default CA store (suitable for databases whose certificates chain to a public CA, e.g. Neon, Supabase).
+Migration files are stored in `src/database/migrations/` and should be committed to version control.
+The DataSource configuration lives in `src/database/typeorm.config.ts`.
 
 ## 📚 API Documentation
 
@@ -117,3 +119,7 @@ Swagger docs available at `http://localhost:3000/docs` after starting the server
 - **Phase 3** 🔜 — Orders & Payments
 - **Phase 4** 🔜 — QA Workflow
 - **Phase 5** 🔜 — Notifications & Admin Dashboard
+
+## 📄 License
+
+This project is licensed under the [MIT License](./LICENSE).

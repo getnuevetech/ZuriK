@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { fabricsApi } from '../../lib/api';
 import { useCart } from '../../lib/cart-context';
 import { useToast } from '../../components/ui/Toast';
-import { Spinner } from '../../components/ui/Spinner';
+import { SkeletonGrid } from '../../components/ui/Skeleton';
 import { Select } from '../../components/ui/Select';
 import { FabricCard } from '../../components/fabrics/FabricCard';
 import { SearchBar } from '../../components/common/SearchBar';
@@ -169,7 +169,7 @@ function FabricsContent() {
       <ActiveFilters filters={activeTags} onRemove={handleRemoveFilter} onClearAll={handleClearFilters} />
 
       {loading ? (
-        <div className="flex justify-center py-20"><Spinner size="lg" /></div>
+        <SkeletonGrid count={6} columns="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" />
       ) : items.length === 0 ? (
         <EmptyState
           title="No fabrics found"
@@ -198,7 +198,7 @@ function FabricsContent() {
 
 export default function FabricsPage() {
   return (
-    <Suspense fallback={<div className="flex justify-center py-20"><Spinner size="lg" /></div>}>
+    <Suspense fallback={<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"><SkeletonGrid count={6} columns="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" /></div>}>
       <FabricsContent />
     </Suspense>
   );
