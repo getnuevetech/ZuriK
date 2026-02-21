@@ -22,6 +22,9 @@ import { UpdateSubOrderTrackingDto } from './dto/update-sub-order-tracking.dto';
 import { SettingsService } from '../settings/settings.service';
 import { TaxesService } from '../taxes/taxes.service';
 import { NotificationTriggersService } from '../notifications/notification-triggers.service';
+import { LoyaltyService } from '../loyalty/loyalty.service';
+import { LoyaltyTransactionType } from '../loyalty/entities/loyalty-transaction.entity';
+import { ReviewPromptsService } from '../review-prompts/review-prompts.service';
 
 const DEFAULT_PLATFORM_FEE_RATE = 10;
 
@@ -45,6 +48,8 @@ export class OrdersService {
     private readonly settingsService: SettingsService,
     private readonly taxesService: TaxesService,
     private readonly notificationTriggers: NotificationTriggersService,
+    private readonly loyaltyService: LoyaltyService,
+    private readonly reviewPromptsService: ReviewPromptsService,
   ) {}
 
   private generateOrderNumber(): string {
@@ -548,6 +553,17 @@ export class OrdersService {
         break;
       case OrderStatus.DELIVERED:
         await this.notificationTriggers.onDelivered(order, customer);
+        await this.reviewPromptsService.createPrompts(order);
+        const loyaltyPoints = this.loyaltyService.getPointsForPurchase(Number(order.totalPrice));
+        if (loyaltyPoints > 0) {
+          await this.loyaltyService.earnPoints(
+            customer.id,
+            loyaltyPoints,
+            LoyaltyTransactionType.EARNED_PURCHASE,
+            `Points earned for order #${order.orderNumber}`,
+            order.id,
+          );
+        }
         break;
       default:
         break;

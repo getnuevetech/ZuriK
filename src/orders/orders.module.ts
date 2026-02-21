@@ -12,6 +12,8 @@ import { User } from '../users/entities/user.entity';
 import { SettingsModule } from '../settings/settings.module';
 import { TaxesModule } from '../taxes/taxes.module';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { LoyaltyModule } from '../loyalty/loyalty.module';
+import { ReviewPromptsModule } from '../review-prompts/review-prompts.module';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { NotificationsModule } from '../notifications/notifications.module';
     SettingsModule,
     TaxesModule,
     NotificationsModule,
+    LoyaltyModule,
+    ReviewPromptsModule,
   ],
   controllers: [OrdersController],
   providers: [OrdersService],

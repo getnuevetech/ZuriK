@@ -85,6 +85,9 @@ export class User {
   @Column({ nullable: true })
   postalCode: string;
 
+  @Column({ default: 0 })
+  loyaltyPoints: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

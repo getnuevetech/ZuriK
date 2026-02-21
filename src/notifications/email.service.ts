@@ -185,4 +185,53 @@ export class EmailService {
     `);
     await this.sendEmail(user.email, '⚠️ Account Security Alert — African Fashion', html);
   }
+
+  async sendAbandonedCartReminder(user: any, cart: { items: any[]; totalValue: number }): Promise<void> {
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+    const itemsHtml = cart.items
+      .map((item: any) => `<li>${item.name ?? 'Item'} × ${item.quantity ?? 1} — $${Number(item.price ?? 0).toFixed(2)}</li>`)
+      .join('');
+    const content = `
+      <h2>🛒 You left something behind!</h2>
+      <p>Hi ${user.firstName || user.email},</p>
+      <p>You have items waiting in your cart. Don't let them slip away!</p>
+      <div class="highlight">
+        <ul style="margin:0;padding-left:18px;">${itemsHtml}</ul>
+        <strong>Total:</strong> $${Number(cart.totalValue).toFixed(2)}
+      </div>
+      <a href="${frontendUrl}/cart" class="btn">Return to Cart</a>`;
+    await this.sendEmail(user.email, "You left something behind! 🛒", this.baseTemplate(content));
+  }
+
+  async sendReviewRequest(user: any, product: any, order: any): Promise<void> {
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+    const content = `
+      <h2>⭐ How was your order?</h2>
+      <p>Hi ${user.firstName || user.email},</p>
+      <p>You recently received <strong>${product.name ?? 'your order'}</strong>. We'd love to hear what you think!</p>
+      <div class="highlight"><strong>Order:</strong> ${order.orderNumber ?? ''}</div>
+      <a href="${frontendUrl}/products/${product.id}#reviews" class="btn">Leave a Review</a>`;
+    await this.sendEmail(user.email, "How was your order? Leave a review! ⭐", this.baseTemplate(content));
+  }
+
+  async sendBackInStockAlert(user: any, productName: string, productUrl: string): Promise<void> {
+    const content = `
+      <h2>🎉 Good news!</h2>
+      <p>Hi ${user.firstName || user.email},</p>
+      <p><strong>${productName}</strong> is back in stock. Grab it before it sells out again!</p>
+      <a href="${productUrl}" class="btn">Shop Now</a>`;
+    await this.sendEmail(user.email, `Good news! ${productName} is back in stock 🎉`, this.baseTemplate(content));
+  }
+
+  async sendLoyaltyPointsEarned(user: any, points: number, description: string, newBalance: number): Promise<void> {
+    const content = `
+      <h2>🌟 You earned loyalty points!</h2>
+      <p>Hi ${user.firstName || user.email},</p>
+      <p>${description}</p>
+      <div class="highlight">
+        <strong>Points Earned:</strong> +${points}<br/>
+        <strong>New Balance:</strong> ${newBalance} points
+      </div>`;
+    await this.sendEmail(user.email, `You earned ${points} loyalty points! 🌟`, this.baseTemplate(content));
+  }
 }
