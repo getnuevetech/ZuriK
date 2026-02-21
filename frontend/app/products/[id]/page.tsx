@@ -20,6 +20,7 @@ import { StarRating } from '../../../components/reviews/StarRating';
 import { RatingSummary } from '../../../components/reviews/RatingSummary';
 import { ReviewList } from '../../../components/reviews/ReviewList';
 import { ReviewForm } from '../../../components/reviews/ReviewForm';
+import { WishlistButton } from '../../../components/WishlistButton';
 import type { Product, Order, RatingSummary as RatingSummaryType } from '../../../types';
 
 export default function ProductDetailPage() {
@@ -245,14 +246,21 @@ export default function ProductDetailPage() {
               <Button size="lg" onClick={handleAddToCart} className="w-full">
                 Add to Cart
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                onClick={() => setTryOnOpen(true)}
-                className="w-full mt-2 border-accent-500 text-accent-600 hover:bg-accent-50"
-              >
-                👤 Try It On
-              </Button>
+              <div className="flex gap-2 mt-2">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={() => setTryOnOpen(true)}
+                  className="flex-1 border-accent-500 text-accent-600 hover:bg-accent-50"
+                >
+                  👤 Try It On
+                </Button>
+                <WishlistButton
+                  productId={product.id}
+                  size="lg"
+                  className="border border-neutral-300 hover:border-red-300 hover:bg-red-50 p-3"
+                />
+              </div>
             </div>
 
             {/* Custom design */}
