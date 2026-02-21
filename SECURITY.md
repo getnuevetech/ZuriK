@@ -46,6 +46,11 @@ Last security scan: `npm audit` - **0 vulnerabilities found**
 ✅ **Secure Dependencies**: Using maintained, reputable packages  
 ✅ **Authentication**: NextAuth.js for secure authentication flows  
 ✅ **Payment Security**: Stripe integration (PCI compliant)  
+✅ **Response Serialization**: `ClassSerializerInterceptor` is applied globally in `src/main.ts`, enforcing `@Exclude()` decorators on entity fields. The following sensitive fields on the `User` entity are excluded from all API responses:
+  - `password`
+  - `refreshToken`
+  - `emailVerificationToken`
+  - `passwordResetToken`
 
 ## Reporting a Vulnerability
 

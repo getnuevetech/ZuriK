@@ -27,6 +27,8 @@ async function bootstrap() {
     }),
   );
 
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+
   const port = process.env.PORT || 3000;
   const isProduction = process.env.NODE_ENV === 'production';
 
