@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Exclude } from 'class-transformer';
 
 export enum UserRole {
   CUSTOMER = 'customer',
@@ -16,6 +17,7 @@ export class User {
   @Column({ unique: true })
   email: string;
 
+  @Exclude()
   @Column({ nullable: true })
   password: string;
 
@@ -28,6 +30,7 @@ export class User {
   @Column({ nullable: true })
   avatarUrl: string;
 
+  @Exclude()
   @Column({ nullable: true })
   refreshToken: string;
 
@@ -46,12 +49,14 @@ export class User {
   @Column({ default: false })
   isEmailVerified: boolean;
 
+  @Exclude()
   @Column({ nullable: true, type: 'varchar' })
   emailVerificationToken: string | null;
 
   @Column({ nullable: true, type: 'timestamp' })
   emailVerificationExpires: Date | null;
 
+  @Exclude()
   @Column({ nullable: true, type: 'varchar' })
   passwordResetToken: string | null;
 

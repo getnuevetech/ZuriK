@@ -13,7 +13,7 @@ import { PaymentGateway } from './entities/payment-gateway.entity';
 import { Payment, PaymentProvider, PaymentStatus } from './entities/payment.entity';
 import { Payout, PayoutStatus } from './entities/payout.entity';
 import { Order, OrderStatus } from '../orders/entities/order.entity';
-import { User } from '../users/entities/user.entity';
+import { User, UserRole } from '../users/entities/user.entity';
 import { CreateGatewayDto } from './dto/create-gateway.dto';
 import { PaystackService } from './providers/paystack.service';
 import { StripeService } from './providers/stripe.service';
@@ -231,7 +231,15 @@ export class PaymentsService {
 
   // ── Query helpers ───────────────────────────────────────────────────────────
 
-  async getPaymentsByOrder(orderId: string): Promise<Payment[]> {
+  async getPaymentsByOrder(orderId: string, userId: string, userRole: UserRole): Promise<Payment[]> {
+    const order = await this.orderRepo.findOne({
+      where: { id: orderId },
+      relations: ['customer'],
+    });
+    if (!order) throw new NotFoundException('Order not found');
+    if (order.customer?.id !== userId && userRole !== UserRole.ADMIN) {
+      throw new ForbiddenException('Access denied');
+    }
     return this.paymentRepo.find({
       where: { order: { id: orderId } },
       order: { createdAt: 'DESC' },

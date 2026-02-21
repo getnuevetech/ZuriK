@@ -1,7 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
+import { User, UserRole } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
@@ -20,7 +20,10 @@ export class UsersService {
     return users.map(u => this.sanitize(u));
   }
 
-  async findById(id: string): Promise<Omit<User, 'password' | 'refreshToken'>> {
+  async findById(id: string, requesterId: string, requesterRole: UserRole): Promise<Omit<User, 'password' | 'refreshToken'>> {
+    if (requesterId !== id && requesterRole !== UserRole.ADMIN) {
+      throw new ForbiddenException('Access denied');
+    }
     const user = await this.userRepo.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException('User not found');
@@ -28,7 +31,10 @@ export class UsersService {
     return this.sanitize(user);
   }
 
-  async update(id: string, dto: UpdateUserDto): Promise<Omit<User, 'password' | 'refreshToken'>> {
+  async update(id: string, dto: UpdateUserDto, requesterId: string, requesterRole: UserRole): Promise<Omit<User, 'password' | 'refreshToken'>> {
+    if (requesterId !== id && requesterRole !== UserRole.ADMIN) {
+      throw new ForbiddenException('Access denied');
+    }
     const user = await this.userRepo.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException('User not found');
@@ -38,7 +44,13 @@ export class UsersService {
     return this.sanitize(user);
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string, requesterId: string, requesterRole: UserRole): Promise<void> {
+    // TODO: Implement GDPR-compliant data purge mechanism.
+    // Currently soft-deletes by setting isActive=false.
+    // Consider adding a scheduled job to permanently delete inactive users after a retention period.
+    if (requesterId !== id && requesterRole !== UserRole.ADMIN) {
+      throw new ForbiddenException('Access denied');
+    }
     const user = await this.userRepo.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException('User not found');
