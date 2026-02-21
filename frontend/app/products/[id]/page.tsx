@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { productsApi, ordersApi, reviewsApi } from '../../../lib/api';
+import { productsApi, ordersApi, reviewsApi, recentlyViewedApi } from '../../../lib/api';
 import { useCart } from '../../../lib/cart-context';
 import { useAuth } from '../../../lib/auth-context';
 import { useToast } from '../../../components/ui/Toast';
@@ -21,6 +21,8 @@ import { RatingSummary } from '../../../components/reviews/RatingSummary';
 import { ReviewList } from '../../../components/reviews/ReviewList';
 import { ReviewForm } from '../../../components/reviews/ReviewForm';
 import { WishlistButton } from '../../../components/WishlistButton';
+import { RecentlyViewedCarousel } from '../../../components/products/RecentlyViewedCarousel';
+import { addLocalRecentlyViewed, clearLocalRecentlyViewed } from '../../../lib/recently-viewed-local';
 import type { Product, Order, RatingSummary as RatingSummaryType } from '../../../types';
 
 export default function ProductDetailPage() {
@@ -43,6 +45,9 @@ export default function ProductDetailPage() {
   const [reviewFormLoading, setReviewFormLoading] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
   const [reviewListKey, setReviewListKey] = useState(0);
+
+  // Recently viewed state
+  const [recentlyViewed, setRecentlyViewed] = useState<Product[]>([]);
 
   useEffect(() => {
     if (params?.id) {
@@ -99,6 +104,20 @@ export default function ProductDetailPage() {
   useEffect(() => {
     checkHasReviewed();
   }, [checkHasReviewed]);
+
+  // Track product view and load recently viewed
+  useEffect(() => {
+    if (!params?.id) return;
+    const productId = String(params.id);
+    if (isAuthenticated) {
+      recentlyViewedApi.track(productId).catch(() => {});
+      recentlyViewedApi.list(10)
+        .then((products) => setRecentlyViewed(products.filter((p) => p.id !== productId)))
+        .catch(() => {});
+    } else {
+      addLocalRecentlyViewed(productId);
+    }
+  }, [params?.id, isAuthenticated]);
 
   const handleSubmitReview = async (data: { rating: number; title?: string; comment: string; images?: string[] }) => {
     if (!params?.id) return;
@@ -338,6 +357,23 @@ export default function ProductDetailPage() {
               <ProductCard key={p.id} product={p} onAddToCart={handleRelatedAddToCart} />
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Recently viewed */}
+      {recentlyViewed.length > 0 && (
+        <div className="mt-16">
+          <RecentlyViewedCarousel
+            products={recentlyViewed}
+            onClear={() => {
+              if (isAuthenticated) {
+                recentlyViewedApi.clear().catch(() => {});
+              } else {
+                clearLocalRecentlyViewed();
+              }
+              setRecentlyViewed([]);
+            }}
+          />
         </div>
       )}
     </div>

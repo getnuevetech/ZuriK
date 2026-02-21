@@ -493,5 +493,19 @@ export const searchApi = {
   },
 };
 
+// --- Recently Viewed API ---
+export const recentlyViewedApi = {
+  list: (limit?: number): Promise<Product[]> => {
+    const params = limit ? `?limit=${limit}` : '';
+    return api.get<Product[]>(`/recently-viewed${params}`).then((r) => r.data);
+  },
+  track: (productId: string): Promise<void> =>
+    api.post(`/recently-viewed/${productId}`).then(() => undefined),
+  clear: (): Promise<void> =>
+    api.delete('/recently-viewed').then(() => undefined),
+  remove: (productId: string): Promise<void> =>
+    api.delete(`/recently-viewed/${productId}`).then(() => undefined),
+};
+
 export default api;
 
