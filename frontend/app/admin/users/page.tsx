@@ -11,14 +11,8 @@ import FilterSelect from '../../../components/admin/FilterSelect';
 import ConfirmDialog from '../../../components/admin/ConfirmDialog';
 import { Spinner } from '../../../components/ui/Spinner';
 import { useToast } from '../../../components/ui/Toast';
-import { User } from '../../../types';
+import { User, PaginatedResponse } from '../../../types';
 
-interface UsersResponse {
-  data: User[];
-  total: number;
-  page: number;
-  totalPages: number;
-}
 
 const ROLE_OPTIONS = [
   { value: '', label: 'All Roles' },
@@ -56,7 +50,7 @@ export default function AdminUsersPage() {
     if (roleFilter) params.role = roleFilter;
     adminApi
       .getUsers(params)
-      .then((res: UsersResponse) => {
+      .then((res: PaginatedResponse<User>) => {
         setUsers(res.data ?? []);
         setTotal(res.total ?? 0);
         setTotalPages(res.totalPages ?? 1);

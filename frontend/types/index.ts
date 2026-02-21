@@ -7,3 +7,10 @@ export * from './hero-banner';
 export * from './analytics';
 export * from './payment';
 export * from './review';
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  totalPages: number;
+}

@@ -6,6 +6,7 @@ import { searchApi } from '../../lib/api';
 import type { Product } from '../../types';
 import type { Fabric } from '../../types';
 import { getUserDisplayName } from '../../lib/utils';
+import { useDebounce } from '../../hooks/useDebounce';
 
 interface DesignerResult {
   id: string;
@@ -19,14 +20,6 @@ interface SearchResults {
   designers: DesignerResult[];
 }
 
-function useDebounce<T>(value: T, delay: number): T {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const t = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(t);
-  }, [value, delay]);
-  return debounced;
-}
 
 interface GlobalSearchProps {
   onClose?: () => void;
