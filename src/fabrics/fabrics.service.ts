@@ -141,4 +141,25 @@ export class FabricsService {
     fabric.isActive = false;
     await this.fabricRepo.save(fabric);
   }
+
+  async updateStock(id: string, sellerId: string, role: UserRole, quantity: number): Promise<Fabric> {
+    const fabric = await this.fabricRepo.findOne({ where: { id }, relations: ['seller'] });
+    if (!fabric) throw new NotFoundException(`Fabric ${id} not found`);
+    if (role !== UserRole.ADMIN && fabric.seller?.id !== sellerId) {
+      throw new ForbiddenException('You can only update stock for your own fabrics');
+    }
+    fabric.stock = quantity;
+    return this.fabricRepo.save(fabric);
+  }
+
+  async getLowStockItems(sellerId: string): Promise<Fabric[]> {
+    return this.fabricRepo
+      .createQueryBuilder('fabric')
+      .leftJoinAndSelect('fabric.seller', 'seller')
+      .where('seller.id = :sellerId', { sellerId })
+      .andWhere('fabric.isActive = true')
+      .andWhere('fabric.trackInventory = true')
+      .andWhere('fabric.stock <= fabric.lowStockThreshold')
+      .getMany();
+  }
 }

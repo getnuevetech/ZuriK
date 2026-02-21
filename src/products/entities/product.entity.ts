@@ -33,6 +33,15 @@ export class Product {
   @ManyToOne(() => User, { eager: true })
   designer: User;
 
+  @Column({ default: 0 })
+  stock: number;
+
+  @Column({ default: 5 })
+  lowStockThreshold: number;
+
+  @Column({ default: false })
+  trackInventory: boolean;
+
   @Column({ default: true })
   isActive: boolean;
 

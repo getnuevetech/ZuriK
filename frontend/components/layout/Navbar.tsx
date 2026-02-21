@@ -243,6 +243,13 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
                     </div>
                     <Link href="/profile" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>Profile</Link>
                     <Link href="/orders" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>My Orders</Link>
+                    <Link href="/account/addresses" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>Addresses</Link>
+                    {user.role === 'customer' && (
+                      <Link href="/become-seller" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>Become a Seller</Link>
+                    )}
+                    {user.role === 'admin' && (
+                      <Link href="/admin/seller-applications" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>Seller Applications</Link>
+                    )}
                     <Link
                       href={
                         user.role === 'designer' ? '/dashboard/designer'
@@ -260,6 +267,9 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
                         : user.role === 'admin' ? 'Admin Dashboard'
                         : 'My Account'}
                     </Link>
+                    {(user.role === 'designer' || user.role === 'fabric_seller') && (
+                      <Link href="/dashboard/inventory" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>Inventory</Link>
+                    )}
                     <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">Sign out</button>
                   </div>
                 )}

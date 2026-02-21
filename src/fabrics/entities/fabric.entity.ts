@@ -45,6 +45,12 @@ export class Fabric {
   @Column({ default: 0 })
   stock: number;
 
+  @Column({ default: 10 })
+  lowStockThreshold: number;
+
+  @Column({ default: true })
+  trackInventory: boolean;
+
   @Column({ default: true })
   isActive: boolean;
 

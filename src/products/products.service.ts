@@ -164,4 +164,32 @@ export class ProductsService {
     product.isActive = false;
     await this.productRepo.save(product);
   }
+
+  async updateStock(id: string, designerId: string, role: UserRole, quantity: number): Promise<Product> {
+    const product = await this.productRepo.findOne({ where: { id }, relations: ['designer'] });
+    if (!product) throw new NotFoundException(`Product ${id} not found`);
+    if (role !== UserRole.ADMIN && product.designer?.id !== designerId) {
+      throw new ForbiddenException('You can only update stock for your own products');
+    }
+    product.stock = quantity;
+    return this.productRepo.save(product);
+  }
+
+  async getLowStockItems(designerId: string): Promise<Product[]> {
+    return this.productRepo
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.designer', 'designer')
+      .where('designer.id = :designerId', { designerId })
+      .andWhere('product.isActive = true')
+      .andWhere('product.trackInventory = true')
+      .andWhere('product.stock <= product.lowStockThreshold')
+      .getMany();
+  }
+
+  async toggleActive(id: string): Promise<Product> {
+    const product = await this.productRepo.findOne({ where: { id } });
+    if (!product) throw new NotFoundException(`Product ${id} not found`);
+    product.isActive = !product.isActive;
+    return this.productRepo.save(product);
+  }
 }

@@ -182,6 +182,10 @@ export const productsApi = {
     api.delete(`/products/${id}`).then(() => undefined),
   toggleActive: (id: string): Promise<Product> =>
     api.patch<Product>(`/products/${id}/toggle-active`).then((r) => r.data),
+  updateStock: (id: string, quantity: number): Promise<Product> =>
+    api.patch<Product>(`/products/${id}/stock`, { quantity }).then((r) => r.data),
+  getLowStock: (): Promise<Product[]> =>
+    api.get<Product[]>('/products/low-stock').then((r) => r.data),
 };
 
 // --- Fabrics API ---
@@ -210,7 +214,9 @@ export const fabricsApi = {
   delete: (id: string): Promise<void> =>
     api.delete(`/fabrics/${id}`).then(() => undefined),
   updateStock: (id: string, stock: number): Promise<Fabric> =>
-    api.patch<Fabric>(`/fabrics/${id}`, { stock }).then((r) => r.data),
+    api.patch<Fabric>(`/fabrics/${id}/stock`, { quantity: stock }).then((r) => r.data),
+  getLowStock: (): Promise<Fabric[]> =>
+    api.get<Fabric[]>('/fabrics/low-stock').then((r) => r.data),
 };
 
 // --- Designers API ---
@@ -642,5 +648,142 @@ export const shippingApi = {
 };
 
 export default api;
+
+// --- Seller Applications API ---
+export interface SellerApplication {
+  id: string;
+  applicantId: string;
+  applicant?: { id: string; firstName: string; lastName: string; email: string };
+  requestedRole: 'designer' | 'fabric_seller';
+  status: 'pending' | 'approved' | 'rejected';
+  businessName: string;
+  businessDescription: string;
+  portfolioUrl?: string;
+  experience?: string;
+  adminNotes?: string;
+  reviewedById?: string;
+  reviewedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateSellerApplicationPayload {
+  requestedRole: 'designer' | 'fabric_seller';
+  businessName: string;
+  businessDescription: string;
+  portfolioUrl?: string;
+  experience?: string;
+}
+
+export interface ReviewSellerApplicationPayload {
+  status: 'approved' | 'rejected';
+  adminNotes?: string;
+}
+
+export const sellerApplicationsApi = {
+  apply: (dto: CreateSellerApplicationPayload): Promise<SellerApplication> =>
+    api.post<SellerApplication>('/seller-applications', dto).then((r) => r.data),
+  getMyApplications: (): Promise<SellerApplication[]> =>
+    api.get<SellerApplication[]>('/seller-applications/my').then((r) => r.data),
+  getAll: (status?: string): Promise<SellerApplication[]> => {
+    const params = status ? `?status=${status}` : '';
+    return api.get<SellerApplication[]>(`/seller-applications${params}`).then((r) => r.data);
+  },
+  getById: (id: string): Promise<SellerApplication> =>
+    api.get<SellerApplication>(`/seller-applications/${id}`).then((r) => r.data),
+  review: (id: string, dto: ReviewSellerApplicationPayload): Promise<SellerApplication> =>
+    api.patch<SellerApplication>(`/seller-applications/${id}/review`, dto).then((r) => r.data),
+};
+
+// --- Cart API ---
+export interface ServerCartItem {
+  id: string;
+  type: 'ready-to-wear' | 'fabric-only';
+  quantity: number;
+  productId?: string;
+  fabricId?: string;
+  name: string | null;
+  price: number;
+  image: string | null;
+  inStock: boolean;
+}
+
+export interface CartSummary {
+  items: ServerCartItem[];
+  subtotal: number;
+  itemCount: number;
+}
+
+export interface AddToCartPayload {
+  productId?: string;
+  fabricId?: string;
+  type: 'ready-to-wear' | 'fabric-only';
+  quantity?: number;
+}
+
+export const cartApi = {
+  getCart: (): Promise<ServerCartItem[]> =>
+    api.get<ServerCartItem[]>('/cart').then((r) => r.data),
+  getCartSummary: (): Promise<CartSummary> =>
+    api.get<CartSummary>('/cart/summary').then((r) => r.data),
+  addToCart: (dto: AddToCartPayload): Promise<ServerCartItem> =>
+    api.post<ServerCartItem>('/cart', dto).then((r) => r.data),
+  updateItem: (id: string, quantity: number): Promise<ServerCartItem> =>
+    api.patch<ServerCartItem>(`/cart/${id}`, { quantity }).then((r) => r.data),
+  removeItem: (id: string): Promise<void> =>
+    api.delete(`/cart/${id}`).then(() => undefined),
+  clearCart: (): Promise<void> =>
+    api.delete('/cart').then(() => undefined),
+  sync: (items: AddToCartPayload[]): Promise<ServerCartItem[]> =>
+    api.post<ServerCartItem[]>('/cart/sync', { items }).then((r) => r.data),
+};
+
+// --- Addresses API ---
+export interface Address {
+  id: string;
+  userId: string;
+  label: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state?: string;
+  country: string;
+  postalCode?: string;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateAddressPayload {
+  label?: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state?: string;
+  country: string;
+  postalCode?: string;
+  isDefault?: boolean;
+}
+
+export const addressesApi = {
+  getAll: (): Promise<Address[]> =>
+    api.get<Address[]>('/addresses').then((r) => r.data),
+  getById: (id: string): Promise<Address> =>
+    api.get<Address>(`/addresses/${id}`).then((r) => r.data),
+  create: (dto: CreateAddressPayload): Promise<Address> =>
+    api.post<Address>('/addresses', dto).then((r) => r.data),
+  update: (id: string, dto: Partial<CreateAddressPayload>): Promise<Address> =>
+    api.patch<Address>(`/addresses/${id}`, dto).then((r) => r.data),
+  delete: (id: string): Promise<void> =>
+    api.delete(`/addresses/${id}`).then(() => undefined),
+  setDefault: (id: string): Promise<Address> =>
+    api.patch<Address>(`/addresses/${id}/default`, {}).then((r) => r.data),
+};
 
 
