@@ -46,7 +46,7 @@ export class AuthService {
     user.emailVerificationToken = hashedToken;
     user.emailVerificationExpires = new Date(Date.now() + 86400000); // 24 hours
     await this.userRepo.save(user);
-    const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL');
     const verifyUrl = `${frontendUrl}/verify-email?token=${token}`;
     await this.emailService.sendEmailVerification(user, verifyUrl);
 
@@ -183,7 +183,7 @@ export class AuthService {
     user.passwordResetExpires = new Date(Date.now() + 3600000); // 1 hour
     await this.userRepo.save(user);
 
-    const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL');
     const resetUrl = `${frontendUrl}/reset-password?token=${token}`;
     await this.emailService.sendPasswordReset(user, resetUrl);
 
@@ -223,7 +223,7 @@ export class AuthService {
     user.emailVerificationExpires = new Date(Date.now() + 86400000); // 24 hours
     await this.userRepo.save(user);
 
-    const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL');
     const verifyUrl = `${frontendUrl}/verify-email?token=${token}`;
     await this.emailService.sendEmailVerification(user, verifyUrl);
 
