@@ -44,4 +44,14 @@ export class CreateCollectionDisplayDto {
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  ctaText?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  ctaLink?: string;
 }

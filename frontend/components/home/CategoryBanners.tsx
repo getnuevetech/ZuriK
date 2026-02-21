@@ -1,40 +1,83 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { homepageApi } from '../../lib/api';
 
-const CATEGORIES = [
+interface CollectionCard {
+  id: string;
+  name: string;
+  description: string | null;
+  image: string | null;
+  ctaText: string | null;
+  ctaLink: string | null;
+}
+
+const FALLBACK_CATEGORIES: CollectionCard[] = [
   {
-    title: 'Ready-to-Wear',
-    subtitle: 'Curated African Fashion, Ready to Ship',
-    href: '/products',
-    bg: 'bg-neutral-900',
-    cta: 'Shop Now',
+    id: 'fallback-1',
+    name: 'Ready-to-Wear',
+    description: 'Curated African Fashion, Ready to Ship',
+    image: null,
+    ctaText: 'Shop Now',
+    ctaLink: '/products',
   },
   {
-    title: 'Premium Fabrics',
-    subtitle: 'Authentic African Textiles from Across the Continent',
-    href: '/fabrics',
-    bg: 'bg-secondary-600',
-    cta: 'Browse Fabrics',
+    id: 'fallback-2',
+    name: 'Premium Fabrics',
+    description: 'Authentic African Textiles from Across the Continent',
+    image: null,
+    ctaText: 'Browse Fabrics',
+    ctaLink: '/fabrics',
   },
   {
-    title: 'Custom Designs',
-    subtitle: 'Your Body. Your Fabric. Your Style.',
-    href: '/orders/custom-design',
-    bg: 'bg-neutral-700',
-    cta: 'Start Designing',
+    id: 'fallback-3',
+    name: 'Custom Designs',
+    description: 'Your Body. Your Fabric. Your Style.',
+    image: null,
+    ctaText: 'Start Designing',
+    ctaLink: '/orders/custom-design',
   },
   {
-    title: 'Meet Our Designers',
-    subtitle: 'Artisans Keeping African Tradition Alive',
-    href: '/designers',
-    bg: 'bg-neutral-800',
-    cta: 'Explore Designers',
+    id: 'fallback-4',
+    name: 'Meet Our Designers',
+    description: 'Artisans Keeping African Tradition Alive',
+    image: null,
+    ctaText: 'Explore Designers',
+    ctaLink: '/designers',
   },
 ];
 
+const FALLBACK_BG_COLORS = ['bg-neutral-900', 'bg-secondary-600', 'bg-neutral-700', 'bg-neutral-800'];
+
+function SkeletonCard() {
+  return (
+    <div className="relative overflow-hidden min-h-[320px] bg-neutral-200 animate-pulse" />
+  );
+}
+
 export function CategoryBanners() {
+  const [cards, setCards] = useState<CollectionCard[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    homepageApi
+      .getCollections()
+      .then((data: CollectionCard[]) => {
+        setCards(data.slice(0, 4));
+      })
+      .catch((err) => {
+        console.error('Failed to fetch collections:', err);
+        setCards([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  const displayCards = cards.length > 0 ? cards : FALLBACK_CATEGORIES;
+
   return (
     <section className="py-24 px-4 bg-white" aria-labelledby="category-banners-heading">
       <div className="max-w-7xl mx-auto">
@@ -48,25 +91,42 @@ export function CategoryBanners() {
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {CATEGORIES.map((cat) => (
-            <Link
-              key={cat.title}
-              href={cat.href}
-              className={`group relative overflow-hidden ${cat.bg} p-10 min-h-[220px] flex flex-col justify-between transition-opacity hover:opacity-95`}
-            >
-              <div>
-                <h3 className="font-heading text-2xl font-bold text-white mb-2 tracking-tight">{cat.title}</h3>
-                <p className="text-white/70 text-sm font-light max-w-xs">{cat.subtitle}</p>
-              </div>
-
-              <div className="mt-8">
-                <span className="inline-flex items-center gap-2 text-white text-sm font-semibold uppercase tracking-wider border-b border-white/40 pb-0.5 group-hover:border-white transition-colors">
-                  {cat.cta}
-                  <span className="group-hover:translate-x-1 transition-transform">→</span>
-                </span>
-              </div>
-            </Link>
-          ))}
+          {loading
+            ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
+            : displayCards.map((card, idx) => {
+                const href = card.ctaLink || '/products';
+                const cta = card.ctaText || 'Explore';
+                return (
+                  <Link
+                    key={card.id}
+                    href={href}
+                    className="group relative overflow-hidden min-h-[320px] flex flex-col justify-end p-10"
+                  >
+                    {card.image ? (
+                      <Image
+                        src={card.image}
+                        alt={`${card.name} collection banner`}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                      />
+                    ) : (
+                      <div className={`absolute inset-0 ${FALLBACK_BG_COLORS[idx % FALLBACK_BG_COLORS.length]}`} />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+                    <div className="relative z-10">
+                      <h3 className="font-heading text-2xl font-bold text-white mb-2 tracking-tight">{card.name}</h3>
+                      {card.description && (
+                        <p className="text-white/70 text-sm font-light max-w-xs mb-6">{card.description}</p>
+                      )}
+                      <span className="inline-flex items-center gap-2 text-white text-sm font-semibold uppercase tracking-wider border-b border-white/40 pb-0.5 group-hover:border-white transition-colors">
+                        {cta}
+                        <span className="group-hover:translate-x-1 transition-transform">→</span>
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
         </div>
       </div>
     </section>
