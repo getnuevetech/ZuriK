@@ -28,6 +28,9 @@ import { RecentlyViewedModule } from './recently-viewed/recently-viewed.module';
 import { ComparisonsModule } from './comparisons/comparisons.module';
 import { SharingModule } from './sharing/sharing.module';
 import { CouponsModule } from './coupons/coupons.module';
+import { SellerApprovalModule } from './seller-approval/seller-approval.module';
+import { CartModule } from './cart/cart.module';
+import { AddressesModule } from './addresses/addresses.module';
 import { Coupon } from './coupons/entities/coupon.entity';
 import { CouponUsage } from './coupons/entities/coupon-usage.entity';
 import { WishlistItem } from './wishlist/entities/wishlist-item.entity';
@@ -56,6 +59,9 @@ import { Payout } from './payments/entities/payout.entity';
 import { HeroBanner } from './hero-banners/entities/hero-banner.entity';
 import { Notification } from './notifications/entities/notification.entity';
 import { Review } from './reviews/entities/review.entity';
+import { SellerApplication } from './seller-approval/entities/seller-application.entity';
+import { CartItem } from './cart/entities/cart-item.entity';
+import { Address } from './addresses/entities/address.entity';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -81,6 +87,9 @@ const isProduction = process.env.NODE_ENV === 'production';
         RecentlyViewed,
         Coupon,
         CouponUsage,
+        SellerApplication,
+        CartItem,
+        Address,
       ],
       synchronize: process.env.AUTO_SYNC === 'true' || !isProduction,
       ssl: isProduction,
@@ -111,6 +120,9 @@ const isProduction = process.env.NODE_ENV === 'production';
     ComparisonsModule,
     SharingModule,
     CouponsModule,
+    SellerApprovalModule,
+    CartModule,
+    AddressesModule,
   ],
   controllers: [AppController],
   providers: [

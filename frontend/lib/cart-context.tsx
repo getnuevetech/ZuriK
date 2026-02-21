@@ -1,6 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { cartApi, type AddToCartPayload, type ServerCartItem } from './api';
+import { useAuth } from './auth-context';
 
 export interface CartItem {
   id: string;
@@ -44,46 +46,151 @@ function saveCart(items: CartItem[]) {
   }
 }
 
+function serverItemToCartItem(item: ServerCartItem): CartItem {
+  return {
+    id: item.id,
+    name: item.name ?? '',
+    price: item.price,
+    quantity: item.quantity,
+    type: item.type,
+    image: item.image ?? undefined,
+    designId: item.productId,
+    fabricId: item.fabricId,
+  };
+}
+
+function cartItemToAddPayload(item: CartItem): AddToCartPayload {
+  return {
+    productId: item.designId || (item.type === 'ready-to-wear' ? item.id : undefined),
+    fabricId: item.fabricId || (item.type === 'fabric-only' ? item.id : undefined),
+    type: item.type,
+    quantity: item.quantity,
+  };
+}
+
 export function CartProvider({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [serverMode, setServerMode] = useState(false);
 
+  // Load initial cart from localStorage
   useEffect(() => {
-    setCartItems(loadCart());
+    if (!serverMode) {
+      setCartItems(loadCart());
+    }
   }, []);
 
-  const addToCart = useCallback((item: CartItem) => {
-    setCartItems((prev) => {
-      const existing = prev.find((i) => i.id === item.id);
-      const updated = existing
-        ? prev.map((i) => i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i)
-        : [...prev, item];
-      saveCart(updated);
-      return updated;
-    });
-  }, []);
+  // When auth state resolves, sync to server if authenticated
+  useEffect(() => {
+    if (authLoading) return;
+    if (isAuthenticated) {
+      const localItems = loadCart();
+      setServerMode(true);
+      // Sync local cart to server then load server cart
+      const syncAndLoad = async () => {
+        try {
+          if (localItems.length > 0) {
+            const synced = await cartApi.sync(localItems.map(cartItemToAddPayload));
+            setCartItems(synced.map(serverItemToCartItem));
+            localStorage.removeItem(CART_KEY);
+          } else {
+            const serverItems = await cartApi.getCart();
+            setCartItems(serverItems.map(serverItemToCartItem));
+          }
+        } catch {
+          // Fallback to local cart on error
+          setCartItems(localItems);
+        }
+      };
+      syncAndLoad();
+    } else {
+      setServerMode(false);
+      setCartItems(loadCart());
+    }
+  }, [isAuthenticated, authLoading]);
 
-  const removeFromCart = useCallback((id: string) => {
-    setCartItems((prev) => {
-      const updated = prev.filter((i) => i.id !== id);
-      saveCart(updated);
-      return updated;
-    });
-  }, []);
+  const addToCart = useCallback(async (item: CartItem) => {
+    if (serverMode) {
+      try {
+        await cartApi.addToCart(cartItemToAddPayload(item));
+        const updated = await cartApi.getCart();
+        setCartItems(updated.map(serverItemToCartItem));
+      } catch {
+        // Fallback: update locally
+        setCartItems((prev) => {
+          const existing = prev.find((i) => i.id === item.id);
+          return existing
+            ? prev.map((i) => i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i)
+            : [...prev, item];
+        });
+      }
+    } else {
+      setCartItems((prev) => {
+        const existing = prev.find((i) => i.id === item.id);
+        const updated = existing
+          ? prev.map((i) => i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i)
+          : [...prev, item];
+        saveCart(updated);
+        return updated;
+      });
+    }
+  }, [serverMode]);
 
-  const updateQuantity = useCallback((id: string, qty: number) => {
-    setCartItems((prev) => {
-      const updated = qty <= 0
-        ? prev.filter((i) => i.id !== id)
-        : prev.map((i) => i.id === id ? { ...i, quantity: qty } : i);
-      saveCart(updated);
-      return updated;
-    });
-  }, []);
+  const removeFromCart = useCallback(async (id: string) => {
+    if (serverMode) {
+      try {
+        await cartApi.removeItem(id);
+        setCartItems((prev) => prev.filter((i) => i.id !== id));
+      } catch {
+        setCartItems((prev) => prev.filter((i) => i.id !== id));
+      }
+    } else {
+      setCartItems((prev) => {
+        const updated = prev.filter((i) => i.id !== id);
+        saveCart(updated);
+        return updated;
+      });
+    }
+  }, [serverMode]);
 
-  const clearCart = useCallback(() => {
+  const updateQuantity = useCallback(async (id: string, qty: number) => {
+    if (serverMode) {
+      try {
+        if (qty <= 0) {
+          await cartApi.removeItem(id);
+          setCartItems((prev) => prev.filter((i) => i.id !== id));
+        } else {
+          await cartApi.updateItem(id, qty);
+          setCartItems((prev) => prev.map((i) => i.id === id ? { ...i, quantity: qty } : i));
+        }
+      } catch {
+        setCartItems((prev) =>
+          qty <= 0 ? prev.filter((i) => i.id !== id) : prev.map((i) => i.id === id ? { ...i, quantity: qty } : i)
+        );
+      }
+    } else {
+      setCartItems((prev) => {
+        const updated = qty <= 0
+          ? prev.filter((i) => i.id !== id)
+          : prev.map((i) => i.id === id ? { ...i, quantity: qty } : i);
+        saveCart(updated);
+        return updated;
+      });
+    }
+  }, [serverMode]);
+
+  const clearCart = useCallback(async () => {
+    if (serverMode) {
+      try {
+        await cartApi.clearCart();
+      } catch {
+        // ignore
+      }
+    } else {
+      saveCart([]);
+    }
     setCartItems([]);
-    saveCart([]);
-  }, []);
+  }, [serverMode]);
 
   const cartTotal = cartItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
   const cartCount = cartItems.reduce((sum, i) => sum + i.quantity, 0);

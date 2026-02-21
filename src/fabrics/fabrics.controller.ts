@@ -27,6 +27,13 @@ export class FabricsController {
     return this.fabricsService.findAll(filters);
   }
 
+  @Get('low-stock')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.FABRIC_SELLER, UserRole.ADMIN)
+  getLowStock(@Request() req: RequestWithUser) {
+    return this.fabricsService.getLowStockItems(req.user.id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.fabricsService.findOne(id);
@@ -37,6 +44,17 @@ export class FabricsController {
   @Roles(UserRole.FABRIC_SELLER, UserRole.ADMIN)
   update(@Param('id') id: string, @Request() req: RequestWithUser, @Body() dto: UpdateFabricDto) {
     return this.fabricsService.update(id, req.user.id, req.user.role, dto);
+  }
+
+  @Patch(':id/stock')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.FABRIC_SELLER, UserRole.ADMIN)
+  updateStock(
+    @Param('id') id: string,
+    @Request() req: RequestWithUser,
+    @Body('quantity') quantity: number,
+  ) {
+    return this.fabricsService.updateStock(id, req.user.id, req.user.role, quantity);
   }
 
   @Delete(':id')

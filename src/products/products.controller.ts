@@ -27,6 +27,13 @@ export class ProductsController {
     return this.productsService.findAll(filters);
   }
 
+  @Get('low-stock')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.DESIGNER, UserRole.ADMIN)
+  getLowStock(@Request() req: RequestWithUser) {
+    return this.productsService.getLowStockItems(req.user.id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(id);
@@ -37,6 +44,24 @@ export class ProductsController {
   @Roles(UserRole.DESIGNER, UserRole.ADMIN)
   update(@Param('id') id: string, @Request() req: RequestWithUser, @Body() dto: UpdateProductDto) {
     return this.productsService.update(id, req.user.id, req.user.role, dto);
+  }
+
+  @Patch(':id/stock')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.DESIGNER, UserRole.ADMIN)
+  updateStock(
+    @Param('id') id: string,
+    @Request() req: RequestWithUser,
+    @Body('quantity') quantity: number,
+  ) {
+    return this.productsService.updateStock(id, req.user.id, req.user.role, quantity);
+  }
+
+  @Patch(':id/toggle-active')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.DESIGNER, UserRole.ADMIN)
+  toggleActive(@Param('id') id: string) {
+    return this.productsService.toggleActive(id);
   }
 
   @Delete(':id')
