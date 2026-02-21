@@ -21,6 +21,8 @@ import { RatingSummary } from '../../../components/reviews/RatingSummary';
 import { ReviewList } from '../../../components/reviews/ReviewList';
 import { ReviewForm } from '../../../components/reviews/ReviewForm';
 import { WishlistButton } from '../../../components/WishlistButton';
+import { ShareButton } from '../../../components/common/ShareButton';
+import { getShareUrl } from '../../../lib/share-utils';
 import { RecentlyViewedCarousel } from '../../../components/products/RecentlyViewedCarousel';
 import { addLocalRecentlyViewed, clearLocalRecentlyViewed } from '../../../lib/recently-viewed-local';
 import type { Product, Order, RatingSummary as RatingSummaryType } from '../../../types';
@@ -227,6 +229,15 @@ export default function ProductDetailPage() {
             {product.country && <Badge variant="secondary">{product.country}</Badge>}
           </div>
           <h1 className="font-heading text-3xl font-bold text-neutral-900 mb-2">{product.name}</h1>
+          <div className="flex items-center gap-2 mb-3">
+            <ShareButton
+              url={getShareUrl(`/products/${product.id}`)}
+              title={product.name}
+              description={product.description}
+              image={images[0]}
+              type="product"
+            />
+          </div>
           {designerName && (
             <Link href={`/designers/${product.designer!.id}`} className="text-sm text-primary-600 hover:underline mb-4 block">
               by {designerName}
