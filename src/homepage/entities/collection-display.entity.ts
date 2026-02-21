@@ -33,6 +33,12 @@ export class CollectionDisplay {
   @Column({ type: 'int', default: 0 })
   displayOrder: number;
 
+  @Column({ nullable: true })
+  ctaText: string;
+
+  @Column({ nullable: true })
+  ctaLink: string;
+
   @Column({ default: true })
   isActive: boolean;
 

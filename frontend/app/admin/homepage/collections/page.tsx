@@ -16,6 +16,8 @@ interface CollectionDisplay {
   category: string | null;
   displayOrder: number;
   isActive: boolean;
+  ctaText: string | null;
+  ctaLink: string | null;
 }
 
 const emptyForm = (): Omit<CollectionDisplay, 'id'> => ({
@@ -27,6 +29,8 @@ const emptyForm = (): Omit<CollectionDisplay, 'id'> => ({
   category: '',
   displayOrder: 0,
   isActive: true,
+  ctaText: '',
+  ctaLink: '',
 });
 
 export default function AdminCollectionsPage() {
@@ -72,6 +76,8 @@ export default function AdminCollectionsPage() {
       category: c.category ?? '',
       displayOrder: c.displayOrder,
       isActive: c.isActive,
+      ctaText: c.ctaText ?? '',
+      ctaLink: c.ctaLink ?? '',
     });
     setShowForm(true);
   };
@@ -157,7 +163,7 @@ export default function AdminCollectionsPage() {
             <table className="w-full text-sm">
               <thead className="bg-neutral-50 border-b border-neutral-200">
                 <tr>
-                  {['Name', 'Mode', 'Category', 'Order', 'Status', ''].map((h) => (
+                  {['Name', 'Mode', 'Category', 'CTA', 'Order', 'Status', ''].map((h) => (
                     <th key={h} className="px-4 py-3 text-left text-xs font-medium text-neutral-500 uppercase">{h}</th>
                   ))}
                 </tr>
@@ -168,6 +174,7 @@ export default function AdminCollectionsPage() {
                     <td className="px-4 py-3 font-medium text-neutral-800">{c.name}</td>
                     <td className="px-4 py-3 text-neutral-500">{c.displayMode}</td>
                     <td className="px-4 py-3 text-neutral-500">{c.category || '—'}</td>
+                    <td className="px-4 py-3 text-neutral-500">{c.ctaText || '—'}</td>
                     <td className="px-4 py-3 text-neutral-500">{c.displayOrder}</td>
                     <td className="px-4 py-3">
                       <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${c.isActive ? 'bg-green-100 text-green-700' : 'bg-neutral-100 text-neutral-500'}`}>
@@ -269,6 +276,26 @@ export default function AdminCollectionsPage() {
                   className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
                   value={form.category ?? ''}
                   onChange={(e) => setForm({ ...form, category: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-neutral-600 mb-1">CTA Button Text</label>
+                <input
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+                  placeholder="e.g. Shop Now"
+                  value={form.ctaText ?? ''}
+                  onChange={(e) => setForm({ ...form, ctaText: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-neutral-600 mb-1">CTA Link URL</label>
+                <input
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+                  placeholder="e.g. /products"
+                  value={form.ctaLink ?? ''}
+                  onChange={(e) => setForm({ ...form, ctaLink: e.target.value })}
                 />
               </div>
 
