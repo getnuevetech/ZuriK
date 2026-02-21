@@ -23,6 +23,7 @@ import { HomepageModule } from './homepage/homepage.module';
 import { WishlistModule } from './wishlist/wishlist.module';
 import { SearchModule } from './search/search.module';
 import { RecentlyViewedModule } from './recently-viewed/recently-viewed.module';
+import { ComparisonsModule } from './comparisons/comparisons.module';
 import { WishlistItem } from './wishlist/entities/wishlist-item.entity';
 import { RecentlyViewed } from './recently-viewed/entities/recently-viewed.entity';
 import { FeaturedSection } from './homepage/entities/featured-section.entity';
@@ -91,6 +92,7 @@ const isProduction = process.env.NODE_ENV === 'production';
     WishlistModule,
     SearchModule,
     RecentlyViewedModule,
+    ComparisonsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

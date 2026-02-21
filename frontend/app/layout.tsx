@@ -4,10 +4,12 @@ import './globals.css';
 import { AuthProvider } from '../lib/auth-context';
 import { CartProvider } from '../lib/cart-context';
 import { WishlistProvider } from '../lib/wishlist-context';
+import { ComparisonProvider } from '../lib/comparison-context';
 import { ToastProvider } from '../components/ui/Toast';
 import { NavbarWrapper } from '../components/layout/NavbarWrapper';
 import { Footer } from '../components/layout/Footer';
 import { MobileBottomTabs } from '../components/layout/MobileBottomTabs';
+import { ComparisonBar } from '../components/products/ComparisonBar';
 
 export const metadata: Metadata = {
   title: 'African Fashion — Premium African Marketplace',
@@ -27,12 +29,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <CartProvider>
             <WishlistProvider>
               <ToastProvider>
-                <NavbarWrapper />
-                <main className="flex-1 pb-16 md:pb-0">
-                  {children}
-                </main>
-                <Footer />
-                <MobileBottomTabs />
+                <ComparisonProvider>
+                  <NavbarWrapper />
+                  <main className="flex-1 pb-16 md:pb-0">
+                    {children}
+                  </main>
+                  <Footer />
+                  <MobileBottomTabs />
+                  <ComparisonBar />
+                </ComparisonProvider>
               </ToastProvider>
             </WishlistProvider>
           </CartProvider>

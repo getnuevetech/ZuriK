@@ -507,5 +507,11 @@ export const recentlyViewedApi = {
     api.delete(`/recently-viewed/${productId}`).then(() => undefined),
 };
 
+// --- Comparison API ---
+export const comparisonApi = {
+  compare: (productIds: string[]): Promise<Product[]> =>
+    api.post<Product[]>('/comparisons/products', { productIds }).then((r) => r.data),
+};
+
 export default api;
 
