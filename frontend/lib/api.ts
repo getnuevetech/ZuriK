@@ -432,13 +432,30 @@ export const adminApi = {
 };
 
 // --- Homepage API ---
+export interface PromoBanner {
+  id: string;
+  title: string;
+  subtitle: string | null;
+  imageUrl: string;
+  ctaText: string | null;
+  ctaLink: string | null;
+  displayOrder: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export const homepageApi = {
   // Public endpoints
   getHomepage: () => api.get('/homepage').then((r) => r.data),
   getTheme: () => api.get('/homepage/theme').then((r) => r.data),
   getFeatured: () => api.get('/homepage/featured').then((r) => r.data),
+  getFeaturedProducts: (): Promise<{ section: { id: string; title: string }; products: Product[] }[]> =>
+    api.get('/homepage/featured').then((r) => r.data),
   getCountries: () => api.get('/homepage/countries').then((r) => r.data),
   getCollections: () => api.get('/homepage/collections').then((r) => r.data),
+  getPromoBanners: (): Promise<PromoBanner[]> =>
+    api.get('/homepage/promo-banners').then((r) => r.data),
 
   // Admin — Featured Sections
   adminGetFeatured: () => api.get('/homepage/admin/featured').then((r) => r.data),
@@ -477,6 +494,15 @@ export const homepageApi = {
   adminGetLayout: () => api.get('/homepage/admin/layout').then((r) => r.data),
   adminUpdateLayout: (sections: Record<string, unknown>[]) =>
     api.put('/homepage/admin/layout', { sections }).then((r) => r.data),
+
+  // Admin — Promo Banners
+  adminGetPromoBanners: () => api.get('/homepage/admin/promo-banners').then((r) => r.data),
+  adminCreatePromoBanner: (data: Record<string, unknown>) =>
+    api.post('/homepage/admin/promo-banners', data).then((r) => r.data),
+  adminUpdatePromoBanner: (id: string, data: Record<string, unknown>) =>
+    api.patch(`/homepage/admin/promo-banners/${id}`, data).then((r) => r.data),
+  adminDeletePromoBanner: (id: string) =>
+    api.delete(`/homepage/admin/promo-banners/${id}`).then((r) => r.data),
 };
 
 // --- Wishlist API ---

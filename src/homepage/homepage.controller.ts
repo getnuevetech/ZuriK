@@ -15,6 +15,8 @@ import { CreateCollectionDisplayDto } from './dto/create-collection-display.dto'
 import { UpdateCollectionDisplayDto } from './dto/update-collection-display.dto';
 import { UpdateThemeDto } from './dto/update-theme.dto';
 import { UpdateHomepageLayoutDto } from './dto/update-homepage-layout.dto';
+import { CreatePromoBannerDto } from './dto/create-promo-banner.dto';
+import { UpdatePromoBannerDto } from './dto/update-promo-banner.dto';
 
 @ApiTags('homepage')
 @Controller('homepage')
@@ -234,5 +236,51 @@ export class HomepageController {
   @ApiOperation({ summary: 'Update homepage layout order (admin)' })
   adminUpdateLayout(@Body() dto: UpdateHomepageLayoutDto) {
     return this.homepageService.updateHomepageLayout(dto);
+  }
+
+  // ─── Public Endpoints — Promo Banners ────────────────────────────────────────
+
+  @Get('promo-banners')
+  @ApiOperation({ summary: 'Get active promo banners (public)' })
+  getPromoBanners() {
+    return this.homepageService.getActivePromoBanners();
+  }
+
+  // ─── Admin Endpoints — Promo Banners ─────────────────────────────────────────
+
+  @Get('admin/promo-banners')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'List all promo banners (admin)' })
+  adminGetPromoBanners() {
+    return this.homepageService.getPromoBanners();
+  }
+
+  @Post('admin/promo-banners')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create promo banner (admin)' })
+  adminCreatePromoBanner(@Body() dto: CreatePromoBannerDto) {
+    return this.homepageService.createPromoBanner(dto);
+  }
+
+  @Patch('admin/promo-banners/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update promo banner (admin)' })
+  adminUpdatePromoBanner(@Param('id') id: string, @Body() dto: UpdatePromoBannerDto) {
+    return this.homepageService.updatePromoBanner(id, dto);
+  }
+
+  @Delete('admin/promo-banners/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete promo banner (admin)' })
+  adminDeletePromoBanner(@Param('id') id: string) {
+    return this.homepageService.deletePromoBanner(id);
   }
 }
