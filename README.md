@@ -73,6 +73,25 @@ PORT=3000
 AUTO_SYNC=true
 ```
 
+## 🔒 Database SSL in Production
+
+When `NODE_ENV=production`, SSL is required for all database connections and certificate validation is **always enforced** (`rejectUnauthorized: true`). This protects against man-in-the-middle attacks.
+
+### Managed databases (Railway, AWS RDS, etc.)
+
+If your database uses a private CA (common with Railway Postgres, AWS RDS, and similar services), set the `DATABASE_CA_CERT` environment variable to the PEM-encoded CA certificate:
+
+```bash
+# Single-line value — replace actual newlines with \n
+DATABASE_CA_CERT="-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----"
+```
+
+**Railway**: Download the CA cert from your Railway Postgres service dashboard under *Connect → SSL Certificates*, then set the variable in your Railway service environment.
+
+**AWS RDS**: Download the appropriate regional bundle from https://truststore.pki.rds.amazonaws.com and set `DATABASE_CA_CERT` to its contents.
+
+If `DATABASE_CA_CERT` is not set, the connection uses the system's default CA store (suitable for databases whose certificates chain to a public CA, e.g. Neon, Supabase).
+
 ## 📚 API Documentation
 
 Swagger docs available at `http://localhost:3000/docs` after starting the server.
