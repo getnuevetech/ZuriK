@@ -180,10 +180,10 @@ function FabricsContent() {
       ) : items.length === 0 ? (
         <EmptyState
           title="No fabrics found"
-          message={total === 0 ? 'Fabric sellers are coming soon!' : 'Try adjusting your filters or search term'}
+          message={activeTags.length === 0 && !debouncedSearch ? 'Fabric sellers are coming soon!' : 'Try adjusting your filters or search term'}
           icon="🧵"
-          actionLabel="Clear Filters"
-          actionHref="/fabrics"
+          actionLabel={activeTags.length > 0 || debouncedSearch ? 'Clear Filters' : undefined}
+          actionHref={activeTags.length > 0 || debouncedSearch ? '/fabrics' : undefined}
         />
       ) : (
         <>

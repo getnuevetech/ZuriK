@@ -171,7 +171,7 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => { if (results) setOpen(true); else if (!query && searchHistory.length > 0) setOpen(true); }}
+          onFocus={() => { if (results || (!query && searchHistory.length > 0)) setOpen(true); }}
           onKeyDown={handleKeyDown}
           placeholder="Search designs, fabrics, designers..."
           className="w-full pl-9 pr-4 py-2.5 bg-white border border-neutral-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent"

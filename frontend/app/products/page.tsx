@@ -211,10 +211,10 @@ function ProductsContent() {
       ) : items.length === 0 ? (
         <EmptyState
           title="No products found"
-          message={total === 0 ? 'Check back soon for new arrivals' : 'Try adjusting your filters or search term'}
+          message={activeTags.length === 0 && !debouncedSearch ? 'Check back soon for new arrivals' : 'Try adjusting your filters or search term'}
           icon="👗"
-          actionLabel="Clear Filters"
-          actionHref="/products"
+          actionLabel={activeTags.length > 0 || debouncedSearch ? 'Clear Filters' : undefined}
+          actionHref={activeTags.length > 0 || debouncedSearch ? '/products' : undefined}
         />
       ) : (
         <>
