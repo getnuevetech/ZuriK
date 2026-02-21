@@ -7,11 +7,13 @@ import { AbandonedCartCron } from './abandoned-cart.cron';
 import { AbandonedCartController } from './abandoned-cart.controller';
 import { CartItem } from '../cart/entities/cart-item.entity';
 import { User } from '../users/entities/user.entity';
+import { Product } from '../products/entities/product.entity';
+import { Fabric } from '../fabrics/entities/fabric.entity';
 import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([AbandonedCart, CartItem, User]),
+    TypeOrmModule.forFeature([AbandonedCart, CartItem, User, Product, Fabric]),
     ScheduleModule.forRoot(),
     NotificationsModule,
   ],

@@ -91,7 +91,7 @@ export class LoyaltyService {
   }
 
   getPointsValue(points: number): number {
-    return Math.floor((points / this.pointsRedemptionRate) * 100) / 100;
+    return Math.round((points / this.pointsRedemptionRate) * 100) / 100;
   }
 
   getPointsForPurchase(totalPrice: number): number {

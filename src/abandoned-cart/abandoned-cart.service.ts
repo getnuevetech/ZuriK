@@ -1,9 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In, LessThan } from 'typeorm';
+import { Repository, In, LessThan, MoreThan } from 'typeorm';
 import { AbandonedCart, AbandonedCartStatus } from './entities/abandoned-cart.entity';
 import { CartItem } from '../cart/entities/cart-item.entity';
 import { User } from '../users/entities/user.entity';
+import { Product } from '../products/entities/product.entity';
+import { Fabric } from '../fabrics/entities/fabric.entity';
 import { EmailService } from '../notifications/email.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationType } from '../notifications/entities/notification.entity';
@@ -19,6 +21,10 @@ export class AbandonedCartService {
     private readonly cartItemRepo: Repository<CartItem>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+    @InjectRepository(Product)
+    private readonly productRepo: Repository<Product>,
+    @InjectRepository(Fabric)
+    private readonly fabricRepo: Repository<Fabric>,
     private readonly emailService: EmailService,
     private readonly notificationsService: NotificationsService,
   ) {}
@@ -48,20 +54,27 @@ export class AbandonedCartService {
       const items = await this.cartItemRepo.find({ where: { userId: row.userId } });
       if (items.length === 0) continue;
 
-      const snapshot = items.map((i) => ({
-        productId: i.productId,
-        fabricId: i.fabricId,
-        type: i.type,
-        quantity: i.quantity,
-        name: i.productId ?? i.fabricId ?? 'Item',
-        price: 0,
-      }));
+      const snapshot: Record<string, any>[] = [];
+      let totalValue = 0;
+      for (const i of items) {
+        let name = 'Item';
+        let price = 0;
+        if (i.productId) {
+          const product = await this.productRepo.findOne({ where: { id: i.productId } });
+          if (product) { name = product.name; price = Number(product.customerPrice ?? 0); }
+        } else if (i.fabricId) {
+          const fabric = await this.fabricRepo.findOne({ where: { id: i.fabricId } });
+          if (fabric) { name = fabric.name; price = Number(fabric.sellerPrice ?? 0); }
+        }
+        totalValue += price * i.quantity;
+        snapshot.push({ productId: i.productId, fabricId: i.fabricId, type: i.type, quantity: i.quantity, name, price });
+      }
 
       await this.abandonedCartRepo.save(
         this.abandonedCartRepo.create({
           userId: row.userId,
           cartSnapshot: snapshot,
-          totalValue: 0,
+          totalValue,
           status: AbandonedCartStatus.PENDING,
         }),
       );
@@ -73,16 +86,15 @@ export class AbandonedCartService {
     const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-    const pendingCarts = await this.abandonedCartRepo.find({
-      where: {
-        status: AbandonedCartStatus.PENDING,
-        createdAt: LessThan(twoHoursAgo),
-      },
-      relations: ['user'],
-    });
+    const pendingCarts = await this.abandonedCartRepo
+      .createQueryBuilder('cart')
+      .leftJoinAndSelect('cart.user', 'user')
+      .where('cart.status = :status', { status: AbandonedCartStatus.PENDING })
+      .andWhere('cart.createdAt < :twoHoursAgo', { twoHoursAgo })
+      .andWhere('cart.createdAt > :thirtyDaysAgo', { thirtyDaysAgo })
+      .getMany();
 
     for (const cart of pendingCarts) {
-      if (cart.createdAt < thirtyDaysAgo) continue;
       try {
         await this.emailService.sendAbandonedCartReminder(cart.user, {
           items: cart.cartSnapshot,

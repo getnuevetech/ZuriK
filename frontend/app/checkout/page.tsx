@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ordersApi, paymentsApi, shippingApi, addressesApi, type ShippingMethod, type Address } from '../../lib/api';
+import { ordersApi, paymentsApi, shippingApi, addressesApi, loyaltyApi, type ShippingMethod, type Address, type LoyaltyBalance } from '../../lib/api';
 import { useAuth } from '../../lib/auth-context';
 import { useCart } from '../../lib/cart-context';
 import { useToast } from '../../components/ui/Toast';
@@ -57,6 +57,9 @@ export default function CheckoutPage() {
   const [selectedShippingMethod, setSelectedShippingMethod] = useState<ShippingMethod | null>(null);
   const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
   const [saveNewAddress, setSaveNewAddress] = useState(false);
+  const [loyaltyBalance, setLoyaltyBalance] = useState<LoyaltyBalance | null>(null);
+  const [loyaltyPointsToRedeem, setLoyaltyPointsToRedeem] = useState(0);
+  const [useLoyalty, setUseLoyalty] = useState(false);
 
   useEffect(() => {
     if (authLoading) return;
@@ -65,6 +68,8 @@ export default function CheckoutPage() {
     } else {
       // Load saved addresses for shipping step
       addressesApi.getAll().then(setSavedAddresses).catch(() => {});
+      // Load loyalty balance
+      loyaltyApi.getBalance().then(setLoyaltyBalance).catch(() => {});
     }
   }, [isAuthenticated, authLoading, router]);
 
@@ -86,7 +91,8 @@ export default function CheckoutPage() {
 
   const currentStepIndex = STEPS.findIndex((s) => s.key === step);
   const shippingCost = selectedShippingMethod?.effectiveCost ?? selectedShippingMethod?.basePrice ?? 0;
-  const orderTotal = Math.max(0, cartTotal - couponDiscount + Number(shippingCost));
+  const loyaltyDiscount = useLoyalty ? loyaltyPointsToRedeem / 100 : 0;
+  const orderTotal = Math.max(0, cartTotal - couponDiscount - loyaltyDiscount + Number(shippingCost));
 
   const validateShipping = (): boolean => {
     if (!shippingAddress.fullName || !shippingAddress.addressLine1 || !shippingAddress.city || !shippingAddress.country) {
@@ -258,6 +264,45 @@ export default function CheckoutPage() {
                 <div className="flex justify-between text-sm text-green-600">
                   <span>Discount ({appliedCoupon.code})</span>
                   <span>−₦{couponDiscount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                </div>
+              )}
+              {loyaltyBalance && loyaltyBalance.points >= 100 && (
+                <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 space-y-2">
+                  <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-amber-800">
+                    <input
+                      type="checkbox"
+                      checked={useLoyalty}
+                      onChange={(e) => {
+                        setUseLoyalty(e.target.checked);
+                        if (!e.target.checked) setLoyaltyPointsToRedeem(0);
+                        else setLoyaltyPointsToRedeem(Math.min(loyaltyBalance.points, Math.floor(cartTotal * 100)));
+                      }}
+                      className="rounded"
+                    />
+                    🌟 Use Loyalty Points ({loyaltyBalance.points.toLocaleString()} pts available)
+                  </label>
+                  {useLoyalty && (
+                    <div className="space-y-1">
+                      <input
+                        type="range"
+                        min={0}
+                        max={Math.min(loyaltyBalance.points, Math.floor(cartTotal * 100))}
+                        step={100}
+                        value={loyaltyPointsToRedeem}
+                        onChange={(e) => setLoyaltyPointsToRedeem(Number(e.target.value))}
+                        className="w-full accent-amber-500"
+                      />
+                      <p className="text-xs text-amber-700">
+                        Redeeming <strong>{loyaltyPointsToRedeem.toLocaleString()} pts</strong> → −${(loyaltyPointsToRedeem / 100).toFixed(2)} discount
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+              {useLoyalty && loyaltyDiscount > 0 && (
+                <div className="flex justify-between text-sm text-amber-600">
+                  <span>Loyalty Points ({loyaltyPointsToRedeem.toLocaleString()} pts)</span>
+                  <span>−${loyaltyDiscount.toFixed(2)}</span>
                 </div>
               )}
               <div className="flex justify-between text-sm text-neutral-600">

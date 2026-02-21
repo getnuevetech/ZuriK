@@ -11,35 +11,35 @@ import { ConfigService } from '@nestjs/config';
 
 @ApiTags('Stock Alerts')
 @ApiBearerAuth()
-@Controller()
+@Controller('stock-alerts')
 export class StockAlertsController {
   constructor(
     private readonly stockAlertsService: StockAlertsService,
     private readonly configService: ConfigService,
   ) {}
 
-  @Post('stock-alerts')
+  @Post()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Subscribe to back-in-stock alert' })
   subscribe(@Req() req: any, @Body() dto: SubscribeStockAlertDto) {
     return this.stockAlertsService.subscribe(req.user.id, dto.productId, dto.productType);
   }
 
-  @Delete('stock-alerts/:productId')
+  @Delete(':productId')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Unsubscribe from back-in-stock alert' })
   unsubscribe(@Req() req: any, @Param('productId') productId: string) {
     return this.stockAlertsService.unsubscribe(req.user.id, productId);
   }
 
-  @Get('stock-alerts')
+  @Get()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get my stock alerts' })
   getMyAlerts(@Req() req: any) {
     return this.stockAlertsService.getMyAlerts(req.user.id);
   }
 
-  @Post('admin/stock-alerts/:productId/notify')
+  @Post('admin/:productId/notify')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Admin: manually trigger back-in-stock notifications' })

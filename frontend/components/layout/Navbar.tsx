@@ -7,6 +7,7 @@ import { Avatar } from '../ui/Avatar';
 import { Button } from '../ui/Button';
 import { GlobalSearch } from '../common/GlobalSearch';
 import { NotificationBell } from '../notifications/NotificationBell';
+import { LoyaltyBadge } from '../loyalty/LoyaltyBadge';
 
 interface NavbarProps {
   cartCount?: number;
@@ -229,6 +230,7 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
 
             {user ? (
               <>
+                <LoyaltyBadge />
                 <NotificationBell />
                 <div className="relative" ref={userMenuRef}>
                 <button onClick={() => setUserMenuOpen((v) => !v)} className="flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary-400 rounded-lg p-1" aria-expanded={userMenuOpen} aria-haspopup="true">

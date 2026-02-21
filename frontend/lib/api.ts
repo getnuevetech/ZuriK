@@ -787,3 +787,94 @@ export const addressesApi = {
 };
 
 
+
+// --- Stock Alerts API ---
+export type StockAlertProductType = 'product' | 'fabric';
+
+export interface StockAlert {
+  id: string;
+  userId: string;
+  productId: string;
+  productType: StockAlertProductType;
+  notifiedAt: string | null;
+  status: 'active' | 'notified' | 'cancelled';
+  createdAt: string;
+}
+
+export const stockAlertsApi = {
+  subscribe: (productId: string, productType: StockAlertProductType): Promise<StockAlert> =>
+    api.post<StockAlert>('/stock-alerts', { productId, productType }).then((r) => r.data),
+  unsubscribe: (productId: string): Promise<void> =>
+    api.delete(`/stock-alerts/${productId}`).then(() => undefined),
+  getMyAlerts: (): Promise<StockAlert[]> =>
+    api.get<StockAlert[]>('/stock-alerts').then((r) => r.data),
+  adminNotify: (productId: string, productType: StockAlertProductType, productName: string): Promise<{ message: string }> =>
+    api.post(`/stock-alerts/admin/${productId}/notify`, { productType, productName }).then((r) => r.data),
+};
+
+// --- Loyalty API ---
+export interface LoyaltyBalance {
+  points: number;
+  dollarValue: number;
+}
+
+export interface LoyaltyTransaction {
+  id: string;
+  userId: string;
+  points: number;
+  type: string;
+  description: string;
+  referenceId: string | null;
+  createdAt: string;
+}
+
+export interface LoyaltyHistoryResponse {
+  transactions: LoyaltyTransaction[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export const loyaltyApi = {
+  getBalance: (): Promise<LoyaltyBalance> =>
+    api.get<LoyaltyBalance>('/loyalty/balance').then((r) => r.data),
+  getHistory: (page = 1, limit = 20): Promise<LoyaltyHistoryResponse> =>
+    api.get<LoyaltyHistoryResponse>(`/loyalty/history?page=${page}&limit=${limit}`).then((r) => r.data),
+  redeem: (points: number): Promise<LoyaltyTransaction> =>
+    api.post<LoyaltyTransaction>('/loyalty/redeem', { points }).then((r) => r.data),
+};
+
+// --- Review Prompts API ---
+export interface ReviewPrompt {
+  id: string;
+  userId: string;
+  orderId: string;
+  productId: string;
+  emailSentAt: string | null;
+  reviewedAt: string | null;
+  status: 'pending' | 'email_sent' | 'reviewed' | 'dismissed';
+  createdAt: string;
+}
+
+export const reviewPromptsApi = {
+  getMyPrompts: (): Promise<ReviewPrompt[]> =>
+    api.get<ReviewPrompt[]>('/review-prompts').then((r) => r.data),
+  dismiss: (id: string): Promise<void> =>
+    api.patch(`/review-prompts/${id}/dismiss`, {}).then(() => undefined),
+};
+
+// --- Abandoned Carts Admin API ---
+export interface AbandonedCartStats {
+  totalAbandoned: number;
+  recovered: number;
+  recoveryRate: number;
+  totalRecoveredRevenue: number;
+}
+
+export const abandonedCartsAdminApi = {
+  getStats: (): Promise<AbandonedCartStats> =>
+    api.get<AbandonedCartStats>('/admin/abandoned-carts/stats').then((r) => r.data),
+  getAll: (page = 1, limit = 20) =>
+    api.get(`/admin/abandoned-carts?page=${page}&limit=${limit}`).then((r) => r.data),
+};
