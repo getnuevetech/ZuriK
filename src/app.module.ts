@@ -22,7 +22,9 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { HomepageModule } from './homepage/homepage.module';
 import { WishlistModule } from './wishlist/wishlist.module';
 import { SearchModule } from './search/search.module';
+import { RecentlyViewedModule } from './recently-viewed/recently-viewed.module';
 import { WishlistItem } from './wishlist/entities/wishlist-item.entity';
+import { RecentlyViewed } from './recently-viewed/entities/recently-viewed.entity';
 import { FeaturedSection } from './homepage/entities/featured-section.entity';
 import { CountryHero } from './homepage/entities/country-hero.entity';
 import { CollectionDisplay } from './homepage/entities/collection-display.entity';
@@ -61,6 +63,7 @@ const isProduction = process.env.NODE_ENV === 'production';
         PlatformSettings, TaxConfiguration, ShippingCarrier, PaymentGateway, Payment, Payout, HeroBanner, Notification, Review,
         FeaturedSection, CountryHero, CollectionDisplay, ThemeSettings, HomepageLayout,
         WishlistItem,
+        RecentlyViewed,
       ],
       synchronize: process.env.AUTO_SYNC === 'true' || !isProduction,
       ssl: isProduction,
@@ -87,6 +90,7 @@ const isProduction = process.env.NODE_ENV === 'production';
     HomepageModule,
     WishlistModule,
     SearchModule,
+    RecentlyViewedModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -2,17 +2,20 @@
 
 import React, { useEffect, useState, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { productsApi } from '../../lib/api';
+import { productsApi, recentlyViewedApi } from '../../lib/api';
 import { useCart } from '../../lib/cart-context';
 import { useToast } from '../../components/ui/Toast';
 import { Spinner } from '../../components/ui/Spinner';
 import { Select } from '../../components/ui/Select';
 import { ProductCard } from '../../components/products/ProductCard';
+import { RecentlyViewedCarousel } from '../../components/products/RecentlyViewedCarousel';
 import { SearchBar } from '../../components/common/SearchBar';
 import { FilterPanel } from '../../components/common/FilterPanel';
 import { EmptyState } from '../../components/common/EmptyState';
 import { Pagination } from '../../components/common/Pagination';
 import { ActiveFilters, FilterTag } from '../../components/common/ActiveFilters';
+import { useAuth } from '../../lib/auth-context';
+import { getLocalRecentlyViewed, clearLocalRecentlyViewed } from '../../lib/recently-viewed-local';
 import type { Product } from '../../types';
 import { useDebounce } from '../../hooks/useDebounce';
 
@@ -47,11 +50,13 @@ function ProductsContent() {
   const searchParams = useSearchParams();
   const { addToCart } = useCart();
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
 
   const [items, setItems] = useState<Product[]>([]);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [recentlyViewed, setRecentlyViewed] = useState<Product[]>([]);
 
   const [search, setSearch] = useState(searchParams.get('search') ?? '');
   const [sort, setSort] = useState(searchParams.get('sort') ?? 'newest');
@@ -91,6 +96,20 @@ function ProductsContent() {
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
+
+  // Load recently viewed products
+  useEffect(() => {
+    if (isAuthenticated) {
+      recentlyViewedApi.list(10).then(setRecentlyViewed).catch(() => {});
+    } else {
+      const localIds = getLocalRecentlyViewed();
+      if (localIds.length > 0) {
+        Promise.all(localIds.slice(0, 10).map((id) => productsApi.get(id).catch(() => null)))
+          .then((results) => setRecentlyViewed(results.filter(Boolean) as Product[]))
+          .catch(() => {});
+      }
+    }
+  }, [isAuthenticated]);
 
   // Sync URL params
   useEffect(() => {
@@ -196,6 +215,23 @@ function ProductsContent() {
 
       {/* Active filter tags */}
       <ActiveFilters filters={activeTags} onRemove={handleRemoveFilter} onClearAll={handleClearFilters} />
+
+      {/* Recently viewed section */}
+      {recentlyViewed.length > 0 && (
+        <div className="mb-8">
+          <RecentlyViewedCarousel
+            products={recentlyViewed}
+            onClear={() => {
+              if (isAuthenticated) {
+                recentlyViewedApi.clear().catch(() => {});
+              } else {
+                clearLocalRecentlyViewed();
+              }
+              setRecentlyViewed([]);
+            }}
+          />
+        </div>
+      )}
 
       {loading ? (
         <div className="flex justify-center items-center py-20">
