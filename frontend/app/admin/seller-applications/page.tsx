@@ -1,22 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../../lib/auth-context';
 import { sellerApplicationsApi, type SellerApplication } from '../../../lib/api';
+import AdminPageHeader from '../../../components/admin/AdminPageHeader';
+import DataTable from '../../../components/admin/DataTable';
+import StatusBadge from '../../../components/admin/StatusBadge';
 import { useToast } from '../../../components/ui/Toast';
 import { Button } from '../../../components/ui/Button';
 import { Card, CardBody, CardHeader } from '../../../components/ui/Card';
-import { Badge } from '../../../components/ui/Badge';
 import { Spinner } from '../../../components/ui/Spinner';
 
-const STATUS_COLORS: Record<string, 'warning' | 'success' | 'danger' | 'default'> = {
-  pending: 'warning',
-  approved: 'success',
-  rejected: 'danger',
-};
-
 export default function AdminSellerApplicationsPage() {
-  const { user } = useAuth();
   const { toast } = useToast();
 
   const [applications, setApplications] = useState<SellerApplication[]>([]);
@@ -61,15 +55,62 @@ export default function AdminSellerApplicationsPage() {
     }
   }
 
-  if (user?.role !== 'admin') {
-    return <div className="text-center py-20 text-neutral-500">Access denied.</div>;
-  }
+  const columns = [
+    {
+      key: 'applicant',
+      header: 'Applicant',
+      render: (row: SellerApplication) => (
+        <div>
+          <p className="font-medium text-neutral-900">
+            {row.applicant ? `${row.applicant.firstName} ${row.applicant.lastName}` : 'Unknown'}
+          </p>
+          <p className="text-sm text-neutral-500">{row.applicant?.email}</p>
+        </div>
+      ),
+    },
+    {
+      key: 'businessName',
+      header: 'Business',
+      render: (row: SellerApplication) => <span className="text-neutral-700">{row.businessName}</span>,
+    },
+    {
+      key: 'requestedRole',
+      header: 'Role',
+      render: (row: SellerApplication) => (
+        <span className="text-neutral-700 capitalize">{row.requestedRole.replace('_', ' ')}</span>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      render: (row: SellerApplication) => <StatusBadge status={row.status} />,
+    },
+    {
+      key: 'createdAt',
+      header: 'Date',
+      render: (row: SellerApplication) => (
+        <span className="text-sm text-neutral-500">{new Date(row.createdAt).toLocaleDateString()}</span>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'Actions',
+      render: (row: SellerApplication) => (
+        <button
+          onClick={() => { setSelected(row); setReviewNotes(row.adminNotes || ''); }}
+          className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
+        >
+          Review
+        </button>
+      ),
+    },
+  ];
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
-      <h1 className="text-3xl font-bold text-neutral-900 mb-6">Seller Applications</h1>
+    <div className="space-y-6">
+      <AdminPageHeader title="Seller Applications" />
 
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-2">
         {['', 'pending', 'approved', 'rejected'].map((s) => (
           <button
             key={s}
@@ -85,62 +126,20 @@ export default function AdminSellerApplicationsPage() {
         ))}
       </div>
 
-      {loading ? (
-        <div className="flex justify-center py-20"><Spinner size="lg" /></div>
-      ) : applications.length === 0 ? (
-        <Card>
-          <CardBody>
-            <div className="text-center py-10 text-neutral-500">No applications found.</div>
-          </CardBody>
-        </Card>
-      ) : (
-        <Card>
-          <CardBody className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-neutral-50 border-b border-neutral-200">
-                  <tr>
-                    <th className="text-left px-4 py-3 text-sm font-medium text-neutral-600">Applicant</th>
-                    <th className="text-left px-4 py-3 text-sm font-medium text-neutral-600">Business</th>
-                    <th className="text-left px-4 py-3 text-sm font-medium text-neutral-600">Role</th>
-                    <th className="text-left px-4 py-3 text-sm font-medium text-neutral-600">Status</th>
-                    <th className="text-left px-4 py-3 text-sm font-medium text-neutral-600">Date</th>
-                    <th className="text-left px-4 py-3 text-sm font-medium text-neutral-600">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-neutral-100">
-                  {applications.map((app) => (
-                    <tr key={app.id} className="hover:bg-neutral-50">
-                      <td className="px-4 py-3">
-                        <p className="font-medium text-neutral-900">
-                          {app.applicant ? `${app.applicant.firstName} ${app.applicant.lastName}` : 'Unknown'}
-                        </p>
-                        <p className="text-sm text-neutral-500">{app.applicant?.email}</p>
-                      </td>
-                      <td className="px-4 py-3 text-neutral-700">{app.businessName}</td>
-                      <td className="px-4 py-3 text-neutral-700 capitalize">{app.requestedRole.replace('_', ' ')}</td>
-                      <td className="px-4 py-3">
-                        <Badge variant={STATUS_COLORS[app.status] || 'default'} className="capitalize">{app.status}</Badge>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-neutral-500">
-                        {new Date(app.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className="px-4 py-3">
-                        <button
-                          onClick={() => { setSelected(app); setReviewNotes(app.adminNotes || ''); }}
-                          className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
-                        >
-                          Review
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardBody>
-        </Card>
-      )}
+      <div className="bg-white rounded-xl border border-neutral-200 p-6">
+        {loading ? (
+          <div className="flex items-center justify-center h-40">
+            <Spinner />
+          </div>
+        ) : (
+          <DataTable
+            columns={columns}
+            data={applications}
+            loading={false}
+            emptyMessage="No applications found"
+          />
+        )}
+      </div>
 
       {selected && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
