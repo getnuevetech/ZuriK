@@ -106,7 +106,14 @@ const isProduction = process.env.NODE_ENV === 'production';
       synchronize: !isProduction,
       ssl: isProduction,
       extra: isProduction
-        ? { ssl: { rejectUnauthorized: false } }
+        ? {
+            ssl: {
+              rejectUnauthorized: true,
+              ...(process.env.DATABASE_CA_CERT
+                ? { ca: process.env.DATABASE_CA_CERT }
+                : {}),
+            },
+          }
         : undefined,
     }),
     AuthModule,
