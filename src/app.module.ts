@@ -21,6 +21,7 @@ import { AdminModule } from './admin/admin.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { HomepageModule } from './homepage/homepage.module';
 import { WishlistModule } from './wishlist/wishlist.module';
+import { SearchModule } from './search/search.module';
 import { WishlistItem } from './wishlist/entities/wishlist-item.entity';
 import { FeaturedSection } from './homepage/entities/featured-section.entity';
 import { CountryHero } from './homepage/entities/country-hero.entity';
@@ -85,6 +86,7 @@ const isProduction = process.env.NODE_ENV === 'production';
     ReviewsModule,
     HomepageModule,
     WishlistModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [AppService],

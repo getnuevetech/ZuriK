@@ -63,15 +63,15 @@ function CustomDesignContent() {
       return;
     }
     Promise.all([productsApi.list(), fabricsApi.list()])
-      .then(([prods, fabs]) => {
-        setProducts(prods);
-        setFabrics(fabs);
+      .then(([prodsRes, fabsRes]) => {
+        setProducts(prodsRes.items);
+        setFabrics(fabsRes.items);
         if (preselectedDesignId) {
-          const design = prods.find((p: Product) => p.id === preselectedDesignId);
+          const design = prodsRes.items.find((p: Product) => p.id === preselectedDesignId);
           if (design) { setSelectedDesign(design); setStep(1); }
         }
         if (preselectedFabricId) {
-          const fabric = fabs.find((f: Fabric) => f.id === preselectedFabricId);
+          const fabric = fabsRes.items.find((f: Fabric) => f.id === preselectedFabricId);
           if (fabric) setSelectedFabric(fabric);
         }
       })

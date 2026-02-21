@@ -33,8 +33,9 @@ export default function FabricDetailPage() {
           setFabric(data);
           return fabricsApi.list();
         })
-        .then((all) => {
-          if (!all) return;
+        .then((res) => {
+          if (!res) return;
+          const all = res.items;
           const current = all.find((f: Fabric) => f.id === params.id);
           if (current) {
             const rel = all

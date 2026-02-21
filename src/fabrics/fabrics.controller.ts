@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards, Request, Query } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -6,8 +7,10 @@ import { UserRole } from '../users/entities/user.entity';
 import { FabricsService } from './fabrics.service';
 import { CreateFabricDto } from './dto/create-fabric.dto';
 import { UpdateFabricDto } from './dto/update-fabric.dto';
+import { FabricFilterDto } from './dto/fabric-filter.dto';
 import { RequestWithUser } from '../auth/auth.types';
 
+@ApiTags('Fabrics')
 @Controller('fabrics')
 export class FabricsController {
   constructor(private readonly fabricsService: FabricsService) {}
@@ -20,8 +23,8 @@ export class FabricsController {
   }
 
   @Get()
-  findAll() {
-    return this.fabricsService.findAll();
+  findAll(@Query() filters: FabricFilterDto) {
+    return this.fabricsService.findAll(filters);
   }
 
   @Get(':id')

@@ -46,7 +46,7 @@ export default function DesignerProductsPage() {
   const [saving, setSaving] = useState(false);
 
   const loadProducts = () => {
-    productsApi.list().then(setProducts).catch(() => {}).finally(() => setLoading(false));
+    productsApi.list().then((res) => setProducts(res.items)).catch(() => {}).finally(() => setLoading(false));
   };
 
   useEffect(() => { loadProducts(); }, []);

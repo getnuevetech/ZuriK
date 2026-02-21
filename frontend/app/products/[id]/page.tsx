@@ -54,9 +54,10 @@ export default function ProductDetailPage() {
             reviewsApi.getRatingSummary(String(params.id)).catch(() => null),
           ]);
         })
-        .then(([all, summaryRes]) => {
+        .then(([allRes, summaryRes]) => {
           if (summaryRes) setRatingSummary(summaryRes.data as RatingSummaryType);
-          if (!all) return;
+          if (!allRes) return;
+          const all = allRes.items;
           const current = all.find((p: Product) => p.id === params.id);
           if (current) {
             const rel = all

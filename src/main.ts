@@ -35,6 +35,7 @@ async function bootstrap() {
     .addTag('Admin Shipping')
     .addTag('Admin Payments')
     .addTag('Upload')
+    .addTag('Search')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

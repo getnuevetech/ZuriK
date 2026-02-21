@@ -28,7 +28,8 @@ export default function DesignerProfilePage() {
   useEffect(() => {
     if (params?.id) {
       productsApi.list()
-        .then((all: Product[]) => {
+        .then((res: { items: Product[] }) => {
+          const all = res.items;
           const designerProducts = all.filter((p) => p.designer?.id === params.id);
           if (designerProducts.length > 0 && designerProducts[0].designer) {
             setDesigner(designerProducts[0].designer as Designer);
