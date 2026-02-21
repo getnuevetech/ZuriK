@@ -173,7 +173,7 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
                     user.role === 'designer' ? '/dashboard/designer'
                     : user.role === 'fabric_seller' ? '/dashboard/fabric-seller'
                     : user.role === 'qa' ? '/dashboard/qa'
-                    : user.role === 'admin' ? '/dashboard/admin'
+                    : user.role === 'admin' ? '/admin'
                     : '/account'
                   }
                   className="text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors px-4 py-2"
@@ -241,6 +241,7 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
                     </div>
                     <Link href="/profile" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>Profile</Link>
                     <Link href="/orders" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>My Orders</Link>
+                    <Link href="/wishlist" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>Wishlist</Link>
                     <Link href="/account/addresses" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>Addresses</Link>
                     {user.role === 'customer' && (
                       <Link href="/become-seller" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>Become a Seller</Link>
@@ -253,7 +254,7 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
                         user.role === 'designer' ? '/dashboard/designer'
                         : user.role === 'fabric_seller' ? '/dashboard/fabric-seller'
                         : user.role === 'qa' ? '/dashboard/qa'
-                        : user.role === 'admin' ? '/dashboard/admin'
+                        : user.role === 'admin' ? '/admin'
                         : '/account'
                       }
                       className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors"
@@ -326,7 +327,7 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
                     user.role === 'designer' ? '/dashboard/designer'
                     : user.role === 'fabric_seller' ? '/dashboard/fabric-seller'
                     : user.role === 'qa' ? '/dashboard/qa'
-                    : user.role === 'admin' ? '/dashboard/admin'
+                    : user.role === 'admin' ? '/admin'
                     : '/account'
                   }
                   className="block px-3 py-2.5 text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors"
