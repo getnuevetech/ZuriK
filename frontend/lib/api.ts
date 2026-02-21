@@ -15,6 +15,14 @@ export interface AuthResponse { accessToken: string; refreshToken: string; user:
 export interface UserProfile { id: string; email: string; firstName: string; lastName: string; role: string; }
 export interface RefreshResponse { accessToken: string; refreshToken: string; }
 
+export interface PaginatedResponse<T> {
+  items: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 export interface ProductFilters {
   category?: string;
   country?: string;
@@ -22,6 +30,11 @@ export interface ProductFilters {
   minPrice?: number;
   maxPrice?: number;
   sort?: string;
+  minRating?: number;
+  tags?: string;
+  designerId?: string;
+  page?: number;
+  limit?: number;
 }
 
 export interface FabricFilters {
@@ -33,6 +46,9 @@ export interface FabricFilters {
   maxPrice?: number;
   pattern?: string;
   inStock?: boolean;
+  sort?: string;
+  page?: number;
+  limit?: number;
 }
 
 export interface OrderFilters {
@@ -133,7 +149,7 @@ export const authApi = {
 
 // --- Products API ---
 export const productsApi = {
-  list: (filters?: ProductFilters): Promise<Product[]> => {
+  list: (filters?: ProductFilters): Promise<PaginatedResponse<Product>> => {
     const params = new URLSearchParams();
     if (filters?.category) params.set('category', filters.category);
     if (filters?.country) params.set('country', filters.country);
@@ -141,8 +157,13 @@ export const productsApi = {
     if (filters?.minPrice !== undefined) params.set('minPrice', String(filters.minPrice));
     if (filters?.maxPrice !== undefined) params.set('maxPrice', String(filters.maxPrice));
     if (filters?.sort) params.set('sort', filters.sort);
+    if (filters?.minRating !== undefined) params.set('minRating', String(filters.minRating));
+    if (filters?.tags) params.set('tags', filters.tags);
+    if (filters?.designerId) params.set('designerId', filters.designerId);
+    if (filters?.page !== undefined) params.set('page', String(filters.page));
+    if (filters?.limit !== undefined) params.set('limit', String(filters.limit));
     const query = params.toString();
-    return api.get<Product[]>(`/products${query ? `?${query}` : ''}`).then((r) => r.data);
+    return api.get<PaginatedResponse<Product>>(`/products${query ? `?${query}` : ''}`).then((r) => r.data);
   },
   get: (id: string): Promise<Product> => api.get<Product>(`/products/${id}`).then((r) => r.data),
   create: (data: Partial<Product>): Promise<Product> =>
@@ -157,7 +178,7 @@ export const productsApi = {
 
 // --- Fabrics API ---
 export const fabricsApi = {
-  list: (filters?: FabricFilters): Promise<Fabric[]> => {
+  list: (filters?: FabricFilters): Promise<PaginatedResponse<Fabric>> => {
     const params = new URLSearchParams();
     if (filters?.material) params.set('material', filters.material);
     if (filters?.color) params.set('color', filters.color);
@@ -166,8 +187,12 @@ export const fabricsApi = {
     if (filters?.minPrice !== undefined) params.set('minPrice', String(filters.minPrice));
     if (filters?.maxPrice !== undefined) params.set('maxPrice', String(filters.maxPrice));
     if (filters?.pattern) params.set('pattern', filters.pattern);
+    if (filters?.inStock !== undefined) params.set('inStock', String(filters.inStock));
+    if (filters?.sort) params.set('sort', filters.sort);
+    if (filters?.page !== undefined) params.set('page', String(filters.page));
+    if (filters?.limit !== undefined) params.set('limit', String(filters.limit));
     const query = params.toString();
-    return api.get<Fabric[]>(`/fabrics${query ? `?${query}` : ''}`).then((r) => r.data);
+    return api.get<PaginatedResponse<Fabric>>(`/fabrics${query ? `?${query}` : ''}`).then((r) => r.data);
   },
   get: (id: string): Promise<Fabric> => api.get<Fabric>(`/fabrics/${id}`).then((r) => r.data),
   create: (data: Partial<Fabric>): Promise<Fabric> =>
@@ -268,12 +293,14 @@ export const uploadApi = {
 // --- Analytics API ---
 export const analyticsApi = {
   getOverview: async (): Promise<AnalyticsOverview> => {
-    const [users, orders, products, fabrics] = await Promise.all([
+    const [users, orders, productsRes, fabricsRes] = await Promise.all([
       usersApi.list().catch(() => [] as User[]),
       ordersApi.listAll().catch(() => [] as Order[]),
-      productsApi.list().catch(() => [] as Product[]),
-      fabricsApi.list().catch(() => [] as Fabric[]),
+      productsApi.list().catch(() => ({ items: [], total: 0, page: 1, limit: 20, totalPages: 0 } as PaginatedResponse<Product>)),
+      fabricsApi.list().catch(() => ({ items: [], total: 0, page: 1, limit: 20, totalPages: 0 } as PaginatedResponse<Fabric>)),
     ]);
+    const products = productsRes.items;
+    const fabrics = fabricsRes.items;
     const totalRevenue = orders.reduce((sum, o) => sum + (o.totalPrice || 0), 0);
     const recentOrders = [...orders]
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -454,6 +481,16 @@ export const wishlistApi = {
     api.post<{ added: boolean }>(`/wishlist/${productId}/toggle`).then((r) => r.data),
   clearWishlist: () =>
     api.delete('/wishlist').then((r) => r.data),
+};
+
+// --- Search API ---
+export const searchApi = {
+  search: (q: string, type?: 'all' | 'products' | 'fabrics', limit?: number) => {
+    const params = new URLSearchParams({ q });
+    if (type) params.set('type', type);
+    if (limit !== undefined) params.set('limit', String(limit));
+    return api.get<{ products: Product[]; fabrics: Fabric[]; total: number }>(`/search?${params.toString()}`).then((r) => r.data);
+  },
 };
 
 export default api;

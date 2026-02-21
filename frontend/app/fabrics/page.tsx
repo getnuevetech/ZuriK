@@ -11,6 +11,8 @@ import { FabricCard } from '../../components/fabrics/FabricCard';
 import { SearchBar } from '../../components/common/SearchBar';
 import { FilterPanel } from '../../components/common/FilterPanel';
 import { EmptyState } from '../../components/common/EmptyState';
+import { Pagination } from '../../components/common/Pagination';
+import { ActiveFilters, FilterTag } from '../../components/common/ActiveFilters';
 import type { Fabric } from '../../types';
 
 const MATERIALS = ['Cotton', 'Silk', 'Ankara', 'Kente', 'Adire', 'Aso-oke', 'Linen', 'Velvet', 'Other'];
@@ -18,7 +20,7 @@ const PATTERNS = ['Plain', 'Printed', 'Woven', 'Embroidered', 'Batik', 'Tie-dye'
 const COUNTRIES = ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Senegal', 'Ethiopia', 'Tanzania', 'Egypt', 'Morocco'];
 
 const SORT_OPTIONS = [
-  { value: '', label: 'Newest' },
+  { value: 'newest', label: 'Newest' },
   { value: 'price_asc', label: 'Price: Low → High' },
   { value: 'price_desc', label: 'Price: High → Low' },
   { value: 'name_asc', label: 'Name: A → Z' },
@@ -32,17 +34,29 @@ const FILTER_CONFIGS = [
   { key: 'inStock', label: 'In Stock Only', type: 'checkbox' as const },
 ];
 
+function useDebounce<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(t);
+  }, [value, delay]);
+  return debounced;
+}
+
 function FabricsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { addToCart } = useCart();
   const { toast } = useToast();
 
-  const [fabrics, setFabrics] = useState<Fabric[]>([]);
-  const [filtered, setFiltered] = useState<Fabric[]>([]);
+  const [items, setItems] = useState<Fabric[]>([]);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
+
   const [search, setSearch] = useState(searchParams.get('search') ?? '');
-  const [sort, setSort] = useState(searchParams.get('sort') ?? '');
+  const [sort, setSort] = useState(searchParams.get('sort') ?? 'newest');
+  const [page, setPage] = useState(Number(searchParams.get('page') ?? '1'));
   const [filterValues, setFilterValues] = useState<Record<string, string | number | boolean>>({
     material: searchParams.get('material') ?? '',
     pattern: searchParams.get('pattern') ?? '',
@@ -52,45 +66,41 @@ function FabricsContent() {
     inStock: searchParams.get('inStock') === 'true',
   });
 
-  useEffect(() => {
+  const debouncedSearch = useDebounce(search, 300);
+
+  const fetchFabrics = useCallback(() => {
     setLoading(true);
-    fabricsApi.list()
-      .then((data) => setFabrics(data))
+    fabricsApi.list({
+      search: debouncedSearch || undefined,
+      material: filterValues.material ? String(filterValues.material) : undefined,
+      pattern: filterValues.pattern ? String(filterValues.pattern) : undefined,
+      country: filterValues.country ? String(filterValues.country) : undefined,
+      minPrice: filterValues.priceMin !== '' ? Number(filterValues.priceMin) : undefined,
+      maxPrice: filterValues.priceMax !== '' ? Number(filterValues.priceMax) : undefined,
+      inStock: filterValues.inStock ? true : undefined,
+      sort: sort || undefined,
+      page,
+      limit: 20,
+    })
+      .then((res) => {
+        setItems(res.items);
+        setTotal(res.total);
+        setTotalPages(res.totalPages);
+      })
       .catch(() => toast('error', 'Failed to load fabrics'))
       .finally(() => setLoading(false));
-  }, [toast]);
-
-  const applyFilters = useCallback(() => {
-    let result = [...fabrics];
-    if (search) {
-      const q = search.toLowerCase();
-      result = result.filter((f) => f.name.toLowerCase().includes(q) || f.description?.toLowerCase().includes(q));
-    }
-    if (filterValues.material) result = result.filter((f) => f.material === filterValues.material);
-    if (filterValues.pattern) result = result.filter((f) => f.pattern === filterValues.pattern);
-    if (filterValues.country) result = result.filter((f) => f.country === filterValues.country);
-    if (filterValues.inStock) result = result.filter((f) => f.stock > 0);
-    if (filterValues.priceMin !== '' && filterValues.priceMin !== undefined) {
-      result = result.filter((f) => f.customerPrice >= Number(filterValues.priceMin));
-    }
-    if (filterValues.priceMax !== '' && filterValues.priceMax !== undefined) {
-      result = result.filter((f) => f.customerPrice <= Number(filterValues.priceMax));
-    }
-
-    if (sort === 'price_asc') result.sort((a, b) => a.customerPrice - b.customerPrice);
-    else if (sort === 'price_desc') result.sort((a, b) => b.customerPrice - a.customerPrice);
-    else if (sort === 'name_asc') result.sort((a, b) => a.name.localeCompare(b.name));
-    else result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-    setFiltered(result);
-  }, [fabrics, search, filterValues, sort]);
-
-  useEffect(() => { applyFilters(); }, [applyFilters]);
+  }, [debouncedSearch, filterValues, sort, page, toast]);
 
   useEffect(() => {
+    fetchFabrics();
+  }, [fetchFabrics]);
+
+  // Sync URL params
+  useEffect(() => {
     const params = new URLSearchParams();
-    if (search) params.set('search', search);
-    if (sort) params.set('sort', sort);
+    if (debouncedSearch) params.set('search', debouncedSearch);
+    if (sort && sort !== 'newest') params.set('sort', sort);
+    if (page > 1) params.set('page', String(page));
     if (filterValues.material) params.set('material', String(filterValues.material));
     if (filterValues.pattern) params.set('pattern', String(filterValues.pattern));
     if (filterValues.country) params.set('country', String(filterValues.country));
@@ -98,7 +108,7 @@ function FabricsContent() {
     if (filterValues.priceMin !== '') params.set('priceMin', String(filterValues.priceMin));
     if (filterValues.priceMax !== '') params.set('priceMax', String(filterValues.priceMax));
     router.replace(`/fabrics${params.toString() ? `?${params}` : ''}`, { scroll: false });
-  }, [search, sort, filterValues, router]);
+  }, [debouncedSearch, sort, page, filterValues, router]);
 
   const handleOrder = (fabric: Fabric) => {
     addToCart({
@@ -115,12 +125,32 @@ function FabricsContent() {
 
   const handleFilterChange = (key: string, value: string | number | boolean) => {
     setFilterValues((prev) => ({ ...prev, [key]: value }));
+    setPage(1);
   };
 
   const handleClearFilters = () => {
     setFilterValues({ material: '', pattern: '', country: '', priceMin: '', priceMax: '', inStock: false });
     setSearch('');
-    setSort('');
+    setSort('newest');
+    setPage(1);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Build active filter tags
+  const activeTags: FilterTag[] = [];
+  if (filterValues.material) activeTags.push({ key: 'material', label: 'Material', value: String(filterValues.material) });
+  if (filterValues.pattern) activeTags.push({ key: 'pattern', label: 'Pattern', value: String(filterValues.pattern) });
+  if (filterValues.country) activeTags.push({ key: 'country', label: 'Country', value: String(filterValues.country) });
+  if (filterValues.priceMin !== '') activeTags.push({ key: 'priceMin', label: 'Min Price', value: `₦${filterValues.priceMin}` });
+  if (filterValues.priceMax !== '') activeTags.push({ key: 'priceMax', label: 'Max Price', value: `₦${filterValues.priceMax}` });
+
+  const handleRemoveFilter = (key: string) => {
+    setFilterValues((prev) => ({ ...prev, [key]: key === 'inStock' ? false : '' }));
+    setPage(1);
   };
 
   return (
@@ -132,35 +162,41 @@ function FabricsContent() {
 
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <div className="flex-1">
-          <SearchBar onSearch={setSearch} placeholder="Search fabrics..." initialValue={search} />
+          <SearchBar onSearch={(v) => { setSearch(v); setPage(1); }} placeholder="Search fabrics..." initialValue={search} />
         </div>
         <div className="w-full sm:w-48">
-          <Select options={SORT_OPTIONS} value={sort} onChange={(e) => setSort(e.target.value)} placeholder="Sort by" />
+          <Select options={SORT_OPTIONS} value={sort} onChange={(e) => { setSort(e.target.value); setPage(1); }} placeholder="Sort by" />
         </div>
       </div>
 
-      <div className="mb-6">
+      <div className="mb-4">
         <FilterPanel filters={FILTER_CONFIGS} values={filterValues} onChange={handleFilterChange} onClear={handleClearFilters} />
       </div>
 
+      <ActiveFilters filters={activeTags} onRemove={handleRemoveFilter} onClearAll={handleClearFilters} />
+
       {loading ? (
         <div className="flex justify-center py-20"><Spinner size="lg" /></div>
-      ) : filtered.length === 0 ? (
+      ) : items.length === 0 ? (
         <EmptyState
           title="No fabrics found"
-          message={fabrics.length === 0 ? 'Fabric sellers are coming soon!' : 'Try adjusting your filters or search term'}
+          message={total === 0 ? 'Fabric sellers are coming soon!' : 'Try adjusting your filters or search term'}
           icon="🧵"
-          actionLabel={fabrics.length > 0 ? 'Clear Filters' : undefined}
-          actionHref={fabrics.length > 0 ? '/fabrics' : undefined}
+          actionLabel="Clear Filters"
+          actionHref="/fabrics"
         />
       ) : (
         <>
-          <p className="text-sm text-neutral-500 mb-4">{filtered.length} fabric{filtered.length !== 1 ? 's' : ''} found</p>
+          <p className="text-sm text-neutral-500 mb-4">
+            {total} fabric{total !== 1 ? 's' : ''} found
+            {totalPages > 1 && ` — page ${page} of ${totalPages}`}
+          </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((fabric) => (
+            {items.map((fabric) => (
               <FabricCard key={fabric.id} fabric={fabric} onOrder={handleOrder} />
             ))}
           </div>
+          <Pagination page={page} totalPages={totalPages} onPageChange={handlePageChange} disabled={loading} />
         </>
       )}
     </div>

@@ -27,8 +27,9 @@ export default function DesignersPage() {
 
   useEffect(() => {
     productsApi.list()
-      .then((products: Product[]) => {
+      .then((res: { items: Product[] }) => {
         // Extract unique designers from products
+        const products = res.items;
         const designerMap = new Map<string, DesignerWithProducts>();
         products.forEach((p) => {
           if (p.designer) {

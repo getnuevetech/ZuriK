@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { productsApi, fabricsApi } from '../../lib/api';
+import { searchApi } from '../../lib/api';
 import type { Product } from '../../types';
 import type { Fabric } from '../../types';
 import { getUserDisplayName } from '../../lib/utils';
@@ -44,6 +44,16 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
+  const [searchHistory, setSearchHistory] = useState<string[]>([]);
+
+  // Load search history on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('search_history');
+      if (stored) setSearchHistory(JSON.parse(stored));
+    } catch {}
+  }, []);
+
   useEffect(() => {
     if (autoFocus && inputRef.current) inputRef.current.focus();
   }, [autoFocus]);
@@ -55,11 +65,8 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
       return;
     }
     setLoading(true);
-    Promise.all([
-      productsApi.list({ search: debouncedQuery }),
-      fabricsApi.list({ search: debouncedQuery }),
-    ])
-      .then(([products, fabrics]) => {
+    searchApi.search(debouncedQuery, 'all', 8)
+      .then(({ products, fabrics }) => {
         // Extract designers from products
         const designerMap = new Map<string, DesignerResult>();
         for (const p of products) {
@@ -138,6 +145,11 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
   );
 
   const navigate = (href: string) => {
+    if (query.trim()) {
+      const updated = [query.trim(), ...searchHistory.filter((h) => h !== query.trim())].slice(0, 5);
+      setSearchHistory(updated);
+      try { localStorage.setItem('search_history', JSON.stringify(updated)); } catch {}
+    }
     router.push(href);
     setOpen(false);
     setQuery('');
@@ -159,7 +171,7 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => { if (results) setOpen(true); }}
+          onFocus={() => { if (results) setOpen(true); else if (!query && searchHistory.length > 0) setOpen(true); }}
           onKeyDown={handleKeyDown}
           placeholder="Search designs, fabrics, designers..."
           className="w-full pl-9 pr-4 py-2.5 bg-white border border-neutral-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent"
@@ -274,6 +286,24 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
       {open && results && totalResults === 0 && !loading && (
         <div ref={dropdownRef} className="absolute top-full left-0 right-0 mt-2 bg-white border border-neutral-200 rounded-xl shadow-modal z-50 p-6 text-center text-sm text-neutral-400">
           No results found for &quot;{query}&quot;
+        </div>
+      )}
+
+      {open && !query && searchHistory.length > 0 && !results && (
+        <div ref={dropdownRef} className="absolute top-full left-0 right-0 mt-2 bg-white border border-neutral-200 rounded-xl shadow-modal z-50 max-h-64 overflow-y-auto">
+          <div className="px-3 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-100">
+            Recent searches
+          </div>
+          {searchHistory.map((h) => (
+            <button
+              key={h}
+              onClick={() => { setQuery(h); }}
+              className="w-full text-left px-4 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 flex items-center gap-2 transition-colors"
+            >
+              <span className="text-neutral-400">🕐</span>
+              {h}
+            </button>
+          ))}
         </div>
       )}
     </div>

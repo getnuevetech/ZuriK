@@ -39,10 +39,10 @@ export default function DesignerDashboardPage() {
   const loadData = () => {
     Promise.all([
       ordersApi.getMyOrders().catch(() => [] as Order[]),
-      productsApi.list().catch(() => [] as Product[]),
+      productsApi.list().catch(() => ({ items: [], total: 0, page: 1, limit: 20, totalPages: 0 })),
     ]).then(([o, p]) => {
       setOrders(o);
-      setProducts(p);
+      setProducts((p as { items: Product[] }).items);
     }).finally(() => setLoading(false));
   };
 

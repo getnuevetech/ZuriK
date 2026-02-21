@@ -38,10 +38,10 @@ export default function FabricSellerDashboardPage() {
   useEffect(() => {
     Promise.all([
       ordersApi.getMyOrders().catch(() => [] as Order[]),
-      fabricsApi.list().catch(() => [] as Fabric[]),
+      fabricsApi.list().catch(() => ({ items: [], total: 0, page: 1, limit: 20, totalPages: 0 })),
     ]).then(([o, f]) => {
       setOrders(o);
-      setFabrics(f);
+      setFabrics((f as { items: Fabric[] }).items);
     }).finally(() => setLoading(false));
   }, []);
 

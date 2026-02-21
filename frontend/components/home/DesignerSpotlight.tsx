@@ -51,7 +51,7 @@ export function DesignerSpotlight() {
 
   useEffect(() => {
     productsApi.list()
-      .then((data) => setDesigners(extractDesigners(data)))
+      .then((res) => setDesigners(extractDesigners(res.items)))
       .catch(() => setDesigners([]))
       .finally(() => setLoading(false));
   }, []);

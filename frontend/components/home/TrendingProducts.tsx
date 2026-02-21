@@ -13,7 +13,7 @@ export function TrendingProducts() {
 
   useEffect(() => {
     productsApi.list()
-      .then((data) => setProducts(data.slice(0, 10)))
+      .then((res) => setProducts(res.items.slice(0, 10)))
       .catch(() => setProducts([]))
       .finally(() => setLoading(false));
   }, []);

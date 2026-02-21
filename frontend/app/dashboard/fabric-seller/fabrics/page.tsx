@@ -50,7 +50,7 @@ export default function FabricSellerFabricsPage() {
   const [inlineStock, setInlineStock] = useState<Record<string, string>>({});
 
   const loadFabrics = () => {
-    fabricsApi.list().then(setFabrics).catch(() => {}).finally(() => setLoading(false));
+    fabricsApi.list().then((res) => setFabrics(res.items)).catch(() => {}).finally(() => setLoading(false));
   };
 
   useEffect(() => { loadFabrics(); }, []);
