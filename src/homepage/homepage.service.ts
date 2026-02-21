@@ -7,8 +7,11 @@ import { CollectionDisplay } from './entities/collection-display.entity';
 import { ThemeSettings, ThemeKey } from './entities/theme-settings.entity';
 import { HomepageLayout } from './entities/homepage-layout.entity';
 import { PromoBanner } from './entities/promo-banner.entity';
+import { CollectionPost } from './entities/collection-post.entity';
+import { HeritageStory } from './entities/heritage-story.entity';
 import { Product } from '../products/entities/product.entity';
 import { Order } from '../orders/entities/order.entity';
+import { User, UserRole } from '../users/entities/user.entity';
 import { CreateFeaturedSectionDto } from './dto/create-featured-section.dto';
 import { UpdateFeaturedSectionDto } from './dto/update-featured-section.dto';
 import { CreateCountryHeroDto } from './dto/create-country-hero.dto';
@@ -19,6 +22,10 @@ import { UpdateThemeDto } from './dto/update-theme.dto';
 import { UpdateHomepageLayoutDto } from './dto/update-homepage-layout.dto';
 import { CreatePromoBannerDto } from './dto/create-promo-banner.dto';
 import { UpdatePromoBannerDto } from './dto/update-promo-banner.dto';
+import { CreateCollectionPostDto } from './dto/create-collection-post.dto';
+import { UpdateCollectionPostDto } from './dto/update-collection-post.dto';
+import { CreateHeritageStoryDto } from './dto/create-heritage-story.dto';
+import { UpdateHeritageStoryDto } from './dto/update-heritage-story.dto';
 import { THEME_PRESETS } from './theme-presets.config';
 
 @Injectable()
@@ -36,10 +43,16 @@ export class HomepageService {
     private layoutRepo: Repository<HomepageLayout>,
     @InjectRepository(PromoBanner)
     private promoBannerRepo: Repository<PromoBanner>,
+    @InjectRepository(CollectionPost)
+    private collectionPostRepo: Repository<CollectionPost>,
+    @InjectRepository(HeritageStory)
+    private heritageStoryRepo: Repository<HeritageStory>,
     @InjectRepository(Product)
     private productRepo: Repository<Product>,
     @InjectRepository(Order)
     private orderRepo: Repository<Order>,
+    @InjectRepository(User)
+    private userRepo: Repository<User>,
   ) {}
 
   // ─── Featured Sections ───────────────────────────────────────────────────────
@@ -268,6 +281,175 @@ export class HomepageService {
 
   async getActivePromoBanners(): Promise<PromoBanner[]> {
     return this.promoBannerRepo.find({
+      where: { isActive: true },
+      order: { displayOrder: 'ASC' },
+    });
+  }
+
+  // ─── Shop by Country ─────────────────────────────────────────────────────────
+
+  async getShopByCountryData(): Promise<{
+    countryName: string;
+    countryCode: string;
+    flag: string;
+    designerCount: number;
+    sellerCount: number;
+    productCount: number;
+    heroImage: string | null;
+  }[]> {
+    const COUNTRY_FLAGS: Record<string, { code: string; flag: string }> = {
+      Nigeria: { code: 'NG', flag: '🇳🇬' },
+      Ghana: { code: 'GH', flag: '🇬🇭' },
+      Kenya: { code: 'KE', flag: '🇰🇪' },
+      'South Africa': { code: 'ZA', flag: '🇿🇦' },
+      Ethiopia: { code: 'ET', flag: '🇪🇹' },
+      Senegal: { code: 'SN', flag: '🇸🇳' },
+      Tanzania: { code: 'TZ', flag: '🇹🇿' },
+      Morocco: { code: 'MA', flag: '🇲🇦' },
+      Cameroon: { code: 'CM', flag: '🇨🇲' },
+      'Ivory Coast': { code: 'CI', flag: '🇨🇮' },
+      Mali: { code: 'ML', flag: '🇲🇱' },
+      'DR Congo': { code: 'CD', flag: '🇨🇩' },
+    };
+
+    // Get distinct countries from active designers/sellers
+    const usersRaw = await this.userRepo
+      .createQueryBuilder('u')
+      .select('u.country', 'country')
+      .addSelect('u.role', 'role')
+      .addSelect('COUNT(u.id)', 'cnt')
+      .where('u.isActive = :active', { active: true })
+      .andWhere('u.role IN (:...roles)', { roles: [UserRole.DESIGNER, UserRole.FABRIC_SELLER] })
+      .andWhere('u.country IS NOT NULL')
+      .groupBy('u.country')
+      .addGroupBy('u.role')
+      .getRawMany();
+
+    // Build country map
+    const countryMap: Record<string, { designerCount: number; sellerCount: number }> = {};
+    for (const row of usersRaw) {
+      if (!row.country) continue;
+      if (!countryMap[row.country]) countryMap[row.country] = { designerCount: 0, sellerCount: 0 };
+      if (row.role === UserRole.DESIGNER) countryMap[row.country].designerCount += Number(row.cnt);
+      if (row.role === UserRole.FABRIC_SELLER) countryMap[row.country].sellerCount += Number(row.cnt);
+    }
+
+    // Get product counts per country
+    const productsRaw = await this.productRepo
+      .createQueryBuilder('p')
+      .select('p.country', 'country')
+      .addSelect('COUNT(p.id)', 'cnt')
+      .where('p.isActive = :active', { active: true })
+      .andWhere('p.country IS NOT NULL')
+      .groupBy('p.country')
+      .getRawMany();
+
+    const productCountMap: Record<string, number> = {};
+    for (const row of productsRaw) {
+      if (row.country) productCountMap[row.country] = Number(row.cnt);
+    }
+
+    // Get hero images from CountryHero
+    const heroes = await this.countryHeroRepo.find({ where: { isActive: true } });
+    const heroMap: Record<string, string> = {};
+    for (const h of heroes) {
+      if (h.heroImages?.length) heroMap[h.countryName] = h.heroImages[0];
+    }
+
+    const countries = Object.keys(countryMap);
+    const result = countries.map((countryName) => ({
+      countryName,
+      countryCode: COUNTRY_FLAGS[countryName]?.code ?? '',
+      flag: COUNTRY_FLAGS[countryName]?.flag ?? '',
+      designerCount: countryMap[countryName].designerCount,
+      sellerCount: countryMap[countryName].sellerCount,
+      productCount: productCountMap[countryName] ?? 0,
+      heroImage: heroMap[countryName] ?? null,
+    }));
+
+    return result.sort((a, b) => b.productCount - a.productCount);
+  }
+
+  // ─── Trending Products ────────────────────────────────────────────────────────
+
+  async getTrendingProducts(limit = 10): Promise<Product[]> {
+    // Try to get products ordered by order count
+    const trending = await this.productRepo
+      .createQueryBuilder('p')
+      .leftJoin('orders', 'o', 'o.designId = p.id')
+      .where('p.isActive = :active', { active: true })
+      .groupBy('p.id')
+      .orderBy('COUNT(o.id)', 'DESC')
+      .limit(limit)
+      .getMany();
+
+    if (trending.length > 0) return trending;
+
+    // Fallback to highest-rated products
+    return this.productRepo.find({
+      where: { isActive: true },
+      order: { averageRating: 'DESC' },
+      take: limit,
+    });
+  }
+
+  // ─── Collection Posts ─────────────────────────────────────────────────────────
+
+  async createCollectionPost(dto: CreateCollectionPostDto): Promise<CollectionPost> {
+    const post = this.collectionPostRepo.create(dto);
+    return this.collectionPostRepo.save(post);
+  }
+
+  async updateCollectionPost(id: string, dto: UpdateCollectionPostDto): Promise<CollectionPost> {
+    const post = await this.collectionPostRepo.findOne({ where: { id } });
+    if (!post) throw new NotFoundException('Collection post not found');
+    Object.assign(post, dto);
+    return this.collectionPostRepo.save(post);
+  }
+
+  async deleteCollectionPost(id: string): Promise<void> {
+    const post = await this.collectionPostRepo.findOne({ where: { id } });
+    if (!post) throw new NotFoundException('Collection post not found');
+    await this.collectionPostRepo.remove(post);
+  }
+
+  async getCollectionPosts(): Promise<CollectionPost[]> {
+    return this.collectionPostRepo.find({ order: { displayOrder: 'ASC' } });
+  }
+
+  async getActiveCollectionPosts(): Promise<CollectionPost[]> {
+    return this.collectionPostRepo.find({
+      where: { isActive: true },
+      order: { displayOrder: 'ASC' },
+    });
+  }
+
+  // ─── Heritage Stories ─────────────────────────────────────────────────────────
+
+  async createHeritageStory(dto: CreateHeritageStoryDto): Promise<HeritageStory> {
+    const story = this.heritageStoryRepo.create(dto);
+    return this.heritageStoryRepo.save(story);
+  }
+
+  async updateHeritageStory(id: string, dto: UpdateHeritageStoryDto): Promise<HeritageStory> {
+    const story = await this.heritageStoryRepo.findOne({ where: { id } });
+    if (!story) throw new NotFoundException('Heritage story not found');
+    Object.assign(story, dto);
+    return this.heritageStoryRepo.save(story);
+  }
+
+  async deleteHeritageStory(id: string): Promise<void> {
+    const story = await this.heritageStoryRepo.findOne({ where: { id } });
+    if (!story) throw new NotFoundException('Heritage story not found');
+    await this.heritageStoryRepo.remove(story);
+  }
+
+  async getHeritageStories(): Promise<HeritageStory[]> {
+    return this.heritageStoryRepo.find({ order: { displayOrder: 'ASC' } });
+  }
+
+  async getActiveHeritageStories(): Promise<HeritageStory[]> {
+    return this.heritageStoryRepo.find({
       where: { isActive: true },
       order: { displayOrder: 'ASC' },
     });

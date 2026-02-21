@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import { productsApi } from '../../lib/api';
+import { homepageApi } from '../../lib/api';
 import { ProductCard } from '../products/ProductCard';
 import type { Product } from '../../types';
 
@@ -34,11 +34,9 @@ export function TrendingProducts() {
   const [activeCategory, setActiveCategory] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const fetchProducts = useCallback((category: string) => {
-    setLoading(true);
-    const filters = category ? { category, limit: PRODUCTS_LIMIT } : { limit: PRODUCTS_LIMIT };
-    productsApi.list(filters)
-      .then((res) => setProducts(res.items.slice(0, PRODUCTS_LIMIT)))
+  useEffect(() => {
+    homepageApi.getTrending(10)
+      .then((data: Product[]) => setProducts(data))
       .catch(() => setProducts([]))
       .finally(() => setLoading(false));
   }, []);

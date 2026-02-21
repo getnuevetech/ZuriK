@@ -6,8 +6,11 @@ import { CollectionDisplay } from './entities/collection-display.entity';
 import { ThemeSettings } from './entities/theme-settings.entity';
 import { HomepageLayout } from './entities/homepage-layout.entity';
 import { PromoBanner } from './entities/promo-banner.entity';
+import { CollectionPost } from './entities/collection-post.entity';
+import { HeritageStory } from './entities/heritage-story.entity';
 import { Product } from '../products/entities/product.entity';
 import { Order } from '../orders/entities/order.entity';
+import { User } from '../users/entities/user.entity';
 import { HomepageService } from './homepage.service';
 import { HomepageController } from './homepage.controller';
 
@@ -20,8 +23,11 @@ import { HomepageController } from './homepage.controller';
       ThemeSettings,
       HomepageLayout,
       PromoBanner,
+      CollectionPost,
+      HeritageStory,
       Product,
       Order,
+      User,
     ]),
   ],
   controllers: [HomepageController],

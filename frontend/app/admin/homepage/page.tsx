@@ -104,6 +104,8 @@ export default function AdminHomepagePage() {
           { href: '/admin/homepage/countries', label: 'Country Categories', icon: '🌍' },
           { href: '/admin/homepage/collections', label: 'Collections', icon: '👗' },
           { href: '/admin/homepage/theme', label: 'Theme Settings', icon: '🎨' },
+          { href: '/admin/homepage/collection-posts', label: 'Collection Stories', icon: '📝' },
+          { href: '/admin/homepage/heritage', label: 'Heritage Stories', icon: '🏺' },
         ].map((item) => (
           <Link
             key={item.href}

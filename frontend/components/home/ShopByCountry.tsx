@@ -3,8 +3,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { homepageApi } from '../../lib/api';
 
-const COUNTRIES = [
+interface CountryItem {
+  name: string;
+  code: string;
+  flag: string;
+  image: string;
+  designerCount?: number;
+  productCount?: number;
+  fabrics?: string[];
+}
+
+const FALLBACK_COUNTRIES: CountryItem[] = [
   { name: 'Nigeria', code: 'NG', flag: '🇳🇬', fabrics: ['Ankara', 'Adire', 'Aso-Oke'], image: 'https://images.unsplash.com/photo-1590735213920-68192a487bc2?w=600&q=80' },
   { name: 'Ghana', code: 'GH', flag: '🇬🇭', fabrics: ['Kente', 'Batakari', 'Fugu'], image: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&q=80' },
   { name: 'Kenya', code: 'KE', flag: '🇰🇪', fabrics: ['Kikoy', 'Maasai Shuka', 'Kanga'], image: 'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?w=600&q=80' },
@@ -29,13 +40,30 @@ function shuffleArray<T>(arr: T[]): T[] {
 }
 
 export function ShopByCountry() {
-  const [countries, setCountries] = useState(COUNTRIES);
+  const [countries, setCountries] = useState<CountryItem[]>([]);
   const [index, setIndex] = useState(0);
   const [visibleCount, setVisibleCount] = useState(4);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setCountries(shuffleArray(COUNTRIES));
+    homepageApi.getShopByCountry()
+      .then((data: { countryName: string; countryCode: string; flag: string; designerCount: number; sellerCount: number; productCount: number; heroImage: string | null }[]) => {
+        if (data && data.length > 0) {
+          const fallbackByCode = new Map(FALLBACK_COUNTRIES.map((f) => [f.code, f]));
+          const mapped: CountryItem[] = data.map((d) => ({
+            name: d.countryName,
+            code: d.countryCode,
+            flag: d.flag,
+            image: d.heroImage ?? fallbackByCode.get(d.countryCode)?.image ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80',
+            designerCount: d.designerCount,
+            productCount: d.productCount,
+          }));
+          setCountries(shuffleArray(mapped));
+        } else {
+          setCountries(shuffleArray(FALLBACK_COUNTRIES));
+        }
+      })
+      .catch(() => setCountries(shuffleArray(FALLBACK_COUNTRIES)));
   }, []);
 
   useEffect(() => {
@@ -98,7 +126,7 @@ export function ShopByCountry() {
             >
               {countries.map((country) => (
                 <div
-                  key={country.code}
+                  key={country.code || country.name}
                   style={{ width: `${cardWidthPct}%`, flexShrink: 0 }}
                   className="px-1"
                 >
@@ -117,7 +145,16 @@ export function ShopByCountry() {
                     <span className="absolute top-3 left-3 text-2xl leading-none">{country.flag}</span>
                     <div className="absolute bottom-0 left-0 right-0 p-4">
                       <div className="font-bold text-white text-base leading-tight">{country.name}</div>
-                      <div className="text-white/75 text-xs mt-1 font-light">{country.fabrics.join(' · ')}</div>
+                      {(country.designerCount !== undefined || country.productCount !== undefined) ? (
+                        <div className="text-white/75 text-xs mt-1 font-light">
+                          {[
+                            country.designerCount !== undefined && `${country.designerCount} designer${country.designerCount !== 1 ? 's' : ''}`,
+                            country.productCount !== undefined && `${country.productCount} product${country.productCount !== 1 ? 's' : ''}`,
+                          ].filter(Boolean).join(' · ')}
+                        </div>
+                      ) : (
+                        <div className="text-white/75 text-xs mt-1 font-light">{country.fabrics?.join(' · ')}</div>
+                      )}
                     </div>
                   </Link>
                 </div>
