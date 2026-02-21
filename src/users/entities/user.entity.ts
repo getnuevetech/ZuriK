@@ -43,6 +43,27 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
+  @Column({ default: false })
+  isEmailVerified: boolean;
+
+  @Column({ nullable: true, type: 'varchar' })
+  emailVerificationToken: string | null;
+
+  @Column({ nullable: true, type: 'timestamp' })
+  emailVerificationExpires: Date | null;
+
+  @Column({ nullable: true, type: 'varchar' })
+  passwordResetToken: string | null;
+
+  @Column({ nullable: true, type: 'timestamp' })
+  passwordResetExpires: Date | null;
+
+  @Column({ default: 0 })
+  failedLoginAttempts: number;
+
+  @Column({ nullable: true, type: 'timestamp' })
+  lockedUntil: Date | null;
+
   @Column({ nullable: true })
   phone: string;
 
