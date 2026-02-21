@@ -10,6 +10,7 @@ import { NavbarWrapper } from '../components/layout/NavbarWrapper';
 import { Footer } from '../components/layout/Footer';
 import { MobileBottomTabs } from '../components/layout/MobileBottomTabs';
 import { ComparisonBar } from '../components/products/ComparisonBar';
+import { EmailVerificationBanner } from '../components/common/EmailVerificationBanner';
 
 export const metadata: Metadata = {
   title: 'African Fashion — Premium African Marketplace',
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <ToastProvider>
                 <ComparisonProvider>
                   <NavbarWrapper />
+                  <EmailVerificationBanner />
                   <main className="flex-1 pb-16 md:pb-0">
                     {children}
                   </main>

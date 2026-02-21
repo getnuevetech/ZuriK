@@ -1,12 +1,14 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, BadRequestException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
 import { User, UserRole } from '../users/entities/user.entity';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { EmailService } from '../notifications/email.service';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +16,7 @@ export class AuthService {
     @InjectRepository(User) private userRepo: Repository<User>,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private emailService: EmailService,
   ) {}
 
   async register(dto: RegisterDto) {
@@ -30,6 +33,17 @@ export class AuthService {
       role: dto.role || UserRole.CUSTOMER,
     });
     await this.userRepo.save(user);
+
+    // Send email verification
+    const token = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    user.emailVerificationToken = hashedToken;
+    user.emailVerificationExpires = new Date(Date.now() + 86400000); // 24 hours
+    await this.userRepo.save(user);
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+    const verifyUrl = `${frontendUrl}/verify-email?token=${token}`;
+    await this.emailService.sendEmailVerification(user, verifyUrl);
+
     const tokens = await this.generateTokens(user);
     const { password: _pw, refreshToken: _rt, ...userWithoutSecrets } = user;
     return { user: userWithoutSecrets, ...tokens };
@@ -40,15 +54,52 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
+
+    // Check if account is locked
+    if (user.lockedUntil && user.lockedUntil > new Date()) {
+      const minutesLeft = Math.ceil((user.lockedUntil.getTime() - Date.now()) / 60000);
+      throw new UnauthorizedException(
+        `Account is temporarily locked due to too many failed login attempts. Please try again in ${minutesLeft} minute(s) or reset your password.`,
+      );
+    }
+
+    // If lock has expired, reset counters
+    if (user.lockedUntil && user.lockedUntil <= new Date()) {
+      user.failedLoginAttempts = 0;
+      user.lockedUntil = null;
+      await this.userRepo.save(user);
+    }
+
     if (!user.password) {
       throw new UnauthorizedException(
         'This account uses Google sign-in. Please use the "Continue with Google" button.',
       );
     }
+
     const valid = await bcrypt.compare(dto.password, user.password);
     if (!valid) {
+      user.failedLoginAttempts = (user.failedLoginAttempts || 0) + 1;
+
+      if (user.failedLoginAttempts >= 5) {
+        user.lockedUntil = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+        await this.userRepo.save(user);
+        await this.emailService.sendAccountLockout(user);
+        throw new UnauthorizedException(
+          'Account has been temporarily locked due to too many failed login attempts. Please try again in 15 minutes or reset your password.',
+        );
+      }
+
+      await this.userRepo.save(user);
       throw new UnauthorizedException('Invalid credentials');
     }
+
+    // Reset failed attempts on successful login
+    if (user.failedLoginAttempts > 0) {
+      user.failedLoginAttempts = 0;
+      user.lockedUntil = null;
+      await this.userRepo.save(user);
+    }
+
     const tokens = await this.generateTokens(user);
     const { password: _pw, refreshToken: _rt, ...userWithoutSecrets } = user;
     return { user: userWithoutSecrets, ...tokens };
@@ -82,6 +133,7 @@ export class AuthService {
           provider: 'google',
           role: UserRole.CUSTOMER,
           isActive: true,
+          isEmailVerified: true,
         });
         await this.userRepo.save(user);
       }
@@ -110,6 +162,83 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
     return this.generateTokens(user);
+  }
+
+  async forgotPassword(email: string): Promise<{ message: string }> {
+    const user = await this.userRepo.findOne({ where: { email } });
+
+    // Always return success to prevent email enumeration
+    if (!user) return { message: 'If an account exists with this email, a reset link has been sent.' };
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    user.passwordResetToken = hashedToken;
+    user.passwordResetExpires = new Date(Date.now() + 3600000); // 1 hour
+    await this.userRepo.save(user);
+
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+    const resetUrl = `${frontendUrl}/reset-password?token=${token}`;
+    await this.emailService.sendPasswordReset(user, resetUrl);
+
+    return { message: 'If an account exists with this email, a reset link has been sent.' };
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    const user = await this.userRepo.findOne({
+      where: { passwordResetToken: hashedToken },
+    });
+
+    if (!user || !user.passwordResetExpires || user.passwordResetExpires < new Date()) {
+      throw new BadRequestException('Invalid or expired reset token');
+    }
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    user.passwordResetToken = null;
+    user.passwordResetExpires = null;
+    await this.userRepo.save(user);
+
+    return { message: 'Password has been reset successfully. You can now log in.' };
+  }
+
+  async sendVerificationEmail(userId: string): Promise<{ message: string }> {
+    const user = await this.userRepo.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+    if (user.isEmailVerified) return { message: 'Email is already verified' };
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    user.emailVerificationToken = hashedToken;
+    user.emailVerificationExpires = new Date(Date.now() + 86400000); // 24 hours
+    await this.userRepo.save(user);
+
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+    const verifyUrl = `${frontendUrl}/verify-email?token=${token}`;
+    await this.emailService.sendEmailVerification(user, verifyUrl);
+
+    return { message: 'Verification email sent' };
+  }
+
+  async verifyEmail(token: string): Promise<{ message: string }> {
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    const user = await this.userRepo.findOne({
+      where: { emailVerificationToken: hashedToken },
+    });
+
+    if (!user || !user.emailVerificationExpires || user.emailVerificationExpires < new Date()) {
+      throw new BadRequestException('Invalid or expired verification token');
+    }
+
+    user.isEmailVerified = true;
+    user.emailVerificationToken = null;
+    user.emailVerificationExpires = null;
+    await this.userRepo.save(user);
+
+    return { message: 'Email verified successfully' };
   }
 
   private async generateTokens(user: User) {

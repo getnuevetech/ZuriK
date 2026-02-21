@@ -12,7 +12,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 export interface LoginPayload { email: string; password: string; }
 export interface RegisterPayload { email: string; password: string; firstName: string; lastName: string; role?: string; }
 export interface AuthResponse { accessToken: string; refreshToken: string; user: UserProfile; }
-export interface UserProfile { id: string; email: string; firstName: string; lastName: string; role: string; avatarUrl?: string; provider?: string; }
+export interface UserProfile { id: string; email: string; firstName: string; lastName: string; role: string; avatarUrl?: string; provider?: string; isEmailVerified?: boolean; }
 export interface RefreshResponse { accessToken: string; refreshToken: string; }
 
 export interface PaginatedResponse<T> {
@@ -145,6 +145,14 @@ export const authApi = {
     api.post<RefreshResponse>('/auth/refresh', { refreshToken }).then((r) => r.data),
   getProfile: () =>
     api.get<UserProfile>('/auth/profile').then((r) => r.data),
+  forgotPassword: (email: string) =>
+    api.post<{ message: string }>('/auth/forgot-password', { email }).then((r) => r.data),
+  resetPassword: (token: string, newPassword: string) =>
+    api.post<{ message: string }>('/auth/reset-password', { token, newPassword }).then((r) => r.data),
+  verifyEmail: (token: string) =>
+    api.post<{ message: string }>('/auth/verify-email', { token }).then((r) => r.data),
+  resendVerification: () =>
+    api.post<{ message: string }>('/auth/resend-verification').then((r) => r.data),
 };
 
 // --- Products API ---

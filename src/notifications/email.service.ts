@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class EmailService {
@@ -143,5 +144,45 @@ export class EmailService {
       <div class="highlight"><strong>Order Number:</strong> ${order.orderNumber}</div>
       <p>If you have any questions or issues, please don't hesitate to contact us.</p>`;
     await this.sendEmail(user.email, `Order Delivered — ${order.orderNumber}`, this.baseTemplate(content));
+  }
+
+  async sendPasswordReset(user: User, resetUrl: string): Promise<void> {
+    const html = this.baseTemplate(`
+      <h2>Reset Your Password</h2>
+      <p>Hi ${user.firstName || user.email},</p>
+      <p>We received a request to reset your password. Click the button below to create a new password:</p>
+      <a href="${resetUrl}" class="btn">Reset Password</a>
+      <p style="color: #9ca3af; font-size: 14px; margin-top: 16px;">
+        This link will expire in 1 hour. If you didn't request this, you can safely ignore this email.
+      </p>
+    `);
+    await this.sendEmail(user.email, 'Reset Your Password — African Fashion', html);
+  }
+
+  async sendEmailVerification(user: User, verifyUrl: string): Promise<void> {
+    const html = this.baseTemplate(`
+      <h2>Verify Your Email</h2>
+      <p>Hi ${user.firstName || user.email},</p>
+      <p>Welcome to African Fashion! Please verify your email address to unlock all features:</p>
+      <a href="${verifyUrl}" class="btn">Verify Email</a>
+      <p style="color: #9ca3af; font-size: 14px; margin-top: 16px;">
+        This link will expire in 24 hours.
+      </p>
+    `);
+    await this.sendEmail(user.email, 'Verify Your Email — African Fashion', html);
+  }
+
+  async sendAccountLockout(user: User): Promise<void> {
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+    const html = this.baseTemplate(`
+      <h2>Account Security Alert</h2>
+      <p>Hi ${user.firstName || user.email},</p>
+      <div class="highlight">
+        <strong>⚠️ Your account has been temporarily locked</strong> due to multiple failed login attempts.
+      </div>
+      <p>Your account will automatically unlock in 15 minutes. If you didn't attempt to log in, we recommend resetting your password immediately.</p>
+      <a href="${frontendUrl}/forgot-password" class="btn">Reset Password</a>
+    `);
+    await this.sendEmail(user.email, '⚠️ Account Security Alert — African Fashion', html);
   }
 }
