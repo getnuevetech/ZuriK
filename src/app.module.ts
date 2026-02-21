@@ -25,6 +25,9 @@ import { SearchModule } from './search/search.module';
 import { RecentlyViewedModule } from './recently-viewed/recently-viewed.module';
 import { ComparisonsModule } from './comparisons/comparisons.module';
 import { SharingModule } from './sharing/sharing.module';
+import { CouponsModule } from './coupons/coupons.module';
+import { Coupon } from './coupons/entities/coupon.entity';
+import { CouponUsage } from './coupons/entities/coupon-usage.entity';
 import { WishlistItem } from './wishlist/entities/wishlist-item.entity';
 import { RecentlyViewed } from './recently-viewed/entities/recently-viewed.entity';
 import { FeaturedSection } from './homepage/entities/featured-section.entity';
@@ -66,6 +69,8 @@ const isProduction = process.env.NODE_ENV === 'production';
         FeaturedSection, CountryHero, CollectionDisplay, ThemeSettings, HomepageLayout,
         WishlistItem,
         RecentlyViewed,
+        Coupon,
+        CouponUsage,
       ],
       synchronize: process.env.AUTO_SYNC === 'true' || !isProduction,
       ssl: isProduction,
@@ -95,6 +100,7 @@ const isProduction = process.env.NODE_ENV === 'production';
     RecentlyViewedModule,
     ComparisonsModule,
     SharingModule,
+    CouponsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
