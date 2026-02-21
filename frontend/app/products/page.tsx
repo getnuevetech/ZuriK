@@ -14,6 +14,7 @@ import { EmptyState } from '../../components/common/EmptyState';
 import { Pagination } from '../../components/common/Pagination';
 import { ActiveFilters, FilterTag } from '../../components/common/ActiveFilters';
 import type { Product } from '../../types';
+import { useDebounce } from '../../hooks/useDebounce';
 
 const CATEGORIES = ['Ankara', 'Kente', 'Dashiki', 'Kaftan', 'Agbada', 'Boubou', 'Aso-oke', 'Other'];
 const COUNTRIES = ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Senegal', 'Ethiopia', 'Tanzania', 'Egypt', 'Morocco'];
@@ -40,14 +41,6 @@ const RATING_OPTIONS = [
   { value: '2', label: '2+ stars' },
 ];
 
-function useDebounce<T>(value: T, delay: number): T {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const t = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(t);
-  }, [value, delay]);
-  return debounced;
-}
 
 function ProductsContent() {
   const router = useRouter();

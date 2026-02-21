@@ -53,10 +53,10 @@ export class ProductsService {
       .leftJoinAndSelect('product.designer', 'designer')
       .where('product.isActive = :isActive', { isActive: true });
 
-    if (search) {
+    if (search && search.trim()) {
       qb.andWhere(
         '(product.name ILIKE :search OR product.description ILIKE :search)',
-        { search: `%${search}%` },
+        { search: `%${search.trim()}%` },
       );
     }
     if (category) {

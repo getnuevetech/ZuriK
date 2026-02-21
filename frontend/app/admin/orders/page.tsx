@@ -10,14 +10,8 @@ import SearchInput from '../../../components/admin/SearchInput';
 import FilterSelect from '../../../components/admin/FilterSelect';
 import { Spinner } from '../../../components/ui/Spinner';
 import { useToast } from '../../../components/ui/Toast';
-import { Order } from '../../../types';
+import { Order, PaginatedResponse } from '../../../types';
 
-interface OrdersResponse {
-  data: Order[];
-  total: number;
-  page: number;
-  totalPages: number;
-}
 
 const STATUS_OPTIONS = [
   { value: '', label: 'All Statuses' },
@@ -67,7 +61,7 @@ export default function AdminOrdersPage() {
     if (typeFilter) params.orderType = typeFilter;
     adminApi
       .getOrders(params)
-      .then((res: OrdersResponse) => {
+      .then((res: PaginatedResponse<Order>) => {
         setOrders(res.data ?? []);
         setTotal(res.total ?? 0);
         setTotalPages(res.totalPages ?? 1);

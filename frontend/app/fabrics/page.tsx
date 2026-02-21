@@ -14,6 +14,7 @@ import { EmptyState } from '../../components/common/EmptyState';
 import { Pagination } from '../../components/common/Pagination';
 import { ActiveFilters, FilterTag } from '../../components/common/ActiveFilters';
 import type { Fabric } from '../../types';
+import { useDebounce } from '../../hooks/useDebounce';
 
 const MATERIALS = ['Cotton', 'Silk', 'Ankara', 'Kente', 'Adire', 'Aso-oke', 'Linen', 'Velvet', 'Other'];
 const PATTERNS = ['Plain', 'Printed', 'Woven', 'Embroidered', 'Batik', 'Tie-dye', 'Geometric', 'Floral'];
@@ -34,14 +35,6 @@ const FILTER_CONFIGS = [
   { key: 'inStock', label: 'In Stock Only', type: 'checkbox' as const },
 ];
 
-function useDebounce<T>(value: T, delay: number): T {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const t = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(t);
-  }, [value, delay]);
-  return debounced;
-}
 
 function FabricsContent() {
   const router = useRouter();
