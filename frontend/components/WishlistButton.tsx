@@ -33,17 +33,18 @@ export function WishlistButton({ productId, className = '', size = 'md' }: Wishl
     }
     setAnimating(true);
     await toggleWishlist(productId);
-    setTimeout(() => setAnimating(false), 300);
+    setTimeout(() => setAnimating(false), 400);
   };
 
   return (
     <button
       onClick={handleClick}
       aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+      aria-pressed={inWishlist}
       className={`flex items-center justify-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 ${className}`}
       style={{
-        transform: animating ? 'scale(1.3)' : 'scale(1)',
-        transition: 'transform 0.15s ease',
+        transform: animating ? 'scale(1.45)' : 'scale(1)',
+        transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
       }}
     >
       {inWishlist ? (
