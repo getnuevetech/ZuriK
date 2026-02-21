@@ -9,6 +9,7 @@ import { Button } from '../ui/Button';
 import { PriceDisplay } from '../common/PriceDisplay';
 import { StarRating } from '../reviews/StarRating';
 import { WishlistButton } from '../WishlistButton';
+import { CompareButton } from './CompareButton';
 import { getUserDisplayName } from '../../lib/utils';
 import type { Product } from '../../types';
 
@@ -78,6 +79,9 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
                 Add to Cart
               </Button>
             )}
+          </div>
+          <div className="mt-2">
+            <CompareButton product={product} size="sm" className="w-full justify-center" />
           </div>
         </div>
       </CardBody>

@@ -9,6 +9,7 @@ export interface Product {
   category: string;
   country: string;
   images?: string[];
+  tags?: string[];
   isActive: boolean;
   designer?: Designer;
   averageRating?: number;
