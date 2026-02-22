@@ -158,6 +158,9 @@ export function extractErrorMessage(err: unknown, fallback: string): string {
     const axiosErr = err as { response?: { status?: number; data?: { message?: string | string[] } }; message?: string };
     if (!axiosErr.response) {
       // Network error or no response from server
+      if (/^https?:\/\/localhost(:\d+)?/.test(API_URL)) {
+        return 'API is configured to connect to localhost. Please set NEXT_PUBLIC_API_URL environment variable.';
+      }
       return 'Unable to connect to server. Please check your connection.';
     }
     if (axiosErr.response.status === 429) {
@@ -169,6 +172,19 @@ export function extractErrorMessage(err: unknown, fallback: string): string {
     }
   }
   return fallback;
+}
+
+// --- Startup health check (browser only, runs once) ---
+if (typeof window !== 'undefined') {
+  axios.get(`${API_URL}/health`, { timeout: 5000 }).then(() => {
+    console.log(`[api] Backend reachable at ${API_URL}`);
+  }).catch((err: unknown) => {
+    const reason = err instanceof Error ? err.message : String(err);
+    console.error(
+      `[api] WARNING: Backend at ${API_URL} is not reachable (${reason}). ` +
+      'Check that NEXT_PUBLIC_API_URL is set correctly and the backend is running.',
+    );
+  });
 }
 
 // --- Auth API ---

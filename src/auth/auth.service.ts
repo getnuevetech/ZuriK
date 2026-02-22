@@ -21,7 +21,11 @@ export class AuthService {
     private emailService: EmailService,
   ) {
     if (!this.configService.get('JWT_ACCESS_SECRET') || !this.configService.get('JWT_REFRESH_SECRET')) {
-      this.logger.warn('JWT_ACCESS_SECRET and/or JWT_REFRESH_SECRET not set. Falling back to JWT_SECRET. For production, set separate secrets.');
+      const fallback = this.configService.get('JWT_SECRET') ? 'JWT_SECRET' : '(none — token generation will fail)';
+      this.logger.warn(
+        `JWT_ACCESS_SECRET and/or JWT_REFRESH_SECRET not set. Falling back to ${fallback}. ` +
+        'For production, set separate JWT_ACCESS_SECRET and JWT_REFRESH_SECRET values.',
+      );
     }
   }
 

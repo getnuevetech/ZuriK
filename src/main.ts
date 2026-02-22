@@ -62,5 +62,20 @@ async function bootstrap() {
   await app.listen(port, '0.0.0.0');
 
   logger.log(`🚀 API: http://localhost:${port}`);
+
+  const frontendUrl = process.env.FRONTEND_URL;
+  if (!frontendUrl) {
+    logger.warn(
+      'FRONTEND_URL is not set. CORS will only allow http://localhost:3000. ' +
+      'Set FRONTEND_URL to your deployed frontend URL to avoid CORS errors in production.',
+    );
+  } else if (isProduction && /^https?:\/\/localhost(:\d+)?/.test(frontendUrl)) {
+    logger.warn(
+      `FRONTEND_URL is set to "${frontendUrl}" which points to localhost. ` +
+      'This will cause CORS errors for production frontend requests.',
+    );
+  } else {
+    logger.log(`✅ CORS allowed origins: ${allowedOrigins.join(', ')}`);
+  }
 }
 bootstrap();
