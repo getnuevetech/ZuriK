@@ -7,6 +7,7 @@ import { Avatar } from '../ui/Avatar';
 import { GlobalSearch } from '../common/GlobalSearch';
 import { NotificationBell } from '../notifications/NotificationBell';
 import { LoyaltyBadge } from '../loyalty/LoyaltyBadge';
+import { useAuth } from '../../lib/auth-context';
 
 interface NavbarProps {
   cartCount?: number;
@@ -32,17 +33,10 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
   const [shopOpen, setShopOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [user, setUser] = useState<{ name?: string; email?: string; role?: string } | null>(null);
+  const { user: authUser, isAuthenticated, logout } = useAuth();
   const pathname = usePathname();
   const userMenuRef = useRef<HTMLDivElement>(null);
   const shopMenuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem('auth_user');
-      if (stored) setUser(JSON.parse(stored));
-    } catch {}
-  }, []);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -64,13 +58,14 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
   }, [pathname]);
 
   const handleLogout = () => {
-    localStorage.removeItem('auth_user');
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    setUser(null);
+    logout();
     setUserMenuOpen(false);
     window.location.href = '/';
   };
+
+  const displayName = authUser?.firstName
+    ? `${authUser.firstName} ${authUser.lastName ?? ''}`.trim()
+    : authUser?.email;
 
   return (
     <nav className="bg-white border-b border-neutral-200 sticky top-0 z-40">
@@ -165,23 +160,23 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
               <span className="bg-neutral-900 text-white text-[9px] font-bold px-1.5 py-0.5 leading-none">Soon</span>
             </Link>
 
-            {user && (
+            {isAuthenticated && (
               <>
                 <Link href="/orders" className="text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors px-4 py-2">My Orders</Link>
                 <Link
                   href={
-                    user.role === 'designer' ? '/dashboard/designer'
-                    : user.role === 'fabric_seller' ? '/dashboard/fabric-seller'
-                    : user.role === 'qa' ? '/dashboard/qa'
-                    : user.role === 'admin' ? '/admin'
+                    authUser?.role === 'designer' ? '/dashboard/designer'
+                    : authUser?.role === 'fabric_seller' ? '/dashboard/fabric-seller'
+                    : authUser?.role === 'qa' ? '/dashboard/qa'
+                    : authUser?.role === 'admin' ? '/admin'
                     : '/account'
                   }
                   className="text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors px-4 py-2"
                 >
-                  {user.role === 'designer' ? 'Designer Dashboard'
-                    : user.role === 'fabric_seller' ? 'Seller Dashboard'
-                    : user.role === 'qa' ? 'QA Dashboard'
-                    : user.role === 'admin' ? 'Admin Dashboard'
+                  {authUser?.role === 'designer' ? 'Designer Dashboard'
+                    : authUser?.role === 'fabric_seller' ? 'Seller Dashboard'
+                    : authUser?.role === 'qa' ? 'QA Dashboard'
+                    : authUser?.role === 'admin' ? 'Admin Dashboard'
                     : 'My Account'}
                 </Link>
               </>
@@ -200,7 +195,7 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
               </svg>
             </button>
 
-            {user && (
+            {isAuthenticated && (
               <Link href="/wishlist" className="relative p-2 text-neutral-500 hover:text-neutral-900 transition-colors" aria-label="Wishlist">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
@@ -224,49 +219,49 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
               )}
             </Link>
 
-            {user ? (
+            {isAuthenticated ? (
               <>
                 <LoyaltyBadge />
                 <NotificationBell />
                 <div className="relative" ref={userMenuRef}>
                 <button onClick={() => setUserMenuOpen((v) => !v)} className="flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 p-1" aria-expanded={userMenuOpen} aria-haspopup="true">
-                  <Avatar name={user.name || user.email} size="sm" />
+                  <Avatar name={displayName} size="sm" />
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-neutral-400" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
                 </button>
                 {userMenuOpen && (
                   <div className="absolute right-0 mt-1 w-48 bg-white border border-neutral-200 py-1 text-neutral-800 z-50 shadow-modal">
                     <div className="px-4 py-2 border-b border-neutral-100">
-                      <p className="text-sm font-medium truncate">{user.name || user.email}</p>
-                      {user.role && <p className="text-xs text-neutral-400 capitalize font-light">{user.role.replace('_', ' ')}</p>}
+                      <p className="text-sm font-medium truncate">{displayName}</p>
+                      {authUser?.role && <p className="text-xs text-neutral-400 capitalize font-light">{authUser.role.replace('_', ' ')}</p>}
                     </div>
                     <Link href="/profile" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>Profile</Link>
                     <Link href="/orders" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>My Orders</Link>
                     <Link href="/wishlist" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>Wishlist</Link>
                     <Link href="/account/addresses" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>Addresses</Link>
-                    {user.role === 'customer' && (
+                    {authUser?.role === 'customer' && (
                       <Link href="/become-seller" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>Become a Seller</Link>
                     )}
-                    {user.role === 'admin' && (
+                    {authUser?.role === 'admin' && (
                       <Link href="/admin/seller-applications" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>Seller Applications</Link>
                     )}
                     <Link
                       href={
-                        user.role === 'designer' ? '/dashboard/designer'
-                        : user.role === 'fabric_seller' ? '/dashboard/fabric-seller'
-                        : user.role === 'qa' ? '/dashboard/qa'
-                        : user.role === 'admin' ? '/admin'
+                        authUser?.role === 'designer' ? '/dashboard/designer'
+                        : authUser?.role === 'fabric_seller' ? '/dashboard/fabric-seller'
+                        : authUser?.role === 'qa' ? '/dashboard/qa'
+                        : authUser?.role === 'admin' ? '/admin'
                         : '/account'
                       }
                       className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors"
                       onClick={() => setUserMenuOpen(false)}
                     >
-                      {user.role === 'designer' ? 'Designer Dashboard'
-                        : user.role === 'fabric_seller' ? 'Seller Dashboard'
-                        : user.role === 'qa' ? 'QA Dashboard'
-                        : user.role === 'admin' ? 'Admin Dashboard'
+                      {authUser?.role === 'designer' ? 'Designer Dashboard'
+                        : authUser?.role === 'fabric_seller' ? 'Seller Dashboard'
+                        : authUser?.role === 'qa' ? 'QA Dashboard'
+                        : authUser?.role === 'admin' ? 'Admin Dashboard'
                         : 'My Account'}
                     </Link>
-                    {(user.role === 'designer' || user.role === 'fabric_seller') && (
+                    {(authUser?.role === 'designer' || authUser?.role === 'fabric_seller') && (
                       <Link href="/dashboard/inventory" className="block px-4 py-2 text-sm hover:bg-neutral-50 transition-colors" onClick={() => setUserMenuOpen(false)}>Inventory</Link>
                     )}
                     <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">Sign out</button>
@@ -319,24 +314,24 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
             <Link href="/products" className="block px-3 py-2.5 text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors" onClick={() => setMobileOpen(false)}>Ready-to-Wear</Link>
             <Link href="/fabrics" className="block px-3 py-2.5 text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors" onClick={() => setMobileOpen(false)}>Fabrics</Link>
             <Link href="/orders/custom-design" className="block px-3 py-2.5 text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors" onClick={() => setMobileOpen(false)}>Custom Design</Link>
-            {user ? (
+            {isAuthenticated ? (
               <>
                 <Link href="/orders" className="block px-3 py-2.5 text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors" onClick={() => setMobileOpen(false)}>My Orders</Link>
                 <Link
                   href={
-                    user.role === 'designer' ? '/dashboard/designer'
-                    : user.role === 'fabric_seller' ? '/dashboard/fabric-seller'
-                    : user.role === 'qa' ? '/dashboard/qa'
-                    : user.role === 'admin' ? '/admin'
+                    authUser?.role === 'designer' ? '/dashboard/designer'
+                    : authUser?.role === 'fabric_seller' ? '/dashboard/fabric-seller'
+                    : authUser?.role === 'qa' ? '/dashboard/qa'
+                    : authUser?.role === 'admin' ? '/admin'
                     : '/account'
                   }
                   className="block px-3 py-2.5 text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
-                  {user.role === 'designer' ? 'Designer Dashboard'
-                    : user.role === 'fabric_seller' ? 'Seller Dashboard'
-                    : user.role === 'qa' ? 'QA Dashboard'
-                    : user.role === 'admin' ? 'Admin Dashboard'
+                  {authUser?.role === 'designer' ? 'Designer Dashboard'
+                    : authUser?.role === 'fabric_seller' ? 'Seller Dashboard'
+                    : authUser?.role === 'qa' ? 'QA Dashboard'
+                    : authUser?.role === 'admin' ? 'Admin Dashboard'
                     : 'My Account'}
                 </Link>
                 <button onClick={handleLogout} className="block w-full text-left px-3 py-2.5 text-sm font-medium text-red-500 hover:text-red-700 transition-colors">Sign out</button>

@@ -122,10 +122,14 @@ api.interceptors.response.use(
       } catch (err) {
         processQueue(err, null);
         if (typeof window !== 'undefined') {
+          const url = originalRequest?.url || '';
+          const isAuthEndpoint = /\/auth\/(login|register|refresh)$/.test(url);
           localStorage.removeItem('access_token');
           localStorage.removeItem('refresh_token');
           localStorage.removeItem('auth_user');
-          window.location.href = '/login';
+          if (!isAuthEndpoint) {
+            window.location.href = '/login';
+          }
         }
         return Promise.reject(err);
       } finally {
