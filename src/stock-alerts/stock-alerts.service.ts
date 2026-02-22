@@ -48,7 +48,7 @@ export class StockAlertsService {
       relations: ['user'],
     });
 
-    const productUrl = `${frontendUrl}/${productType === StockAlertProductType.PRODUCT ? 'products' : 'fabrics'}/${productId}`;
+    const productUrl = `${frontendUrl}/${productType === StockAlertProductType.READY_TO_WEAR ? 'ready-to-wear' : 'fabrics'}/${productId}`;
 
     for (const alert of alerts) {
       try {

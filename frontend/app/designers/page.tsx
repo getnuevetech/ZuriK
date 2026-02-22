@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
-import { productsApi } from '../../lib/api';
+import { designsApi } from '../../lib/api';
 import { useToast } from '../../components/ui/Toast';
 import { Card, CardBody } from '../../components/ui/Card';
 import { Avatar } from '../../components/ui/Avatar';
@@ -12,7 +12,7 @@ import { Spinner } from '../../components/ui/Spinner';
 import { SearchBar } from '../../components/common/SearchBar';
 import { EmptyState } from '../../components/common/EmptyState';
 import { getUserDisplayName } from '../../lib/utils';
-import type { Product, Designer } from '../../types';
+import type { Design, Designer } from '../../types';
 
 interface DesignerWithProducts extends Designer {
   productCount: number;
@@ -26,25 +26,26 @@ export default function DesignersPage() {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    productsApi.list()
-      .then((res: { items: Product[] }) => {
-        // Extract unique designers from products
-        const products = res.items;
+    designsApi.list()
+      .then((res: { items: Design[] }) => {
+        // Extract unique designers from designs
+        const designs = res.items;
         const designerMap = new Map<string, DesignerWithProducts>();
-        products.forEach((p) => {
+        designs.forEach((p) => {
           if (p.designer) {
             const d = p.designer;
+            const country = d.country || '';
             if (designerMap.has(d.id)) {
               const existing = designerMap.get(d.id)!;
               existing.productCount += 1;
-              if (p.country && !existing.countries.includes(p.country)) {
-                existing.countries.push(p.country);
+              if (country && !existing.countries.includes(country)) {
+                existing.countries.push(country);
               }
             } else {
               designerMap.set(d.id, {
                 ...d,
                 productCount: 1,
-                countries: p.country ? [p.country] : [],
+                countries: country ? [country] : [],
               });
             }
           }

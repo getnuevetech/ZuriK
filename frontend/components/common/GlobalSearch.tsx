@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { searchApi } from '../../lib/api';
-import type { Product } from '../../types';
+import type { Design, ReadyToWearProduct } from '../../types';
 import type { Fabric } from '../../types';
 import { getUserDisplayName } from '../../lib/utils';
 import { useDebounce } from '../../hooks/useDebounce';
@@ -15,7 +15,8 @@ interface DesignerResult {
 }
 
 interface SearchResults {
-  products: Product[];
+  designs: Design[];
+  readyToWear: ReadyToWearProduct[];
   fabrics: Fabric[];
   designers: DesignerResult[];
 }
@@ -59,20 +60,21 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
     }
     setLoading(true);
     searchApi.search(debouncedQuery, 'all', 8)
-      .then(({ products, fabrics }) => {
-        // Extract designers from products
+      .then(({ designs, readyToWear, fabrics }) => {
+        // Extract designers from designs
         const designerMap = new Map<string, DesignerResult>();
-        for (const p of products) {
+        for (const p of [...designs, ...readyToWear]) {
           if (p.designer && !designerMap.has(p.designer.id)) {
             designerMap.set(p.designer.id, {
               id: p.designer.id,
               name: getUserDisplayName(p.designer),
-              country: p.country || '',
+              country: p.designer.country || '',
             });
           }
         }
         setResults({
-          products: products.slice(0, 4),
+          designs: designs.slice(0, 4),
+          readyToWear: readyToWear.slice(0, 2),
           fabrics: fabrics.slice(0, 4),
           designers: Array.from(designerMap.values()).slice(0, 3),
         });
@@ -102,7 +104,8 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
   // Build flat list of navigation targets for keyboard nav
   const allItems = results
     ? [
-        ...results.products.map((p) => ({ type: 'product', id: p.id, label: p.name, href: `/products/${p.id}` })),
+        ...results.designs.map((p) => ({ type: 'design', id: p.id, label: p.name, href: `/designs/${p.id}` })),
+        ...results.readyToWear.map((p) => ({ type: 'ready-to-wear', id: p.id, label: p.name, href: `/ready-to-wear/${p.id}` })),
         ...results.fabrics.map((f) => ({ type: 'fabric', id: f.id, label: f.name, href: `/fabrics/${f.id}` })),
         ...results.designers.map((d) => ({ type: 'designer', id: d.id, label: d.name, href: `/designers/${d.id}` })),
       ]
@@ -150,7 +153,7 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
   };
 
   const totalResults = results
-    ? results.products.length + results.fabrics.length + results.designers.length
+    ? results.designs.length + results.readyToWear.length + results.fabrics.length + results.designers.length
     : 0;
 
   return (
@@ -193,17 +196,41 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
             🔍 Results for &quot;{query}&quot;
           </div>
 
-          {results.products.length > 0 && (
+          {results.designs.length > 0 && (
             <div>
-              <div className="px-3 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">👗 Products</div>
-              {results.products.map((p, i) => {
+              <div className="px-3 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">🎨 Designs</div>
+              {results.designs.map((p, i) => {
                 const globalIndex = i;
                 return (
                   <button
                     key={p.id}
                     role="option"
                     aria-selected={activeIndex === globalIndex}
-                    onClick={() => navigate(`/products/${p.id}`)}
+                    onClick={() => navigate(`/designs/${p.id}`)}
+                    className={[
+                      'w-full text-left px-3 py-2 text-sm flex justify-between items-center hover:bg-neutral-50 transition-colors',
+                      activeIndex === globalIndex ? 'bg-primary-50' : '',
+                    ].join(' ')}
+                  >
+                    <span className="text-neutral-800">{p.name}</span>
+                    <span className="text-primary-600 font-medium text-xs">₦{p.customerPrice?.toLocaleString()}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {results.readyToWear.length > 0 && (
+            <div>
+              <div className="px-3 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-t border-neutral-50">👗 Ready-to-Wear</div>
+              {results.readyToWear.map((p, i) => {
+                const globalIndex = results.designs.length + i;
+                return (
+                  <button
+                    key={p.id}
+                    role="option"
+                    aria-selected={activeIndex === globalIndex}
+                    onClick={() => navigate(`/ready-to-wear/${p.id}`)}
                     className={[
                       'w-full text-left px-3 py-2 text-sm flex justify-between items-center hover:bg-neutral-50 transition-colors',
                       activeIndex === globalIndex ? 'bg-primary-50' : '',
@@ -221,7 +248,7 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
             <div>
               <div className="px-3 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-t border-neutral-50">🧵 Fabrics</div>
               {results.fabrics.map((f, i) => {
-                const globalIndex = results.products.length + i;
+                const globalIndex = results.designs.length + results.readyToWear.length + i;
                 return (
                   <button
                     key={f.id}
@@ -243,9 +270,9 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
 
           {results.designers.length > 0 && (
             <div>
-              <div className="px-3 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-t border-neutral-50">🎨 Designers</div>
+              <div className="px-3 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-t border-neutral-50">👤 Designers</div>
               {results.designers.map((d, i) => {
-                const globalIndex = results.products.length + results.fabrics.length + i;
+                const globalIndex = results.designs.length + results.readyToWear.length + results.fabrics.length + i;
                 return (
                   <button
                     key={d.id}

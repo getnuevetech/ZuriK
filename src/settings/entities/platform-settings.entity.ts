@@ -20,6 +20,15 @@ export class PlatformSettings {
   @Column({ default: true })
   isActive: boolean;
 
+  @Column({ default: true })
+  showFeaturedReadyToWear: boolean;
+
+  @Column({ default: true })
+  showFeaturedDesigns: boolean;
+
+  @Column({ default: true })
+  showFeaturedFabrics: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 

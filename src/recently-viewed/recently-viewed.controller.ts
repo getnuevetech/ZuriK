@@ -7,13 +7,12 @@ import {
   Query,
   UseGuards,
   Request,
-  NotFoundException,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RequestWithUser } from '../auth/auth.types';
 import { RecentlyViewedService } from './recently-viewed.service';
-import { ProductsService } from '../products/products.service';
+import { RecentlyViewedItemType } from './entities/recently-viewed.entity';
 
 @ApiTags('recently-viewed')
 @ApiBearerAuth()
@@ -22,11 +21,10 @@ import { ProductsService } from '../products/products.service';
 export class RecentlyViewedController {
   constructor(
     private readonly recentlyViewedService: RecentlyViewedService,
-    private readonly productsService: ProductsService,
   ) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get recently viewed products' })
+  @ApiOperation({ summary: 'Get recently viewed items' })
   getRecentlyViewed(
     @Request() req: RequestWithUser,
     @Query('limit') limit?: string,
@@ -37,15 +35,18 @@ export class RecentlyViewedController {
     );
   }
 
-  @Post(':productId')
-  @ApiOperation({ summary: 'Track a product view' })
+  @Post(':itemId')
+  @ApiOperation({ summary: 'Track an item view' })
   async trackView(
     @Request() req: RequestWithUser,
-    @Param('productId') productId: string,
+    @Param('itemId') itemId: string,
+    @Query('itemType') itemType?: string,
   ) {
-    const product = await this.productsService.findOne(productId).catch(() => null);
-    if (!product) throw new NotFoundException(`Product ${productId} not found`);
-    await this.recentlyViewedService.trackView(req.user.id, productId);
+    await this.recentlyViewedService.trackView(
+      req.user.id,
+      itemId,
+      (itemType as RecentlyViewedItemType) || RecentlyViewedItemType.DESIGN,
+    );
     return { success: true };
   }
 
@@ -56,13 +57,13 @@ export class RecentlyViewedController {
     return { success: true };
   }
 
-  @Delete(':productId')
-  @ApiOperation({ summary: 'Remove a product from recently viewed' })
+  @Delete(':itemId')
+  @ApiOperation({ summary: 'Remove an item from recently viewed' })
   async removeItem(
     @Request() req: RequestWithUser,
-    @Param('productId') productId: string,
+    @Param('itemId') itemId: string,
   ) {
-    await this.recentlyViewedService.removeItem(req.user.id, productId);
+    await this.recentlyViewedService.removeItem(req.user.id, itemId);
     return { success: true };
   }
 }

@@ -9,7 +9,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
-import { Product } from '../../products/entities/product.entity';
+import { Design } from '../../designs/entities/design.entity';
+import { ReadyToWearProduct } from '../../ready-to-wear/entities/ready-to-wear-product.entity';
 import { Fabric } from '../../fabrics/entities/fabric.entity';
 import { Measurement } from '../../measurements/entities/measurement.entity';
 
@@ -31,6 +32,7 @@ export enum OrderStatus {
   SHIPPED_TO_CUSTOMER = 'shipped_to_customer',
   DELIVERED = 'delivered',
   CANCELLED = 'cancelled',
+  CLOSED = 'closed',
 }
 
 @Entity('orders')
@@ -50,11 +52,17 @@ export class Order {
   @ManyToOne(() => User)
   customer: User;
 
-  @ManyToOne(() => Product, { nullable: true, eager: true })
-  design: Product;
+  @ManyToOne(() => Design, { nullable: true, eager: true })
+  design: Design;
+
+  @ManyToOne(() => ReadyToWearProduct, { nullable: true, eager: true })
+  readyToWearProduct: ReadyToWearProduct;
 
   @ManyToOne(() => Fabric, { nullable: true, eager: true })
   fabric: Fabric;
+
+  @Column({ default: false })
+  fabricChosenByDesigner: boolean;
 
   @OneToOne(() => Measurement, { nullable: true, eager: true })
   @JoinColumn()

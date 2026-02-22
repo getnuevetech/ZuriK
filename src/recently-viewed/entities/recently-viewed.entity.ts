@@ -6,14 +6,18 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  Unique,
   Index,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
-import { Product } from '../../products/entities/product.entity';
+
+export enum RecentlyViewedItemType {
+  DESIGN = 'design',
+  READY_TO_WEAR = 'ready_to_wear',
+  FABRIC = 'fabric',
+}
 
 @Entity('recently_viewed')
-@Unique(['userId', 'productId'])
+@Index(['userId', 'itemId', 'itemType'], { unique: true })
 @Index(['userId'])
 export class RecentlyViewed {
   @PrimaryGeneratedColumn('uuid')
@@ -26,12 +30,11 @@ export class RecentlyViewed {
   @Column()
   userId: string;
 
-  @ManyToOne(() => Product, { eager: true, onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'productId' })
-  product: Product;
-
   @Column()
-  productId: string;
+  itemId: string;
+
+  @Column({ type: 'enum', enum: RecentlyViewedItemType, default: RecentlyViewedItemType.DESIGN })
+  itemType: RecentlyViewedItemType;
 
   @CreateDateColumn()
   viewedAt: Date;

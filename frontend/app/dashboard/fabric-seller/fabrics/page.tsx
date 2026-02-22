@@ -24,16 +24,15 @@ interface FabricFormData {
   description: string;
   customerPrice: string;
   material: string;
-  color: string;
-  pattern: string;
-  country: string;
+  colors: string;
+  patterns: string;
   stock: string;
   imageUrl: string;
 }
 
 const EMPTY_FORM: FabricFormData = {
   name: '', description: '', customerPrice: '', material: '',
-  color: '', pattern: '', country: '', stock: '0', imageUrl: '',
+  colors: '', patterns: '', stock: '0', imageUrl: '',
 };
 
 export default function FabricSellerFabricsPage() {
@@ -68,9 +67,8 @@ export default function FabricSellerFabricsPage() {
       description: f.description || '',
       customerPrice: String(f.customerPrice),
       material: f.material || '',
-      color: f.color || '',
-      pattern: f.pattern || '',
-      country: f.country || '',
+      colors: f.colors?.join(', ') || '',
+      patterns: f.patterns?.join(', ') || '',
       stock: String(f.stock),
       imageUrl: (f.images && f.images[0]) || '',
     });
@@ -86,9 +84,8 @@ export default function FabricSellerFabricsPage() {
         description: form.description,
         customerPrice: parseFloat(form.customerPrice),
         material: form.material,
-        color: form.color,
-        pattern: form.pattern,
-        country: form.country,
+        colors: form.colors ? form.colors.split(',').map(c => c.trim()).filter(Boolean) : [],
+        patterns: form.patterns ? form.patterns.split(',').map(p => p.trim()).filter(Boolean) : [],
         stock: parseInt(form.stock, 10),
         images: form.imageUrl ? [form.imageUrl] : [],
       };
@@ -237,11 +234,10 @@ export default function FabricSellerFabricsPage() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <Input label="Material" value={form.material} onChange={(e) => setForm((f) => ({ ...f, material: e.target.value }))} placeholder="e.g. Cotton" />
-            <Input label="Color" value={form.color} onChange={(e) => setForm((f) => ({ ...f, color: e.target.value }))} placeholder="e.g. Blue" />
+            <Input label="Colors (comma-separated)" value={form.colors} onChange={(e) => setForm((f) => ({ ...f, colors: e.target.value }))} placeholder="e.g. Blue, Red, White" />
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <Input label="Pattern" value={form.pattern} onChange={(e) => setForm((f) => ({ ...f, pattern: e.target.value }))} placeholder="e.g. Kente" />
-            <Input label="Country" value={form.country} onChange={(e) => setForm((f) => ({ ...f, country: e.target.value }))} placeholder="e.g. Ghana" />
+            <Input label="Patterns (comma-separated)" value={form.patterns} onChange={(e) => setForm((f) => ({ ...f, patterns: e.target.value }))} placeholder="e.g. Kente, Geometric" />
           </div>
           <ImageUploader
             label="Fabric Image"

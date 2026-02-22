@@ -2,7 +2,7 @@ import { IsString, IsOptional, IsNumber, Min } from 'class-validator';
 
 export class CreateReadyToWearOrderDto {
   @IsString()
-  designId: string;
+  readyToWearProductId: string;
 
   @IsOptional()
   @IsNumber()

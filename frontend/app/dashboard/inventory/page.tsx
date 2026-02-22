@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRequireRole } from '../../../lib/with-role';
-import { productsApi, fabricsApi } from '../../../lib/api';
-import type { Product } from '../../../types/product';
+import { readyToWearApi, fabricsApi } from '../../../lib/api';
+import type { ReadyToWearProduct } from '../../../types/product';
 import type { Fabric } from '../../../types/fabric';
 import { useToast } from '../../../components/ui/Toast';
 import { Badge } from '../../../components/ui/Badge';
@@ -72,22 +72,22 @@ export default function InventoryPage() {
     try {
       if (isDesigner) {
         const [products, lowStock] = await Promise.all([
-          productsApi.list({ limit: 100 }),
-          productsApi.getLowStock().catch(() => [] as Product[]),
+          readyToWearApi.list({ limit: 100 }),
+          readyToWearApi.getLowStock().catch(() => [] as ReadyToWearProduct[]),
         ]);
-        const mapped = products.items.map((p) => ({
+        const mapped = products.items.map((p: ReadyToWearProduct) => ({
           id: p.id,
           name: p.name,
-          stock: (p as any).stock ?? 0,
-          lowStockThreshold: (p as any).lowStockThreshold ?? 5,
+          stock: p.stock ?? 0,
+          lowStockThreshold: p.lowStockThreshold ?? 5,
           itemType: 'product' as const,
         }));
         setItems(mapped);
-        setLowStockItems(lowStock.map((p) => ({
+        setLowStockItems(lowStock.map((p: ReadyToWearProduct) => ({
           id: p.id,
           name: p.name,
-          stock: (p as any).stock ?? 0,
-          lowStockThreshold: (p as any).lowStockThreshold ?? 5,
+          stock: p.stock ?? 0,
+          lowStockThreshold: p.lowStockThreshold ?? 5,
           itemType: 'product' as const,
         })));
       } else if (isFabricSeller) {
@@ -131,7 +131,7 @@ export default function InventoryPage() {
     setSaving(true);
     try {
       if (item.itemType === 'product') {
-        await productsApi.updateStock(item.id, qty);
+        await readyToWearApi.updateStock(item.id, qty);
       } else {
         await fabricsApi.updateStock(item.id, qty);
       }

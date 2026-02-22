@@ -95,7 +95,7 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
                 onClick={() => setShopOpen((v) => !v)}
                 className={[
                   'flex items-center gap-1 text-sm font-medium px-4 py-2 transition-colors hover:text-neutral-900',
-                  (pathname.startsWith('/products') || pathname.startsWith('/fabrics') || pathname.startsWith('/orders/custom'))
+                  (pathname.startsWith('/designs') || pathname.startsWith('/ready-to-wear') || pathname.startsWith('/fabrics') || pathname.startsWith('/orders/custom'))
                     ? 'text-neutral-900' : 'text-neutral-500',
                 ].join(' ')}
                 aria-expanded={shopOpen}
@@ -110,10 +110,16 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
               {shopOpen && (
                 <div className="absolute top-full left-0 mt-1 w-72 bg-white text-neutral-800 border border-neutral-200 py-2 z-50 shadow-modal">
                   <div className="px-1">
-                    <Link href="/products" className="flex items-center gap-3 px-3 py-2.5 hover:bg-neutral-50 transition-colors" onClick={() => setShopOpen(false)}>
+                    <Link href="/ready-to-wear" className="flex items-center gap-3 px-3 py-2.5 hover:bg-neutral-50 transition-colors" onClick={() => setShopOpen(false)}>
                       <div>
                         <div className="font-medium text-sm">Ready-to-Wear</div>
                         <div className="text-xs text-neutral-400 font-light">Curated African fashion, ready to ship</div>
+                      </div>
+                    </Link>
+                    <Link href="/designs" className="flex items-center gap-3 px-3 py-2.5 hover:bg-neutral-50 transition-colors" onClick={() => setShopOpen(false)}>
+                      <div>
+                        <div className="font-medium text-sm">Designs</div>
+                        <div className="text-xs text-neutral-400 font-light">Custom-made to your measurements</div>
                       </div>
                     </Link>
                     <Link href="/fabrics" className="flex items-center gap-3 px-3 py-2.5 hover:bg-neutral-50 transition-colors" onClick={() => setShopOpen(false)}>
@@ -128,24 +134,6 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
                         <div className="text-xs text-neutral-400 font-light">Your body, your fabric, your style</div>
                       </div>
                     </Link>
-                  </div>
-                  <div className="border-t border-neutral-100 mt-1 pt-1 px-1">
-                    <div className="px-3 py-1.5 text-xs font-semibold text-neutral-400 uppercase tracking-wider">Shop by Country</div>
-                    <div className="grid grid-cols-2 gap-0.5">
-                      {COUNTRIES.map((c) => (
-                        <Link
-                          key={c.name}
-                          href={`/products?country=${encodeURIComponent(c.name)}`}
-                          className="flex items-center gap-2 px-3 py-2 hover:bg-neutral-50 transition-colors text-sm text-neutral-600"
-                          onClick={() => setShopOpen(false)}
-                        >
-                          <span>{c.flag}</span> {c.name}
-                        </Link>
-                      ))}
-                      <Link href="/products" className="col-span-2 flex items-center gap-2 px-3 py-2 hover:bg-neutral-50 transition-colors text-sm text-neutral-900 font-medium" onClick={() => setShopOpen(false)}>
-                        View All Countries →
-                      </Link>
-                    </div>
                   </div>
                 </div>
               )}
@@ -311,7 +299,8 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
                 {link.label}
               </Link>
             ))}
-            <Link href="/products" className="block px-3 py-2.5 text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors" onClick={() => setMobileOpen(false)}>Ready-to-Wear</Link>
+            <Link href="/ready-to-wear" className="block px-3 py-2.5 text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors" onClick={() => setMobileOpen(false)}>Ready-to-Wear</Link>
+            <Link href="/designs" className="block px-3 py-2.5 text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors" onClick={() => setMobileOpen(false)}>Designs</Link>
             <Link href="/fabrics" className="block px-3 py-2.5 text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors" onClick={() => setMobileOpen(false)}>Fabrics</Link>
             <Link href="/orders/custom-design" className="block px-3 py-2.5 text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors" onClick={() => setMobileOpen(false)}>Custom Design</Link>
             {isAuthenticated ? (

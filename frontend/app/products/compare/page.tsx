@@ -46,7 +46,7 @@ function ComparePageContent() {
     setLoading(true);
     setError(null);
     try {
-      const data = await comparisonApi.compare(ids);
+      const data = await comparisonApi.compareDesigns(ids);
       setProducts(data);
     } catch (err: unknown) {
       const message =
@@ -245,8 +245,8 @@ function ComparePageContent() {
                             : <span className="text-neutral-400">—</span>
                         )}
                         {row.key === 'country' && (
-                          product.country
-                            ? <Badge variant="secondary">{product.country}</Badge>
+                          product.designer?.country
+                            ? <Badge variant="secondary">{product.designer.country}</Badge>
                             : <span className="text-neutral-400">—</span>
                         )}
                         {row.key === 'designer' && (

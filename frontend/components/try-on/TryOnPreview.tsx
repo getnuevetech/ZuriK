@@ -145,7 +145,7 @@ export function TryOnPreview({
             <div className="absolute inset-0" style={{ width: containerWidth, height: silhouetteHeight }}>
               <FabricOverlay
                 fabricImageUrl={fabric?.images?.[0]}
-                fabricColor={fabric?.color}
+                fabricColor={fabric?.colors?.[0]}
                 width={containerWidth}
                 height={silhouetteHeight}
               />
@@ -157,7 +157,7 @@ export function TryOnPreview({
         {mode === 'custom-design' && fabric && (
           <div className="text-center mt-1">
             <p className="text-xs text-neutral-600 font-medium">{fabric.name}</p>
-            {fabric.color && <p className="text-xs text-neutral-400">{fabric.color} · {fabric.material}</p>}
+            {fabric.colors?.[0] && <p className="text-xs text-neutral-400">{fabric.colors[0]} · {fabric.material}</p>}
           </div>
         )}
 

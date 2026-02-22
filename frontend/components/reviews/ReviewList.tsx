@@ -34,7 +34,7 @@ export function ReviewList({ productId }: ReviewListProps) {
   const fetchReviews = useCallback(async (p: number, s: string) => {
     setLoading(true);
     try {
-      const res = await reviewsApi.getProductReviews(productId, { page: p, limit: LIMIT, sort: s });
+      const res = await reviewsApi.getItemReviews(productId, { page: p, limit: LIMIT, sort: s });
       const data = res.data as ReviewsResponse;
       setReviews(data.reviews);
       setTotal(data.total);

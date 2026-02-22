@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { homepageApi } from '../../../lib/api';
+import { homepageApi, adminApi } from '../../../lib/api';
 import AdminPageHeader from '../../../components/admin/AdminPageHeader';
 import { Spinner } from '../../../components/ui/Spinner';
+import { Button } from '../../../components/ui/Button';
 import { useToast } from '../../../components/ui/Toast';
 
 interface LayoutSection {
@@ -27,25 +28,49 @@ export default function AdminHomepagePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [themeKey, setThemeKey] = useState<string>('BOLD_VIBRANT');
+  const [featuredSettings, setFeaturedSettings] = useState({
+    showFeaturedReadyToWear: true,
+    showFeaturedDesigns: true,
+    showFeaturedFabrics: true,
+  });
+  const [savingFeatured, setSavingFeatured] = useState(false);
   const { toast } = useToast();
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [layoutData, themeData] = await Promise.all([
+      const [layoutData, themeData, featuredData] = await Promise.all([
         homepageApi.adminGetLayout(),
         homepageApi.adminGetTheme(),
+        adminApi.getHomepageSettings().catch(() => ({
+          showFeaturedReadyToWear: true,
+          showFeaturedDesigns: true,
+          showFeaturedFabrics: true,
+        })),
       ]);
       setLayout(
         [...(layoutData as LayoutSection[])].sort((a, b) => a.displayOrder - b.displayOrder),
       );
       setThemeKey((themeData as { activeTheme: string }).activeTheme);
+      setFeaturedSettings(featuredData);
     } catch {
       toast('error', 'Failed to load homepage settings');
     } finally {
       setLoading(false);
     }
   }, [toast]);
+
+  const handleSaveFeaturedSettings = async () => {
+    setSavingFeatured(true);
+    try {
+      await adminApi.updateHomepageSettings(featuredSettings);
+      toast('success', 'Featured section settings saved');
+    } catch {
+      toast('error', 'Failed to save featured section settings');
+    } finally {
+      setSavingFeatured(false);
+    }
+  };
 
   useEffect(() => {
     fetchData();

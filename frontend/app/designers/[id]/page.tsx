@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { productsApi } from '../../../lib/api';
+import { designsApi } from '../../../lib/api';
 import { useCart } from '../../../lib/cart-context';
 import { useToast } from '../../../components/ui/Toast';
 import { Avatar } from '../../../components/ui/Avatar';
@@ -16,7 +16,7 @@ import { EmptyState } from '../../../components/common/EmptyState';
 import { ShareButton } from '../../../components/common/ShareButton';
 import { getShareUrl } from '../../../lib/share-utils';
 import { getUserDisplayName } from '../../../lib/utils';
-import type { Product, Designer } from '../../../types';
+import type { Design, Designer } from '../../../types';
 
 export default function DesignerProfilePage() {
   const params = useParams();
@@ -24,26 +24,25 @@ export default function DesignerProfilePage() {
   const { toast } = useToast();
 
   const [designer, setDesigner] = useState<Designer | null>(null);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Design[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (params?.id) {
-      productsApi.list()
-        .then((res: { items: Product[] }) => {
+      designsApi.list({ designerId: params.id as string })
+        .then((res: { items: Design[] }) => {
           const all = res.items;
-          const designerProducts = all.filter((p) => p.designer?.id === params.id);
-          if (designerProducts.length > 0 && designerProducts[0].designer) {
-            setDesigner(designerProducts[0].designer as Designer);
+          if (all.length > 0 && all[0].designer) {
+            setDesigner(all[0].designer as Designer);
           }
-          setProducts(designerProducts);
+          setProducts(all);
         })
         .catch(() => toast('error', 'Failed to load designer profile'))
         .finally(() => setLoading(false));
     }
   }, [params?.id, toast]);
 
-  const handleAddToCart = (product: Product) => {
+  const handleAddToCart = (product: Design) => {
     addToCart({
       id: product.id,
       name: product.name,
@@ -66,8 +65,7 @@ export default function DesignerProfilePage() {
   );
 
   const designerName = getUserDisplayName(designer);
-  const countrySet = new Set(products.map((p) => p.country).filter(Boolean));
-  const countries = Array.from(countrySet);
+  const countries = designer.country ? [designer.country] : [];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

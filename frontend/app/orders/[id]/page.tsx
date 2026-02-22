@@ -171,7 +171,7 @@ export default function OrderDetailPage() {
                 <p className="font-medium text-neutral-900">{order.fabric.name}</p>
                 <div className="flex gap-2 mt-1 flex-wrap">
                   {order.fabric.material && <Badge variant="secondary">{order.fabric.material}</Badge>}
-                  {order.fabric.color && <Badge variant="default">{order.fabric.color}</Badge>}
+                  {order.fabric.colors?.[0] && <Badge variant="default">{order.fabric.colors[0]}</Badge>}
                 </div>
               </div>
               {order.fabricPrice !== undefined && (

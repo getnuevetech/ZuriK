@@ -30,8 +30,8 @@ export class Fabric {
   @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
   width: number;
 
-  @Column()
-  country: string;
+  @Column({ default: false })
+  isFeatured: boolean;
 
   @Column('decimal', { precision: 10, scale: 2 })
   sellerPrice: number;

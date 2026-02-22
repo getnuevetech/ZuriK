@@ -8,7 +8,7 @@ import { Repository } from 'typeorm';
 import { CartItem, CartItemType } from './entities/cart-item.entity';
 import { AddToCartDto } from './dto/add-to-cart.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
-import { Product } from '../products/entities/product.entity';
+import { ReadyToWearProduct } from '../ready-to-wear/entities/ready-to-wear-product.entity';
 import { Fabric } from '../fabrics/entities/fabric.entity';
 
 @Injectable()
@@ -16,8 +16,8 @@ export class CartService {
   constructor(
     @InjectRepository(CartItem)
     private readonly cartRepo: Repository<CartItem>,
-    @InjectRepository(Product)
-    private readonly productRepo: Repository<Product>,
+    @InjectRepository(ReadyToWearProduct)
+    private readonly rtwRepo: Repository<ReadyToWearProduct>,
     @InjectRepository(Fabric)
     private readonly fabricRepo: Repository<Fabric>,
   ) {}
@@ -32,7 +32,7 @@ export class CartService {
       items.map(async (item) => {
         let details: any = null;
         if (item.productId) {
-          details = await this.productRepo.findOne({ where: { id: item.productId } });
+          details = await this.rtwRepo.findOne({ where: { id: item.productId } });
         } else if (item.fabricId) {
           details = await this.fabricRepo.findOne({ where: { id: item.fabricId } });
         }
@@ -56,7 +56,7 @@ export class CartService {
     const qty = dto.quantity ?? 1;
 
     if (dto.type === CartItemType.READY_TO_WEAR && dto.productId) {
-      const product = await this.productRepo.findOne({ where: { id: dto.productId, isActive: true } });
+      const product = await this.rtwRepo.findOne({ where: { id: dto.productId, isActive: true } });
       if (!product) throw new NotFoundException('Product not found or inactive');
       if (product.stock !== undefined && product.stock <= 0) {
         throw new BadRequestException('Product is out of stock');

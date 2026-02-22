@@ -15,6 +15,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
 import { OrderStatus } from '../orders/entities/order.entity';
 import { AdminService } from './admin.service';
+import { SettingsService } from '../settings/settings.service';
 
 import { AdminCreateUserDto } from './dto/create-user.dto';
 
@@ -24,7 +25,10 @@ import { AdminCreateUserDto } from './dto/create-user.dto';
 @Roles(UserRole.ADMIN)
 @Controller('admin')
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(
+    private readonly adminService: AdminService,
+    private readonly settingsService: SettingsService,
+  ) {}
 
   // ─── Analytics ────────────────────────────────────────────────────────────
 
@@ -146,5 +150,32 @@ export class AdminController {
   @Post('orders/:id/refund')
   refundOrder(@Param('id') id: string) {
     return this.adminService.refundOrder(id);
+  }
+
+  // ─── Homepage Settings ────────────────────────────────────────────────────
+
+  @Get('homepage-settings')
+  async getHomepageSettings() {
+    const settings = await this.settingsService.findActive();
+    return {
+      showFeaturedReadyToWear: settings?.showFeaturedReadyToWear ?? true,
+      showFeaturedDesigns: settings?.showFeaturedDesigns ?? true,
+      showFeaturedFabrics: settings?.showFeaturedFabrics ?? true,
+    };
+  }
+
+  @Patch('homepage-settings')
+  async updateHomepageSettings(
+    @Body() body: {
+      showFeaturedReadyToWear?: boolean;
+      showFeaturedDesigns?: boolean;
+      showFeaturedFabrics?: boolean;
+    },
+  ) {
+    const settings = await this.settingsService.findActive();
+    if (!settings) {
+      return { message: 'No active settings found. Create platform settings first.' };
+    }
+    return this.settingsService.update(settings.id, body);
   }
 }
