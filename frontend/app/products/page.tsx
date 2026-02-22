@@ -141,6 +141,7 @@ function ProductsContent() {
   };
 
   const handleClearFilters = () => {
+    setFilterValues({ category: '', priceMin: '', priceMax: '' });
     setSearch('');
     setSort('newest');
     setMinRating('');

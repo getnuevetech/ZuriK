@@ -526,6 +526,12 @@ export const adminApi = {
   updateSettings: (data: Record<string, unknown>) =>
     api.patch('/admin/settings', data).then((r) => r.data),
 
+  // Homepage settings
+  getHomepageSettings: (): Promise<{ showFeaturedReadyToWear: boolean; showFeaturedDesigns: boolean; showFeaturedFabrics: boolean }> =>
+    api.get('/admin/homepage-settings').then((r) => r.data),
+  updateHomepageSettings: (data: { showFeaturedReadyToWear?: boolean; showFeaturedDesigns?: boolean; showFeaturedFabrics?: boolean }) =>
+    api.patch('/admin/homepage-settings', data).then((r) => r.data),
+
   // Gateways (using existing endpoints)
   getGateways: () => api.get('/admin/payments/gateways').then((r) => r.data),
   createGateway: (data: Record<string, unknown>) =>

@@ -189,7 +189,7 @@ export class OrdersService {
         shipToAddress: qaAddr.address,
         shipToCity: qaAddr.city,
         shipToCountry: qaAddr.country,
-        status: fabricChosenByDesigner ? 'awaiting_fabric' : 'awaiting_fabric',
+        status: fabricChosenByDesigner ? OrderStatus.AWAITING_MATERIALS : OrderStatus.AWAITING_MATERIALS,
       }),
     );
 
