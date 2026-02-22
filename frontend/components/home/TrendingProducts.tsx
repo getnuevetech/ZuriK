@@ -34,9 +34,16 @@ export function TrendingProducts() {
   const [activeCategory, setActiveCategory] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    homepageApi.getTrending(10)
-      .then((data: Product[]) => setProducts(data))
+  const fetchProducts = useCallback((category: string) => {
+    setLoading(true);
+    homepageApi.getTrending(PRODUCTS_LIMIT)
+      .then((data: Product[]) => {
+        if (category) {
+          setProducts(data.filter((p) => p.category === category));
+        } else {
+          setProducts(data);
+        }
+      })
       .catch(() => setProducts([]))
       .finally(() => setLoading(false));
   }, []);
