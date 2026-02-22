@@ -1,6 +1,7 @@
 import React from 'react';
 import { HeroBannerCarousel } from '../components/home/HeroBannerCarousel';
 import { PromoBanner } from '../components/home/PromoBanner';
+import { ShopByCountry } from '../components/home/ShopByCountry';
 import { FeaturedProducts } from '../components/home/FeaturedProducts';
 import { CategoryBanners } from '../components/home/CategoryBanners';
 import { TrendingProducts } from '../components/home/TrendingProducts';
@@ -15,6 +16,7 @@ export default function Home() {
     <div className="min-h-screen">
       <HeroBannerCarousel />
       <PromoBanner />
+      <ShopByCountry />
       <FeaturedProducts />
       <CategoryBanners />
       <TrendingProducts />
