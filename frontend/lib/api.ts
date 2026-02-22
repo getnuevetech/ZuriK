@@ -121,16 +121,8 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (err) {
         processQueue(err, null);
-        if (typeof window !== 'undefined') {
-          const url = originalRequest?.url || '';
-          const isAuthEndpoint = /\/auth\/(login|register|refresh)$/.test(url);
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
-          localStorage.removeItem('auth_user');
-          if (!isAuthEndpoint) {
-            window.location.href = '/login';
-          }
-        }
+        // Don't clear tokens or redirect here — let the AuthContext handle
+        // session cleanup and redirects to avoid race conditions on page refresh.
         return Promise.reject(err);
       } finally {
         isRefreshing = false;
@@ -905,7 +897,6 @@ export const addressesApi = {
 };
 
 
-
 // --- Stock Alerts API ---
 export type StockAlertProductType = 'product' | 'fabric';
 
@@ -961,38 +952,4 @@ export const loyaltyApi = {
     api.get<LoyaltyHistoryResponse>(`/loyalty/history?page=${page}&limit=${limit}`).then((r) => r.data),
   redeem: (points: number): Promise<LoyaltyTransaction> =>
     api.post<LoyaltyTransaction>('/loyalty/redeem', { points }).then((r) => r.data),
-};
-
-// --- Review Prompts API ---
-export interface ReviewPrompt {
-  id: string;
-  userId: string;
-  orderId: string;
-  productId: string;
-  emailSentAt: string | null;
-  reviewedAt: string | null;
-  status: 'pending' | 'email_sent' | 'reviewed' | 'dismissed';
-  createdAt: string;
-}
-
-export const reviewPromptsApi = {
-  getMyPrompts: (): Promise<ReviewPrompt[]> =>
-    api.get<ReviewPrompt[]>('/review-prompts').then((r) => r.data),
-  dismiss: (id: string): Promise<void> =>
-    api.patch(`/review-prompts/${id}/dismiss`, {}).then(() => undefined),
-};
-
-// --- Abandoned Carts Admin API ---
-export interface AbandonedCartStats {
-  totalAbandoned: number;
-  recovered: number;
-  recoveryRate: number;
-  totalRecoveredRevenue: number;
-}
-
-export const abandonedCartsAdminApi = {
-  getStats: (): Promise<AbandonedCartStats> =>
-    api.get<AbandonedCartStats>('/admin/abandoned-carts/stats').then((r) => r.data),
-  getAll: (page = 1, limit = 20) =>
-    api.get(`/admin/abandoned-carts?page=${page}&limit=${limit}`).then((r) => r.data),
 };
