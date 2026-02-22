@@ -969,3 +969,21 @@ export const abandonedCartsAdminApi = {
   list: (page = 1, limit = 20) =>
     api.get('/admin/abandoned-carts', { params: { page, limit } }).then((r) => r.data),
 };
+
+export interface ReviewPrompt {
+  id: string;
+  userId: string;
+  orderId: string;
+  productId: string;
+  emailSentAt: string | null;
+  reviewedAt: string | null;
+  status: 'pending' | 'email_sent' | 'reviewed' | 'dismissed';
+  createdAt: string;
+}
+
+export const reviewPromptsApi = {
+  getMyPrompts: (): Promise<ReviewPrompt[]> =>
+    api.get<ReviewPrompt[]>('/review-prompts').then((r) => r.data),
+  dismiss: (id: string): Promise<void> =>
+    api.patch(`/review-prompts/${id}/dismiss`).then(() => undefined),
+};
