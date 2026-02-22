@@ -117,7 +117,7 @@ const isProduction = process.env.NODE_ENV === 'production';
           }
         : undefined,
     }),
-    AuthModule,
+    AuthModule.register(),
     UsersModule,
     ProductsModule,
     FabricsModule,
