@@ -16,10 +16,24 @@ async function bootstrap() {
     .split(',')
     .map((o) => o.trim());
 
+  // Dynamic CORS: explicit allowlist + *.vercel.app preview deployments + localhost.
+  // For production with a custom domain, set FRONTEND_URL explicitly.
   app.enableCors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      // Allow server-to-server or same-origin requests (no Origin header)
+      if (!origin) return callback(null, true);
+      // Explicit allowlist (FRONTEND_URL env var)
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      // Allow any *.vercel.app subdomain for preview deployments
+      if (/\.vercel\.app$/.test(origin)) return callback(null, true);
+      // Allow localhost in development only
+      if (process.env.NODE_ENV !== 'production' && origin.startsWith('http://localhost:')) return callback(null, true);
+      callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
   });
+
+  logger.log(`CORS allowed origins: ${allowedOrigins.join(', ')} + *.vercel.app`);
 
   app.useGlobalPipes(
     new ValidationPipe({
