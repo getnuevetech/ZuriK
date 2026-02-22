@@ -9,6 +9,7 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Card, CardBody } from '../../components/ui/Card';
 import { GoogleSignInButton } from '../../components/auth/GoogleSignInButton';
+import { extractErrorMessage } from '../../lib/api';
 
 type Role = 'customer' | 'designer' | 'fabric_seller';
 
@@ -54,8 +55,7 @@ export default function RegisterPage() {
       toast('success', 'Account created successfully!');
       router.push('/');
     } catch (err: unknown) {
-      const message = (err as { response?: { data?: { message?: string | string[] } } })?.response?.data?.message || 'Registration failed. Please try again.';
-      toast('error', Array.isArray(message) ? message[0] : message);
+      toast('error', extractErrorMessage(err, 'Registration failed. Please try again.'));
     } finally {
       setLoading(false);
     }

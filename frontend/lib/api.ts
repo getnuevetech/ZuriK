@@ -136,6 +136,37 @@ api.interceptors.response.use(
   }
 );
 
+// --- Error utility ---
+/**
+ * Extracts a user-friendly error message from an unknown error value.
+ *
+ * Handles the following cases in priority order:
+ * - No response (network/CORS/offline): returns a connectivity message.
+ * - HTTP 429 (rate-limited): returns a rate-limit message.
+ * - Backend error response with a `message` field (string or string[]): returns that message.
+ * - Everything else: returns the provided `fallback` string.
+ *
+ * @param err     - The caught error value (typically an Axios error).
+ * @param fallback - Message to display when no specific message can be extracted.
+ */
+export function extractErrorMessage(err: unknown, fallback: string): string {
+  if (typeof err === 'object' && err !== null) {
+    const axiosErr = err as { response?: { status?: number; data?: { message?: string | string[] } }; message?: string };
+    if (!axiosErr.response) {
+      // Network error or no response from server
+      return 'Unable to connect to server. Please check your connection.';
+    }
+    if (axiosErr.response.status === 429) {
+      return 'Too many attempts. Please wait a moment before trying again.';
+    }
+    const msg = axiosErr.response.data?.message;
+    if (msg) {
+      return Array.isArray(msg) ? msg[0] : msg;
+    }
+  }
+  return fallback;
+}
+
 // --- Auth API ---
 export const authApi = {
   login: (payload: LoginPayload) =>
