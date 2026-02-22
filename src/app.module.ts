@@ -111,7 +111,7 @@ const isProduction = process.env.NODE_ENV === 'production';
       extra: isProduction
         ? {
             ssl: {
-              rejectUnauthorized: true,
+              rejectUnauthorized: !!process.env.DATABASE_CA_CERT,
               ...(process.env.DATABASE_CA_CERT
                 ? { ca: process.env.DATABASE_CA_CERT }
                 : {}),
