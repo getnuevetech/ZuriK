@@ -5,8 +5,9 @@ import type {
   User, PlatformSettings, HeroBanner, AnalyticsOverview,
   Payment, Payout, PaymentInitiateResponse, PaymentProvider,
 } from '../types';
+import { config } from './config';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_URL = config.apiUrl;
 
 // --- Types ---
 export interface LoginPayload { email: string; password: string; }

@@ -75,6 +75,27 @@ NODE_ENV=development
 PORT=3000
 ```
 
+## 🔄 Changing Public URLs
+
+When migrating to a new domain or URL, **no code changes are needed** — just update environment variables:
+
+1. **Vercel (Frontend):**
+   - `NEXT_PUBLIC_API_URL` → your backend URL (e.g., `https://api.yourdomain.com`)
+   - `NEXT_PUBLIC_APP_URL` → your frontend URL (e.g., `https://yourdomain.com`)
+
+2. **Railway (Backend):**
+   - `FRONTEND_URL` → your frontend URL (used for CORS, email links)
+   - `DATABASE_URL` → your database connection string
+
+3. **External Services:**
+   - Update payment provider webhook URLs
+   - Update OAuth callback URLs (if applicable)
+   - Update DNS records (if domain changes)
+
+4. **Redeploy both services** — changes take effect automatically.
+
+> ⚠️ The app validates required env vars at startup in production. If any are missing, it will fail fast with a clear error message instead of silently falling back to localhost.
+
 ## 🗄️ Database Migrations
 
 Schema synchronisation (`synchronize`) is **disabled in production** (`NODE_ENV=production`).

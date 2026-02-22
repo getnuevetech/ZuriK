@@ -1,5 +1,7 @@
+import { config } from './config';
+
 export const SITE_NAME = 'African Fashion E-Commerce';
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+export const SITE_URL = config.appUrl;
 
 export function getShareUrl(path: string): string {
   return `${SITE_URL}${path}`;
