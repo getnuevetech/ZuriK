@@ -13,7 +13,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
-    PassportModule,
+    PassportModule.register({ session: false }),
     JwtModule.register({}),
     ConfigModule,
     NotificationsModule,
