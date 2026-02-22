@@ -26,6 +26,16 @@ export class AuthService {
   }
 
   async register(dto: RegisterDto) {
+    if (dto.fullName && !dto.firstName) {
+      const trimmed = dto.fullName.trim();
+      const spaceIndex = trimmed.indexOf(' ');
+      if (spaceIndex !== -1) {
+        dto.firstName = trimmed.substring(0, spaceIndex);
+        dto.lastName = trimmed.substring(spaceIndex + 1);
+      } else {
+        dto.firstName = trimmed;
+      }
+    }
     const existing = await this.userRepo.findOne({ where: { email: dto.email } });
     if (existing) {
       throw new ConflictException('Email already registered');

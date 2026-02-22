@@ -15,6 +15,11 @@ export class RegisterDto {
   })
   password: string;
 
+  @ApiPropertyOptional({ example: 'John Doe' })
+  @IsOptional()
+  @IsString()
+  fullName?: string;
+
   @ApiPropertyOptional({ example: 'John' })
   @IsOptional()
   @IsString()
