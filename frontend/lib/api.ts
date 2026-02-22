@@ -315,6 +315,10 @@ export const heroBannersApi = {
     api.patch<HeroBanner>(`/hero-banners/${id}`, data).then((r) => r.data),
   delete: (id: string): Promise<void> =>
     api.delete(`/hero-banners/${id}`).then(() => undefined),
+  toggle: (id: string): Promise<HeroBanner> =>
+    api.patch<HeroBanner>(`/hero-banners/${id}/toggle`).then((r) => r.data),
+  reorder: (orders: { id: string; sortOrder: number }[]): Promise<void> =>
+    api.patch<void>('/hero-banners/reorder', orders).then(() => undefined),
 };
 
 // --- Settings API ---
@@ -331,6 +335,13 @@ export const uploadApi = {
     const formData = new FormData();
     formData.append('file', file);
     return api.post<{ url: string }>('/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then((r) => r.data);
+  },
+  uploadHeroBannerMedia: (file: File): Promise<{ url: string; mediaType: string }> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return api.post<{ url: string; mediaType: string }>('/upload/hero-banner', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     }).then((r) => r.data);
   },

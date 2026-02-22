@@ -15,6 +15,15 @@ import { UpdateHeroBannerDto } from './dto/update-hero-banner.dto';
 export class HeroBannersController {
   constructor(private readonly heroBannersService: HeroBannersService) {}
 
+  @Get('all')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get all hero banners including inactive (admin only)' })
+  findAll() {
+    return this.heroBannersService.findAll();
+  }
+
   @Get()
   @ApiOperation({ summary: 'Get all active hero banners (public)' })
   findAllActive() {
