@@ -48,7 +48,11 @@ export class AuthService {
     await this.userRepo.save(user);
     const frontendUrl = this.configService.get<string>('FRONTEND_URL');
     const verifyUrl = `${frontendUrl}/verify-email?token=${token}`;
-    await this.emailService.sendEmailVerification(user, verifyUrl);
+    try {
+      await this.emailService.sendEmailVerification(user, verifyUrl);
+    } catch (emailErr) {
+      this.logger.error(`Failed to send verification email to ${user.email}: ${(emailErr as Error).message}`);
+    }
 
     const tokens = await this.generateTokens(user);
     const { password: _pw, refreshToken: _rt, ...userWithoutSecrets } = user;

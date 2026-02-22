@@ -9,6 +9,7 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Card, CardBody } from '../../components/ui/Card';
 import { GoogleSignInButton } from '../../components/auth/GoogleSignInButton';
+import { extractErrorMessage } from '../../lib/api';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -39,8 +40,7 @@ export default function LoginPage() {
       toast('success', 'Welcome back!');
       router.push('/');
     } catch (err: unknown) {
-      const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Invalid email or password';
-      toast('error', message);
+      toast('error', extractErrorMessage(err, 'Invalid email or password'));
     } finally {
       setLoading(false);
     }
