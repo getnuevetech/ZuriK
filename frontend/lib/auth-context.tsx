@@ -56,7 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setState({ user: null, accessToken: null, refreshToken: null, isAuthenticated: false, isLoading: false });
   }, []);
 
-  // On mount: check stored tokens
+  // On mount: validate stored tokens against the server
   useEffect(() => {
     const init = async () => {
       const storedToken = localStorage.getItem('access_token');
@@ -64,10 +64,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const storedUser = localStorage.getItem('auth_user');
       if (storedToken && storedUser) {
         try {
-          const user = JSON.parse(storedUser) as UserProfile;
-          setState({ user, accessToken: storedToken, refreshToken: storedRefresh, isAuthenticated: true, isLoading: false });
+          // Verify access token is still valid and get fresh user data
+          const freshUser = await authApi.getProfile();
+          setState({ user: freshUser, accessToken: storedToken, refreshToken: storedRefresh, isAuthenticated: true, isLoading: false });
         } catch {
-          clearAuth();
+          // Access token invalid — attempt refresh
+          if (storedRefresh) {
+            try {
+              const refreshRes = await authApi.refresh(storedRefresh);
+              localStorage.setItem('access_token', refreshRes.accessToken);
+              localStorage.setItem('refresh_token', refreshRes.refreshToken);
+              const freshUser = await authApi.getProfile();
+              localStorage.setItem('auth_user', JSON.stringify(freshUser));
+              setState({ user: freshUser, accessToken: refreshRes.accessToken, refreshToken: refreshRes.refreshToken, isAuthenticated: true, isLoading: false });
+            } catch {
+              clearAuth();
+            }
+          } else {
+            clearAuth();
+          }
         }
       } else {
         setState((s) => ({ ...s, isLoading: false }));
