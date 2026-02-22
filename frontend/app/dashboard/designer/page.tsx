@@ -19,15 +19,16 @@ const SIDEBAR_ITEMS = [
 ];
 
 const STATUS_VARIANTS: Record<string, 'default' | 'info' | 'warning' | 'success' | 'danger'> = {
-  PENDING_PAYMENT: 'warning',
-  PAID: 'info',
-  IN_PRODUCTION: 'info',
-  SHIPPED_TO_QA: 'info',
-  QA_APPROVED: 'success',
-  QA_REJECTED: 'danger',
-  SHIPPED_TO_CUSTOMER: 'success',
-  DELIVERED: 'success',
-  CANCELLED: 'danger',
+  pending_payment: 'warning',
+  paid: 'info',
+  awaiting_materials: 'info',
+  in_production: 'info',
+  shipped_to_qa: 'info',
+  qa_approved: 'success',
+  qa_rejected: 'danger',
+  shipped_to_customer: 'success',
+  delivered: 'success',
+  cancelled: 'danger',
 };
 
 export default function DesignerDashboardPage() {
@@ -58,9 +59,9 @@ export default function DesignerDashboardPage() {
     return <div className="min-h-screen flex items-center justify-center"><Spinner size="lg" /></div>;
   }
 
-  const pendingOrders = orders.filter((o) => o.status === 'PAID');
-  const inProgressOrders = orders.filter((o) => o.status === 'IN_PRODUCTION');
-  const completedOrders = orders.filter((o) => ['DELIVERED', 'SHIPPED_TO_CUSTOMER'].includes(o.status));
+  const pendingOrders = orders.filter((o) => o.status === 'paid');
+  const inProgressOrders = orders.filter((o) => o.status === 'in_production');
+  const completedOrders = orders.filter((o) => ['delivered', 'shipped_to_customer'].includes(o.status));
   const earnings = completedOrders.reduce((sum, o) => sum + (o.designPrice || 0), 0);
 
   return (
@@ -119,14 +120,14 @@ export default function DesignerDashboardPage() {
                       <div className="flex gap-2 flex-wrap">
                         <StatusTransitionButton
                           orderId={order.id}
-                          targetStatus="IN_PRODUCTION"
+                          targetStatus="in_production"
                           label="Accept"
                           variant="primary"
                           onSuccess={(s) => handleStatusUpdate(order.id, s)}
                         />
                         <StatusTransitionButton
                           orderId={order.id}
-                          targetStatus="CANCELLED"
+                          targetStatus="cancelled"
                           label="Reject"
                           variant="danger"
                           onSuccess={(s) => handleStatusUpdate(order.id, s)}

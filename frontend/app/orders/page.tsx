@@ -30,15 +30,16 @@ const ORDER_TYPE_VARIANTS: Record<string, 'primary' | 'secondary' | 'info'> = {
 
 const STATUS_FILTER_OPTIONS = [
   { value: '', label: 'All Statuses' },
-  { value: 'PENDING_PAYMENT', label: 'Pending Payment' },
-  { value: 'PAID', label: 'Paid' },
-  { value: 'IN_PRODUCTION', label: 'In Production' },
-  { value: 'SHIPPED_TO_QA', label: 'Shipped to QA' },
-  { value: 'QA_INSPECTION', label: 'QA Inspection' },
-  { value: 'APPROVED', label: 'Approved' },
-  { value: 'SHIPPED_TO_CUSTOMER', label: 'Shipped' },
-  { value: 'DELIVERED', label: 'Delivered' },
-  { value: 'CANCELLED', label: 'Cancelled' },
+  { value: 'pending_payment', label: 'Pending Payment' },
+  { value: 'paid', label: 'Paid' },
+  { value: 'awaiting_materials', label: 'Awaiting Materials' },
+  { value: 'in_production', label: 'In Production' },
+  { value: 'shipped_to_qa', label: 'Shipped to QA' },
+  { value: 'qa_inspection', label: 'QA Inspection' },
+  { value: 'qa_approved', label: 'Approved' },
+  { value: 'shipped_to_customer', label: 'Shipped' },
+  { value: 'delivered', label: 'Delivered' },
+  { value: 'cancelled', label: 'Cancelled' },
 ];
 
 export default function OrdersPage() {

@@ -13,16 +13,17 @@ import { Badge } from '../../components/ui/Badge';
 import type { Order } from '../../types';
 
 const STATUS_VARIANTS: Record<string, 'default' | 'info' | 'warning' | 'success' | 'danger'> = {
-  PENDING_PAYMENT: 'warning',
-  PAID: 'info',
-  IN_PRODUCTION: 'info',
-  SHIPPED_TO_QA: 'info',
-  QA_INSPECTION: 'info',
-  QA_APPROVED: 'success',
-  QA_REJECTED: 'danger',
-  SHIPPED_TO_CUSTOMER: 'success',
-  DELIVERED: 'success',
-  CANCELLED: 'danger',
+  pending_payment: 'warning',
+  paid: 'info',
+  awaiting_materials: 'info',
+  in_production: 'info',
+  shipped_to_qa: 'info',
+  qa_inspection: 'info',
+  qa_approved: 'success',
+  qa_rejected: 'danger',
+  shipped_to_customer: 'success',
+  delivered: 'success',
+  cancelled: 'danger',
 };
 
 export default function AccountPage() {

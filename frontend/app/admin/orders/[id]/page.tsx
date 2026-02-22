@@ -14,16 +14,17 @@ import { useToast } from '../../../../components/ui/Toast';
 import { Order, OrderStatus } from '../../../../types';
 
 const ALL_STATUSES: { value: OrderStatus; label: string }[] = [
-  { value: 'PENDING_PAYMENT', label: 'Pending Payment' },
-  { value: 'PAID', label: 'Paid' },
-  { value: 'IN_PRODUCTION', label: 'In Production' },
-  { value: 'SHIPPED_TO_QA', label: 'Shipped to QA' },
-  { value: 'QA_INSPECTION', label: 'QA Inspection' },
-  { value: 'QA_APPROVED', label: 'QA Approved' },
-  { value: 'QA_REJECTED', label: 'QA Rejected' },
-  { value: 'SHIPPED_TO_CUSTOMER', label: 'Shipped to Customer' },
-  { value: 'DELIVERED', label: 'Delivered' },
-  { value: 'CANCELLED', label: 'Cancelled' },
+  { value: 'pending_payment', label: 'Pending Payment' },
+  { value: 'paid', label: 'Paid' },
+  { value: 'awaiting_materials', label: 'Awaiting Materials' },
+  { value: 'in_production', label: 'In Production' },
+  { value: 'shipped_to_qa', label: 'Shipped to QA' },
+  { value: 'qa_inspection', label: 'QA Inspection' },
+  { value: 'qa_approved', label: 'QA Approved' },
+  { value: 'qa_rejected', label: 'QA Rejected' },
+  { value: 'shipped_to_customer', label: 'Shipped to Customer' },
+  { value: 'delivered', label: 'Delivered' },
+  { value: 'cancelled', label: 'Cancelled' },
 ];
 
 interface OrderDetail extends Order {

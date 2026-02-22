@@ -57,16 +57,16 @@ export default function QADashboardPage() {
     if (!selectedOrder || !modalAction) return;
     try {
       if (modalAction === 'approve') {
-        await ordersApi.updateStatus(selectedOrder.id, 'QA_APPROVED', notes || undefined);
-        handleStatusUpdate(selectedOrder.id, 'QA_APPROVED');
+        await ordersApi.updateStatus(selectedOrder.id, 'qa_approved', notes || undefined);
+        handleStatusUpdate(selectedOrder.id, 'qa_approved');
         toast('success', 'Order approved and ready to ship');
       } else {
         if (!notes.trim()) {
           toast('error', 'Please provide rejection notes');
           return;
         }
-        await ordersApi.updateStatus(selectedOrder.id, 'QA_REJECTED', notes);
-        handleStatusUpdate(selectedOrder.id, 'QA_REJECTED');
+        await ordersApi.updateStatus(selectedOrder.id, 'qa_rejected', notes);
+        handleStatusUpdate(selectedOrder.id, 'qa_rejected');
         toast('success', 'Order rejected and returned to designer');
       }
       setModalOpen(false);
@@ -79,10 +79,10 @@ export default function QADashboardPage() {
     return <div className="min-h-screen flex items-center justify-center"><Spinner size="lg" /></div>;
   }
 
-  const inspectionQueue = orders.filter((o) => ['SHIPPED_TO_QA', 'QA_INSPECTION'].includes(o.status));
-  const completed = orders.filter((o) => ['QA_APPROVED', 'QA_REJECTED', 'SHIPPED_TO_CUSTOMER', 'DELIVERED'].includes(o.status));
-  const passCount = completed.filter((o) => ['QA_APPROVED', 'SHIPPED_TO_CUSTOMER', 'DELIVERED'].includes(o.status)).length;
-  const failCount = completed.filter((o) => o.status === 'QA_REJECTED').length;
+  const inspectionQueue = orders.filter((o) => ['shipped_to_qa', 'qa_inspection'].includes(o.status));
+  const completed = orders.filter((o) => ['qa_approved', 'qa_rejected', 'shipped_to_customer', 'delivered'].includes(o.status));
+  const passCount = completed.filter((o) => ['qa_approved', 'shipped_to_customer', 'delivered'].includes(o.status)).length;
+  const failCount = completed.filter((o) => o.status === 'qa_rejected').length;
 
   return (
     <DashboardLayout sidebarItems={SIDEBAR_ITEMS} userRole={user.role} title="QA Dashboard">
@@ -142,10 +142,10 @@ export default function QADashboardPage() {
                     <Button variant="danger" size="sm" onClick={() => openReject(order)}>
                       ✕ Reject
                     </Button>
-                    {order.status === 'QA_APPROVED' && (
+                    {order.status === 'qa_approved' && (
                       <StatusTransitionButton
                         orderId={order.id}
-                        targetStatus="SHIPPED_TO_CUSTOMER"
+                        targetStatus="shipped_to_customer"
                         label="Ship to Customer"
                         variant="secondary"
                         onSuccess={(s) => handleStatusUpdate(order.id, s)}
@@ -179,8 +179,8 @@ export default function QADashboardPage() {
                   <tr key={order.id} className="hover:bg-neutral-50">
                     <td className="px-4 py-3 font-medium">#{order.orderNumber}</td>
                     <td className="px-4 py-3">
-                      <Badge variant={order.status === 'QA_REJECTED' ? 'danger' : 'success'}>
-                        {order.status === 'QA_REJECTED' ? 'Rejected' : 'Passed'}
+                      <Badge variant={order.status === 'qa_rejected' ? 'danger' : 'success'}>
+                        {order.status === 'qa_rejected' ? 'Rejected' : 'Passed'}
                       </Badge>
                     </td>
                     <td className="px-4 py-3 text-neutral-500">{new Date(order.updatedAt).toLocaleDateString()}</td>

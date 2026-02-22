@@ -16,24 +16,25 @@ const SIDEBAR_ITEMS = [
 ];
 
 const STATUS_VARIANTS: Record<string, 'default' | 'info' | 'warning' | 'success' | 'danger'> = {
-  PENDING_PAYMENT: 'warning',
-  PAID: 'info',
-  IN_PRODUCTION: 'info',
-  SHIPPED_TO_QA: 'info',
-  QA_APPROVED: 'success',
-  QA_REJECTED: 'danger',
-  SHIPPED_TO_CUSTOMER: 'success',
-  DELIVERED: 'success',
-  CANCELLED: 'danger',
+  pending_payment: 'warning',
+  paid: 'info',
+  awaiting_materials: 'info',
+  in_production: 'info',
+  shipped_to_qa: 'info',
+  qa_approved: 'success',
+  qa_rejected: 'danger',
+  shipped_to_customer: 'success',
+  delivered: 'success',
+  cancelled: 'danger',
 };
 
 const STATUS_OPTIONS = [
   { value: '', label: 'All Statuses' },
-  { value: 'PAID', label: 'Paid' },
-  { value: 'IN_PRODUCTION', label: 'In Production' },
-  { value: 'SHIPPED_TO_CUSTOMER', label: 'Shipped' },
-  { value: 'DELIVERED', label: 'Delivered' },
-  { value: 'CANCELLED', label: 'Cancelled' },
+  { value: 'paid', label: 'Paid' },
+  { value: 'in_production', label: 'In Production' },
+  { value: 'shipped_to_customer', label: 'Shipped' },
+  { value: 'delivered', label: 'Delivered' },
+  { value: 'cancelled', label: 'Cancelled' },
 ];
 
 export default function FabricSellerOrdersPage() {
