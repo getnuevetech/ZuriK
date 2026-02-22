@@ -60,8 +60,9 @@ module.exports = {
         },
       },
       fontFamily: {
-        heading: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        heading: ['Playfair Display', 'Georgia', 'serif'],
         body: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
       boxShadow: {
         card: '0 1px 4px rgba(0,0,0,0.06)',

@@ -6,74 +6,122 @@ const STEPS = [
   {
     step: '01',
     title: 'Browse',
-    desc: 'Explore designs and fabrics from across Africa',
+    desc: 'Explore thousands of designs and fabrics from across Africa',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+      </svg>
+    ),
   },
   {
     step: '02',
     title: 'Choose',
-    desc: 'Select your design, fabric, and measurements',
+    desc: 'Select your design, fabric, and measurements for a perfect fit',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    ),
   },
   {
     step: '03',
     title: 'QA Verified',
-    desc: 'Every order is quality-checked before shipping',
+    desc: 'Every order is quality-checked by our expert inspectors before shipping',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+      </svg>
+    ),
   },
   {
     step: '04',
     title: 'Delivered',
-    desc: 'Receive authentic African fashion at your doorstep, worldwide',
+    desc: 'Receive authentic African fashion at your doorstep, anywhere worldwide',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+      </svg>
+    ),
+  },
+];
+
+const TRUST_BADGES = [
+  {
+    label: 'Worldwide Delivery',
+    stat: '150+ Countries',
+    desc: 'We ship to every corner of the globe',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Secure Payments',
+    stat: '100% Secure',
+    desc: 'Paystack & Stripe encrypted transactions',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+      </svg>
+    ),
+  },
+  {
+    label: 'QA Guaranteed',
+    stat: '99.9% Satisfaction',
+    desc: 'Every item inspected before dispatch',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+      </svg>
+    ),
   },
 ];
 
 export function HowItWorks() {
   return (
-    <section className="py-24 px-4 bg-neutral-50" aria-labelledby="how-it-works-heading">
-      <div className="max-w-5xl mx-auto">
+    <section className="py-24 px-4" style={{ backgroundColor: '#F9F6F2' }} aria-labelledby="how-it-works-heading">
+      <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <p className="text-xs font-semibold text-neutral-400 uppercase tracking-[0.2em] mb-3">The Process</p>
+          <span className="inline-block border border-[#C97B3A]/40 text-[#C97B3A] text-xs font-medium px-4 py-1.5 rounded-full mb-4">
+            The Process
+          </span>
           <h2 id="how-it-works-heading" className="font-heading text-4xl font-bold text-neutral-900 tracking-tight mb-4">
             How It Works
           </h2>
-          <p className="text-neutral-500 text-base font-light">Your journey from discovery to doorstep — worldwide</p>
+          <p className="text-neutral-500 text-base font-light max-w-xl mx-auto">
+            Your journey from discovery to doorstep — worldwide. Simple, transparent, and delightful.
+          </p>
         </div>
 
         {/* Steps */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-6 relative">
-          {/* Connecting line (desktop only) */}
-          <div className="hidden lg:block absolute top-7 left-[12.5%] right-[12.5%] h-px bg-neutral-200 z-0" />
-
-          {STEPS.map((step, i) => (
-            <div key={step.step} className="relative flex flex-col items-center text-center z-10">
-              {/* Step number circle */}
-              <div className="w-14 h-14 bg-white border border-neutral-200 flex items-center justify-center mb-6">
-                <span className="text-sm font-bold text-neutral-900 tracking-wider">{step.step}</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+          {STEPS.map((step) => (
+            <div key={step.step} className="bg-white p-8 shadow-sm hover:shadow-md transition-shadow">
+              {/* Step number at top-left */}
+              <div className="flex items-center gap-3 mb-6">
+                <span className="text-xs font-bold tracking-widest" style={{ color: '#C97B3A' }}>{step.step}</span>
               </div>
-
-              {/* Arrow between steps (mobile vertical) */}
-              {i < STEPS.length - 1 && (
-                <div className="lg:hidden text-neutral-300 mb-6">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-              )}
-
-              <h3 className="font-heading font-semibold text-neutral-900 text-base mb-2">{step.title}</h3>
+              {/* Icon */}
+              <div className="mb-4" style={{ color: '#C97B3A' }}>
+                {step.icon}
+              </div>
+              <h3 className="font-heading font-bold text-neutral-900 text-lg mb-2">{step.title}</h3>
               <p className="text-sm text-neutral-500 leading-relaxed font-light">{step.desc}</p>
             </div>
           ))}
         </div>
 
-        {/* Trust signals */}
-        <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-px bg-neutral-200">
-          {[
-            { label: 'Worldwide Delivery', desc: 'We ship to 150+ countries' },
-            { label: 'Secure Payments', desc: 'Your transactions are protected' },
-            { label: 'QA Guaranteed', desc: 'Every item inspected before dispatch' },
-          ].map((signal) => (
-            <div key={signal.label} className="flex flex-col items-center text-center p-8 bg-white">
-              <div className="font-semibold text-neutral-900 text-sm mb-1">{signal.label}</div>
-              <div className="text-xs text-neutral-500 font-light">{signal.desc}</div>
+        {/* Trust Badges */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {TRUST_BADGES.map((badge) => (
+            <div key={badge.label} className="bg-white p-8 text-center shadow-sm">
+              <div className="w-12 h-12 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: '#C97B3A1a', color: '#C97B3A' }}>
+                {badge.icon}
+              </div>
+              <div className="font-bold text-neutral-900 text-base mb-1">{badge.label}</div>
+              <div className="font-bold mb-2" style={{ color: '#C97B3A' }}>{badge.stat}</div>
+              <div className="text-xs text-neutral-500 font-light">{badge.desc}</div>
             </div>
           ))}
         </div>

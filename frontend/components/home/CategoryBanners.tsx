@@ -14,119 +14,102 @@ interface CollectionCard {
   ctaLink: string | null;
 }
 
-const FALLBACK_CATEGORIES: CollectionCard[] = [
+const FALLBACK_COLLECTIONS = [
   {
-    id: 'fallback-1',
+    id: 'c1',
     name: 'Ready-to-Wear',
-    description: 'Curated African Fashion, Ready to Ship',
-    image: null,
-    ctaText: 'Shop Now',
+    description: 'Curated African Fashion, Ready to Ship. Discover our handpicked selection of premium ready-to-wear pieces.',
+    image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&q=80',
+    ctaText: 'Shop Now →',
     ctaLink: '/products',
   },
   {
-    id: 'fallback-2',
+    id: 'c2',
     name: 'Premium Fabrics',
-    description: 'Authentic African Textiles from Across the Continent',
-    image: null,
-    ctaText: 'Browse Fabrics',
+    description: 'Authentic African Textiles from the finest craftspeople across the continent.',
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
+    ctaText: 'Browse Fabrics →',
     ctaLink: '/fabrics',
   },
   {
-    id: 'fallback-3',
+    id: 'c3',
     name: 'Custom Designs',
-    description: 'Your Body. Your Fabric. Your Style.',
-    image: null,
-    ctaText: 'Start Designing',
+    description: 'Your Body, Your Fabric, Your Style. Work with top designers to create something uniquely yours.',
+    image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80',
+    ctaText: 'Start Designing →',
     ctaLink: '/orders/custom-design',
-  },
-  {
-    id: 'fallback-4',
-    name: 'Meet Our Designers',
-    description: 'Artisans Keeping African Tradition Alive',
-    image: null,
-    ctaText: 'Explore Designers',
-    ctaLink: '/designers',
   },
 ];
 
-const FALLBACK_BG_COLORS = ['bg-neutral-900', 'bg-secondary-600', 'bg-neutral-700', 'bg-neutral-800'];
-
-function SkeletonCard() {
-  return (
-    <div className="relative overflow-hidden min-h-[320px] bg-neutral-200 animate-pulse" />
-  );
-}
-
 export function CategoryBanners() {
   const [cards, setCards] = useState<CollectionCard[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    homepageApi
-      .getCollections()
+    homepageApi.getCollections()
       .then((data: CollectionCard[]) => {
-        setCards(data.slice(0, 4));
+        if (data && data.length > 0) setCards(data.slice(0, 3));
       })
-      .catch((err) => {
-        console.error('Failed to fetch collections:', err);
-        setCards([]);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      .catch(() => {});
   }, []);
 
-  const displayCards = cards.length > 0 ? cards : FALLBACK_CATEGORIES;
+  const displayCards = cards.length > 0 ? cards : FALLBACK_COLLECTIONS;
 
   return (
-    <section className="py-24 px-4 bg-white" aria-labelledby="category-banners-heading">
+    <section className="py-24 px-4" style={{ backgroundColor: '#F9F6F2' }} aria-labelledby="collections-heading">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-14">
-          <p className="text-xs font-semibold text-neutral-400 uppercase tracking-[0.2em] mb-3">Collections</p>
-          <h2 id="category-banners-heading" className="font-heading text-4xl font-bold text-neutral-900 tracking-tight mb-4">
+          <span className="inline-block border border-[#C97B3A]/40 text-[#C97B3A] text-xs font-medium px-4 py-1.5 rounded-full mb-4">
+            Collections
+          </span>
+          <h2 id="collections-heading" className="font-heading text-4xl font-bold text-neutral-900 tracking-tight mb-4">
             Explore Our Collections
           </h2>
           <p className="text-neutral-500 text-base max-w-md mx-auto font-light">
-            From ready-to-wear to custom-made, discover fashion that celebrates African heritage
+            From ready-to-wear to custom-made, discover fashion celebrating African heritage
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {loading
-            ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
-            : displayCards.map((card, idx) => {
-                const href = card.ctaLink || '/products';
-                const cta = card.ctaText || 'Explore';
-                return (
-                  <Link
-                    key={card.id}
-                    href={href}
-                    className="group relative overflow-hidden min-h-[320px] flex flex-col justify-end p-10"
-                  >
-                    {card.image ? (
-                      <Image
-                        src={card.image}
-                        alt={`${card.name} collection banner`}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-110"
-                        sizes="(max-width: 768px) 100vw, 50vw"
-                      />
-                    ) : (
-                      <div className={`absolute inset-0 ${FALLBACK_BG_COLORS[idx % FALLBACK_BG_COLORS.length]}`} />
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-                    <div className="relative z-10">
-                      <h3 className="font-heading text-2xl font-bold text-white mb-2 tracking-tight">{card.name}</h3>
-                      {card.description && (
-                        <p className="text-white/70 text-sm font-light max-w-xs mb-6">{card.description}</p>
-                      )}
-                      <span className="inline-flex items-center gap-2 text-white text-sm font-semibold uppercase tracking-wider border-b border-white/40 pb-0.5 group-hover:border-white transition-colors">
-                        {cta}
-                        <span className="group-hover:translate-x-1 transition-transform">→</span>
-                      </span>
-                    </div>
-                  </Link>
-                );
-              })}
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {displayCards.map((card, idx) => (
+            <Link
+              key={card.id}
+              href={card.ctaLink || '/products'}
+              className="group relative overflow-hidden flex flex-col justify-end"
+              style={{ minHeight: '420px' }}
+            >
+              {/* Background image - SHARP CORNERS (no border-radius on image wrapper) */}
+              {card.image ? (
+                <Image
+                  src={card.image}
+                  alt={card.name}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+              ) : (
+                <div className="absolute inset-0 bg-neutral-800" />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+
+              {/* Numbered icon at top */}
+              <div className="absolute top-6 left-6 z-10">
+                <div className="w-10 h-10 rounded-full border-2 border-white/40 flex items-center justify-center text-white font-bold text-sm">
+                  {String(idx + 1).padStart(2, '0')}
+                </div>
+              </div>
+
+              {/* Content at bottom */}
+              <div className="relative z-10 p-8">
+                <h3 className="font-heading text-2xl font-bold text-white mb-2">{card.name}</h3>
+                {card.description && (
+                  <p className="text-white/70 text-sm font-light mb-4 max-w-xs">{card.description}</p>
+                )}
+                <span className="text-[#C97B3A] text-sm font-semibold group-hover:underline">
+                  {card.ctaText || 'Explore →'}
+                </span>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </section>
