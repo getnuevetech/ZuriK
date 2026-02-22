@@ -92,4 +92,7 @@ async function bootstrap() {
     logger.log(`✅ CORS allowed origins: ${allowedOrigins.join(', ')}`);
   }
 }
-bootstrap();
+bootstrap().catch((err) => {
+  console.error('❌ Application failed to start:', err);
+  process.exit(1);
+});
