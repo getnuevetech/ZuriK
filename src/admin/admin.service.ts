@@ -1,10 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
 import { User, UserRole } from '../users/entities/user.entity';
 import { Order, OrderStatus, OrderType } from '../orders/entities/order.entity';
 import { DesignerOrder } from '../orders/entities/designer-order.entity';
 import { FabricSellerOrder } from '../orders/entities/fabric-seller-order.entity';
+import { AdminCreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class AdminService {
@@ -363,6 +365,25 @@ export class AdminService {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) throw new NotFoundException(`User ${id} not found`);
     user.isActive = isActive;
+    const saved = await this.userRepository.save(user);
+    return this.sanitizeUser(saved);
+  }
+
+  async createUser(dto: AdminCreateUserDto) {
+    const existing = await this.userRepository.findOne({ where: { email: dto.email } });
+    if (existing) {
+      throw new ConflictException('A user with this email already exists');
+    }
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+    const user = this.userRepository.create({
+      email: dto.email,
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+      password: hashedPassword,
+      role: dto.role,
+      isEmailVerified: true,
+      isActive: dto.isActive !== undefined ? dto.isActive : true,
+    });
     const saved = await this.userRepository.save(user);
     return this.sanitizeUser(saved);
   }

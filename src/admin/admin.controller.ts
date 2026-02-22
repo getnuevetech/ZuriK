@@ -16,6 +16,8 @@ import { UserRole } from '../users/entities/user.entity';
 import { OrderStatus } from '../orders/entities/order.entity';
 import { AdminService } from './admin.service';
 
+import { AdminCreateUserDto } from './dto/create-user.dto';
+
 @ApiTags('Admin')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -47,6 +49,11 @@ export class AdminController {
   }
 
   // ─── User Management ──────────────────────────────────────────────────────
+
+  @Post('users')
+  createUser(@Body() body: AdminCreateUserDto) {
+    return this.adminService.createUser(body);
+  }
 
   @Get('users/pending-approvals')
   getPendingApprovals() {

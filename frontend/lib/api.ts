@@ -463,6 +463,8 @@ export const adminApi = {
   updateUserStatus: (id: string, isActive: boolean) =>
     api.patch(`/admin/users/${id}/status`, { isActive }).then((r) => r.data),
   getPendingApprovals: () => api.get('/admin/users/pending-approvals').then((r) => r.data),
+  createUser: (data: { email: string; firstName: string; lastName: string; password: string; role: string; isActive?: boolean }) =>
+    api.post('/admin/users', data).then((r) => r.data),
 
   // Orders
   getOrders: (params?: Record<string, string | number>) =>

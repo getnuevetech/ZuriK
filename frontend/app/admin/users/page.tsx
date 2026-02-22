@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { adminApi } from '../../../lib/api';
+import { adminApi, extractErrorMessage } from '../../../lib/api';
 import AdminPageHeader from '../../../components/admin/AdminPageHeader';
 import DataTable from '../../../components/admin/DataTable';
 import StatusBadge from '../../../components/admin/StatusBadge';
@@ -10,6 +10,10 @@ import SearchInput from '../../../components/admin/SearchInput';
 import FilterSelect from '../../../components/admin/FilterSelect';
 import ConfirmDialog from '../../../components/admin/ConfirmDialog';
 import { Spinner } from '../../../components/ui/Spinner';
+import { Modal } from '../../../components/ui/Modal';
+import { Input } from '../../../components/ui/Input';
+import { Select } from '../../../components/ui/Select';
+import { Button } from '../../../components/ui/Button';
 import { useToast } from '../../../components/ui/Toast';
 import { User, PaginatedResponse } from '../../../types';
 
@@ -41,6 +45,15 @@ export default function AdminUsersPage() {
   const [page, setPage] = useState(1);
   const [confirmToggle, setConfirmToggle] = useState<{ user: User } | null>(null);
   const [roleEditMap, setRoleEditMap] = useState<Record<string, string>>({});
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    role: 'customer',
+  });
   const { toast } = useToast();
 
   const fetchUsers = useCallback(() => {
@@ -82,6 +95,33 @@ export default function AdminUsersPage() {
       toast('error', 'Failed to update status');
     } finally {
       setConfirmToggle(null);
+    }
+  };
+
+  const handleCreateUser = async () => {
+    if (!createForm.firstName.trim() || !createForm.lastName.trim() || !createForm.email.trim() || !createForm.password) {
+      toast('error', 'Please fill in all required fields');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(createForm.email)) {
+      toast('error', 'Please enter a valid email address');
+      return;
+    }
+    if (createForm.password.length < 8) {
+      toast('error', 'Password must be at least 8 characters');
+      return;
+    }
+    setCreating(true);
+    try {
+      await adminApi.createUser(createForm);
+      toast('success', 'User created successfully');
+      setCreateModalOpen(false);
+      setCreateForm({ firstName: '', lastName: '', email: '', password: '', role: 'customer' });
+      fetchUsers();
+    } catch (err) {
+      toast('error', extractErrorMessage(err, 'Failed to create user'));
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -174,6 +214,12 @@ export default function AdminUsersPage() {
             placeholder="All Roles"
             label="Role"
           />
+          <button
+            onClick={() => setCreateModalOpen(true)}
+            className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors"
+          >
+            + Add User
+          </button>
         </div>
         <p className="text-sm text-neutral-500">{total} user{total !== 1 ? 's' : ''} found</p>
         {loading ? (
@@ -204,6 +250,71 @@ export default function AdminUsersPage() {
         confirmLabel={confirmToggle?.user.isActive ? 'Deactivate' : 'Activate'}
         variant={confirmToggle?.user.isActive ? 'danger' : 'default'}
       />
+
+      <Modal
+        isOpen={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        title="Add New User"
+      >
+        <div className="space-y-4">
+          <Input
+            label="First Name"
+            type="text"
+            value={createForm.firstName}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setCreateForm((f) => ({ ...f, firstName: e.target.value }))
+            }
+            placeholder="First name"
+            required
+          />
+          <Input
+            label="Last Name"
+            type="text"
+            value={createForm.lastName}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setCreateForm((f) => ({ ...f, lastName: e.target.value }))
+            }
+            placeholder="Last name"
+            required
+          />
+          <Input
+            label="Email"
+            type="email"
+            value={createForm.email}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setCreateForm((f) => ({ ...f, email: e.target.value }))
+            }
+            placeholder="user@example.com"
+            required
+          />
+          <Input
+            label="Password"
+            type="password"
+            value={createForm.password}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setCreateForm((f) => ({ ...f, password: e.target.value }))
+            }
+            placeholder="••••••••"
+            required
+          />
+          <Select
+            label="Role"
+            options={ROLE_CHANGE_OPTIONS}
+            value={createForm.role}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              setCreateForm((f) => ({ ...f, role: e.target.value }))
+            }
+          />
+          <div className="flex justify-end gap-2">
+            <Button variant="ghost" size="sm" onClick={() => setCreateModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" size="sm" loading={creating} onClick={handleCreateUser}>
+              Create
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
