@@ -33,4 +33,17 @@ export class CloudinaryService {
   async uploadImages(files: Express.Multer.File[], folder = 'african-fashion'): Promise<string[]> {
     return Promise.all(files.map(file => this.uploadImage(file, folder)));
   }
+
+  async uploadMedia(file: Express.Multer.File, folder = 'african-fashion'): Promise<{ url: string; resourceType: string }> {
+    return new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        { folder, resource_type: 'auto' },
+        (error, result) => {
+          if (error) return reject(error);
+          if (!result) return reject(new Error('Upload failed: no result'));
+          resolve({ url: result.secure_url, resourceType: result.resource_type });
+        },
+      ).end(file.buffer);
+    });
+  }
 }

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { heroBannersApi, HeroBanner } from '../../lib/api';
 import { Spinner } from '../ui/Spinner';
 
@@ -30,10 +31,11 @@ export function HeroBannerCarousel() {
 
   useEffect(() => {
     setMounted(true);
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    const mq = window.matchMedia('(max-width: 768px)');
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    setIsMobile(mq.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
   }, []);
 
   useEffect(() => {
@@ -89,12 +91,14 @@ export function HeroBannerCarousel() {
               className="absolute inset-0 w-full h-full object-cover"
             />
           ) : (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               key={mediaUrl}
               src={mediaUrl}
               alt={banner.title}
-              className="absolute inset-0 w-full h-full object-cover"
+              fill
+              priority={current === 0}
+              sizes="100vw"
+              className="object-cover"
             />
           )}
           <div className="absolute inset-0 bg-black" style={overlayStyle} />
@@ -107,6 +111,7 @@ export function HeroBannerCarousel() {
 
       {/* Content */}
       <div
+        key={banner.id}
         className={[
           'relative z-10 flex flex-col items-center justify-center h-full px-6 text-center',
           'transition-opacity duration-700',

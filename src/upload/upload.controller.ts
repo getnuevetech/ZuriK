@@ -13,10 +13,18 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const HERO_BANNER_MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
 const imageFilter = (req: any, file: Express.Multer.File, callback: (error: Error | null, acceptFile: boolean) => void) => {
   if (!file.mimetype.match(/\/(jpg|jpeg|png|webp)$/)) {
     return callback(new BadRequestException('Only JPG, PNG, WebP files allowed'), false);
+  }
+  callback(null, true);
+};
+
+const mediaFilter = (req: any, file: Express.Multer.File, callback: (error: Error | null, acceptFile: boolean) => void) => {
+  if (!file.mimetype.match(/\/(jpg|jpeg|png|webp|mp4|webm)$/)) {
+    return callback(new BadRequestException('Only JPG, PNG, WebP, MP4, WebM files allowed'), false);
   }
   callback(null, true);
 };
@@ -58,5 +66,14 @@ export class UploadController {
     if (!files || files.length === 0) throw new BadRequestException('No files provided');
     const urls = await this.cloudinaryService.uploadImages(files, 'african-fashion/fabrics');
     return { urls };
+  }
+
+  @Post('hero-banner')
+  @UseInterceptors(FileInterceptor('file', { fileFilter: mediaFilter, limits: { fileSize: HERO_BANNER_MAX_FILE_SIZE } }))
+  async uploadHeroBannerMedia(@UploadedFile() file: Express.Multer.File) {
+    if (!file) throw new BadRequestException('No file provided');
+    const { url, resourceType } = await this.cloudinaryService.uploadMedia(file, 'african-fashion/hero-banners');
+    const mediaType = resourceType === 'video' ? 'video' : 'image';
+    return { url, mediaType };
   }
 }
