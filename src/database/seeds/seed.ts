@@ -17,11 +17,13 @@ export async function runSeed(dataSource: DataSource): Promise<void> {
   let designer3: any;
   let seller: any;
 
-  if (userCount === 0) {
-    const hash = async (p: string) => bcrypt.hash(p, 10);
-    const defaultPassword = await hash('Password123!');
+  const hash = async (p: string) => bcrypt.hash(p, 10);
+  const defaultPassword = await hash('Password123!');
 
-    const users = await userRepo.save([
+  // Always ensure the admin user exists (upsert logic)
+  let adminUser = await userRepo.findOne({ where: { email: 'admin@africanfashion.com' } });
+  if (!adminUser) {
+    adminUser = await userRepo.save(
       userRepo.create({
         email: 'admin@africanfashion.com',
         password: defaultPassword,
@@ -29,10 +31,28 @@ export async function runSeed(dataSource: DataSource): Promise<void> {
         lastName: 'User',
         role: 'admin',
         isActive: true,
+        isEmailVerified: true,
+        failedLoginAttempts: 0,
+        lockedUntil: null,
         country: 'Nigeria',
         city: 'Lagos',
         addressLine1: '1 Admin Street',
       }),
+    );
+    console.log('✅ Admin user created');
+  } else {
+    // Reset admin password and clear any lockout
+    adminUser.password = defaultPassword;
+    adminUser.isEmailVerified = true;
+    adminUser.failedLoginAttempts = 0;
+    adminUser.lockedUntil = null;
+    adminUser.isActive = true;
+    await userRepo.save(adminUser);
+    console.log('✅ Admin user reset (password + lockout cleared)');
+  }
+
+  if (userCount === 0) {
+    const users = await userRepo.save([
       userRepo.create({
         email: 'designer@africanfashion.com',
         password: defaultPassword,
@@ -40,6 +60,9 @@ export async function runSeed(dataSource: DataSource): Promise<void> {
         lastName: 'Diallo',
         role: 'designer',
         isActive: true,
+        isEmailVerified: true,
+        failedLoginAttempts: 0,
+        lockedUntil: null,
         country: 'Nigeria',
         city: 'Lagos',
         addressLine1: '5 Design Lane',
@@ -53,6 +76,9 @@ export async function runSeed(dataSource: DataSource): Promise<void> {
         lastName: 'Ouattara',
         role: 'designer',
         isActive: true,
+        isEmailVerified: true,
+        failedLoginAttempts: 0,
+        lockedUntil: null,
         country: 'Ivory Coast',
         city: 'Abidjan',
         addressLine1: '22 Rue des Tissus',
@@ -66,6 +92,9 @@ export async function runSeed(dataSource: DataSource): Promise<void> {
         lastName: 'Moyo',
         role: 'designer',
         isActive: true,
+        isEmailVerified: true,
+        failedLoginAttempts: 0,
+        lockedUntil: null,
         country: 'South Africa',
         city: 'Cape Town',
         addressLine1: '7 Fashion Walk, Green Point',
@@ -79,6 +108,9 @@ export async function runSeed(dataSource: DataSource): Promise<void> {
         lastName: 'Mensah',
         role: 'fabric_seller',
         isActive: true,
+        isEmailVerified: true,
+        failedLoginAttempts: 0,
+        lockedUntil: null,
         country: 'Nigeria',
         city: 'Kano',
         addressLine1: '12 Fabric Market Road',
@@ -92,6 +124,9 @@ export async function runSeed(dataSource: DataSource): Promise<void> {
         lastName: 'Inspector',
         role: 'qa',
         isActive: true,
+        isEmailVerified: true,
+        failedLoginAttempts: 0,
+        lockedUntil: null,
         country: 'Nigeria',
         city: 'Abuja',
         addressLine1: 'QA Facility, Plot 5 Central Business District',
@@ -105,6 +140,9 @@ export async function runSeed(dataSource: DataSource): Promise<void> {
         lastName: 'User',
         role: 'customer',
         isActive: true,
+        isEmailVerified: true,
+        failedLoginAttempts: 0,
+        lockedUntil: null,
         country: 'Nigeria',
         city: 'Port Harcourt',
         addressLine1: '8 Residential Avenue',

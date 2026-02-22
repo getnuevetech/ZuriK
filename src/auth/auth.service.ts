@@ -36,6 +36,9 @@ export class AuthService {
         dto.firstName = trimmed;
       }
     }
+    if (!dto.firstName) {
+      throw new BadRequestException('First name or full name is required');
+    }
     const existing = await this.userRepo.findOne({ where: { email: dto.email } });
     if (existing) {
       throw new ConflictException('Email already registered');
