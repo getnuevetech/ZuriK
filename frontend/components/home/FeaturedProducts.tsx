@@ -81,10 +81,10 @@ export function FeaturedProducts() {
         id: p.id,
         name: p.name,
         designer: (p.designer as any)?.firstName ? `${(p.designer as any).firstName} ${(p.designer as any).lastName || ''}`.trim() : 'Designer',
-        price: Number(p.price),
+        price: Number(p.customerPrice),
         image: (p.images as string[])?.[0] || 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&q=80',
-        rating: 4.7,
-        reviews: Math.floor(Math.random() * 200) + 10,
+        rating: p.averageRating ?? 4.7,
+        reviews: p.totalReviews ?? 50,
         category: p.category || 'Fashion',
       }))
     : STATIC_PRODUCTS;

@@ -51,7 +51,7 @@ export function TrendingProducts() {
             category: p.category || 'Fashion',
             badge: i % 3 === 0 ? 'Trending' : i % 3 === 1 ? 'Ready-to-Wear' : 'Custom Design',
             badgeColor: i % 3 === 0 ? 'bg-red-500' : i % 3 === 1 ? 'bg-[#C97B3A]' : 'bg-purple-600',
-            price: Number(p.price),
+            price: Number(p.customerPrice),
             image: (p.images as string[])?.[0] || STATIC_TRENDING[i % 6].image,
             designer: (p.designer as any)?.firstName || 'Designer',
             rating: 4.7,
