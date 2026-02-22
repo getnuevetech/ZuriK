@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
-import { ProductsModule } from '../products/products.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Design } from '../designs/entities/design.entity';
+import { ReadyToWearProduct } from '../ready-to-wear/entities/ready-to-wear-product.entity';
 import { ComparisonService } from './comparisons.service';
 import { ComparisonController } from './comparisons.controller';
 
 @Module({
-  imports: [ProductsModule],
+  imports: [TypeOrmModule.forFeature([Design, ReadyToWearProduct])],
   controllers: [ComparisonController],
   providers: [ComparisonService],
 })

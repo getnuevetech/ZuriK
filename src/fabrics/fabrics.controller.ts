@@ -27,6 +27,11 @@ export class FabricsController {
     return this.fabricsService.findAll(filters);
   }
 
+  @Get('featured')
+  findFeatured() {
+    return this.fabricsService.findFeatured();
+  }
+
   @Get('low-stock')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.FABRIC_SELLER, UserRole.ADMIN)
@@ -62,5 +67,12 @@ export class FabricsController {
   @Roles(UserRole.FABRIC_SELLER, UserRole.ADMIN)
   remove(@Param('id') id: string, @Request() req: RequestWithUser) {
     return this.fabricsService.remove(id, req.user.id, req.user.role);
+  }
+
+  @Patch(':id/featured')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  toggleFeatured(@Param('id') id: string) {
+    return this.fabricsService.toggleFeatured(id);
   }
 }

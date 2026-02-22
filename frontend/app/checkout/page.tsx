@@ -142,7 +142,7 @@ export default function CheckoutPage() {
       for (const item of cartItems) {
         if (item.type === 'ready-to-wear' && item.designId) {
           const order = await ordersApi.createReadyToWear({
-            designId: item.designId,
+            readyToWearProductId: item.designId,
             quantity: item.quantity,
             customerNotes: customerNotes || undefined,
           });

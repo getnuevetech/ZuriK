@@ -8,7 +8,8 @@ import { HomepageLayout } from './entities/homepage-layout.entity';
 import { PromoBanner } from './entities/promo-banner.entity';
 import { CollectionPost } from './entities/collection-post.entity';
 import { HeritageStory } from './entities/heritage-story.entity';
-import { Product } from '../products/entities/product.entity';
+import { Design } from '../designs/entities/design.entity';
+import { ReadyToWearProduct } from '../ready-to-wear/entities/ready-to-wear-product.entity';
 import { Order } from '../orders/entities/order.entity';
 import { User } from '../users/entities/user.entity';
 import { HomepageService } from './homepage.service';
@@ -25,7 +26,8 @@ import { HomepageController } from './homepage.controller';
       PromoBanner,
       CollectionPost,
       HeritageStory,
-      Product,
+      Design,
+      ReadyToWearProduct,
       Order,
       User,
     ]),

@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { RecentlyViewed } from './entities/recently-viewed.entity';
-import { Product } from '../products/entities/product.entity';
+import { RecentlyViewed, RecentlyViewedItemType } from './entities/recently-viewed.entity';
 
 @Injectable()
 export class RecentlyViewedService {
@@ -11,33 +10,31 @@ export class RecentlyViewedService {
     private readonly recentlyViewedRepo: Repository<RecentlyViewed>,
   ) {}
 
-  async trackView(userId: string, productId: string): Promise<void> {
+  async trackView(userId: string, itemId: string, itemType: RecentlyViewedItemType = RecentlyViewedItemType.DESIGN): Promise<void> {
     const existing = await this.recentlyViewedRepo.findOne({
-      where: { userId, productId },
+      where: { userId, itemId, itemType },
     });
     if (existing) {
       await this.recentlyViewedRepo.save(existing);
     } else {
-      const record = this.recentlyViewedRepo.create({ userId, productId });
+      const record = this.recentlyViewedRepo.create({ userId, itemId, itemType });
       await this.recentlyViewedRepo.save(record);
     }
   }
 
-  async getRecentlyViewed(userId: string, limit = 10): Promise<Product[]> {
-    const records = await this.recentlyViewedRepo.find({
+  async getRecentlyViewed(userId: string, limit = 10): Promise<RecentlyViewed[]> {
+    return this.recentlyViewedRepo.find({
       where: { userId },
-      relations: ['product', 'product.designer'],
       order: { updatedAt: 'DESC' },
       take: limit,
     });
-    return records.map((r) => r.product).filter(Boolean);
   }
 
   async clearHistory(userId: string): Promise<void> {
     await this.recentlyViewedRepo.delete({ userId });
   }
 
-  async removeItem(userId: string, productId: string): Promise<void> {
-    await this.recentlyViewedRepo.delete({ userId, productId });
+  async removeItem(userId: string, itemId: string): Promise<void> {
+    await this.recentlyViewedRepo.delete({ userId, itemId });
   }
 }

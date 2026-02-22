@@ -2,7 +2,7 @@ import React from 'react';
 import { HeroBannerCarousel } from '../components/home/HeroBannerCarousel';
 import { PromoBanner } from '../components/home/PromoBanner';
 import { ShopByCountry } from '../components/home/ShopByCountry';
-import { FeaturedProducts } from '../components/home/FeaturedProducts';
+import { FeaturedSections } from '../components/home/FeaturedSections';
 import { CategoryBanners } from '../components/home/CategoryBanners';
 import { TrendingProducts } from '../components/home/TrendingProducts';
 import { TryOnShowcase } from '../components/home/TryOnShowcase';
@@ -17,7 +17,7 @@ export default function Home() {
       <HeroBannerCarousel />
       <PromoBanner />
       <ShopByCountry />
-      <FeaturedProducts />
+      <FeaturedSections />
       <CategoryBanners />
       <TrendingProducts />
       <TryOnShowcase />

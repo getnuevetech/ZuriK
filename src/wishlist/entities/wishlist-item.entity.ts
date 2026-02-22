@@ -5,14 +5,18 @@ import {
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
-  Unique,
   Index,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
-import { Product } from '../../products/entities/product.entity';
+
+export enum WishlistItemType {
+  DESIGN = 'design',
+  READY_TO_WEAR = 'ready_to_wear',
+  FABRIC = 'fabric',
+}
 
 @Entity('wishlist_items')
-@Unique(['userId', 'productId'])
+@Index(['userId', 'itemId', 'itemType'], { unique: true })
 @Index(['userId'])
 export class WishlistItem {
   @PrimaryGeneratedColumn('uuid')
@@ -25,12 +29,11 @@ export class WishlistItem {
   @Column()
   userId: string;
 
-  @ManyToOne(() => Product, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'productId' })
-  product: Product;
-
   @Column()
-  productId: string;
+  itemId: string;
+
+  @Column({ type: 'enum', enum: WishlistItemType, default: WishlistItemType.DESIGN })
+  itemType: WishlistItemType;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -6,7 +6,13 @@ import { CreateFabricDto } from './dto/create-fabric.dto';
 import { UpdateFabricDto } from './dto/update-fabric.dto';
 import { UserRole } from '../users/entities/user.entity';
 import { FabricFilterDto, FabricSortOption } from './dto/fabric-filter.dto';
-import { PaginatedResponse } from '../products/products.service';
+export interface PaginatedResponse<T> {
+  items: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
 
 @Injectable()
 export class FabricsService {
@@ -28,7 +34,6 @@ export class FabricsService {
       search,
       material,
       pattern,
-      country,
       minPrice,
       maxPrice,
       inStock,
@@ -56,9 +61,6 @@ export class FabricsService {
     }
     if (pattern) {
       qb.andWhere('fabric.patterns ILIKE :pattern', { pattern: `%${pattern}%` });
-    }
-    if (country) {
-      qb.andWhere('fabric.country = :country', { country });
     }
     if (minPrice !== undefined) {
       qb.andWhere('fabric.customerPrice >= :minPrice', { minPrice });
@@ -161,5 +163,20 @@ export class FabricsService {
       .andWhere('fabric.trackInventory = true')
       .andWhere('fabric.stock <= fabric.lowStockThreshold')
       .getMany();
+  }
+
+  async findFeatured(): Promise<Fabric[]> {
+    return this.fabricRepo.find({
+      where: { isFeatured: true, isActive: true },
+      relations: ['seller'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async toggleFeatured(id: string): Promise<Fabric> {
+    const fabric = await this.fabricRepo.findOne({ where: { id } });
+    if (!fabric) throw new NotFoundException(`Fabric ${id} not found`);
+    fabric.isFeatured = !fabric.isFeatured;
+    return this.fabricRepo.save(fabric);
   }
 }

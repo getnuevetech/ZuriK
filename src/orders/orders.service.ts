@@ -10,7 +10,8 @@ import { Order, OrderType, OrderStatus } from './entities/order.entity';
 import { FabricSellerOrder } from './entities/fabric-seller-order.entity';
 import { DesignerOrder } from './entities/designer-order.entity';
 import { UserRole, User } from '../users/entities/user.entity';
-import { Product } from '../products/entities/product.entity';
+import { Design } from '../designs/entities/design.entity';
+import { ReadyToWearProduct } from '../ready-to-wear/entities/ready-to-wear-product.entity';
 import { Fabric } from '../fabrics/entities/fabric.entity';
 import { Measurement } from '../measurements/entities/measurement.entity';
 import { CreateCustomDesignOrderDto } from './dto/create-custom-design-order.dto';
@@ -37,8 +38,10 @@ export class OrdersService {
     private readonly fabricSellerOrderRepo: Repository<FabricSellerOrder>,
     @InjectRepository(DesignerOrder)
     private readonly designerOrderRepo: Repository<DesignerOrder>,
-    @InjectRepository(Product)
-    private readonly productRepo: Repository<Product>,
+    @InjectRepository(Design)
+    private readonly designRepo: Repository<Design>,
+    @InjectRepository(ReadyToWearProduct)
+    private readonly readyToWearRepo: Repository<ReadyToWearProduct>,
     @InjectRepository(Fabric)
     private readonly fabricRepo: Repository<Fabric>,
     @InjectRepository(Measurement)
@@ -69,24 +72,22 @@ export class OrdersService {
   }
 
   async createCustomDesignOrder(customerId: string, dto: CreateCustomDesignOrderDto): Promise<Order> {
-    const design = await this.productRepo.findOne({
+    const design = await this.designRepo.findOne({
       where: { id: dto.designId, isActive: true },
       relations: ['designer'],
     });
     if (!design) throw new NotFoundException(`Design ${dto.designId} not found or inactive`);
 
-    const fabric = await this.fabricRepo.findOne({
-      where: { id: dto.fabricId, isActive: true },
-      relations: ['seller'],
-    });
-    if (!fabric) throw new NotFoundException(`Fabric ${dto.fabricId} not found or inactive`);
+    const fabricChosenByDesigner = dto.fabricChosenByDesigner || !dto.fabricId;
+    let fabric: Fabric | null = null;
 
-    if (fabric.stock <= 0) throw new BadRequestException('Fabric is out of stock');
-
-    if (fabric.country !== design.country) {
-      throw new BadRequestException(
-        `Fabric country (${fabric.country}) must match design country (${design.country}) for custom orders`,
-      );
+    if (!fabricChosenByDesigner && dto.fabricId) {
+      fabric = await this.fabricRepo.findOne({
+        where: { id: dto.fabricId, isActive: true },
+        relations: ['seller'],
+      });
+      if (!fabric) throw new NotFoundException(`Fabric ${dto.fabricId} not found or inactive`);
+      if (fabric.stock <= 0) throw new BadRequestException('Fabric is out of stock');
     }
 
     const measurement = await this.measurementRepo.save(
@@ -104,7 +105,7 @@ export class OrdersService {
     );
 
     const designPrice = Number(design.customerPrice);
-    const fabricPrice = Number(fabric.customerPrice);
+    const fabricPrice = fabric ? Number(fabric.customerPrice) : 0;
 
     const platformSettings = await this.settingsService.findActive();
     const platformFeeRate = platformSettings
@@ -115,7 +116,8 @@ export class OrdersService {
       : ((designPrice + fabricPrice) * DEFAULT_PLATFORM_FEE_RATE) / 100;
 
     const subtotal = designPrice + fabricPrice + platformFee;
-    const taxConfig = await this.taxesService.findByCountry(design.country);
+    const designerCountry = design.designer?.country || '';
+    const taxConfig = await this.taxesService.findByCountry(designerCountry);
     const totalTaxRate = taxConfig
       ? Number(taxConfig.baseTaxRate) + Number(taxConfig.adminMarkupRate)
       : 0;
@@ -133,7 +135,8 @@ export class OrdersService {
         status: OrderStatus.PENDING_PAYMENT,
         customer: { id: customerId },
         design: { id: dto.designId },
-        fabric: { id: dto.fabricId },
+        fabric: fabric ? { id: fabric.id } : undefined,
+        fabricChosenByDesigner,
         measurement: { id: measurement.id },
         designPrice,
         fabricPrice,
@@ -149,24 +152,29 @@ export class OrdersService {
       }),
     );
 
-    // Get designer address for fabric shipment
     const designer = design.designer;
     const qaUser = await this.userRepo.findOne({ where: { role: UserRole.QA, isActive: true } });
 
-    // Create FabricSellerOrder — ship fabric to designer (NOT customer)
-    await this.fabricSellerOrderRepo.save(
-      this.fabricSellerOrderRepo.create({
-        order: { id: order.id },
-        fabricSeller: { id: fabric.seller.id },
-        fabric: { id: dto.fabricId },
-        earnings: fabricSellerEarnings,
-        shipToName: designer ? `${designer.firstName || ''} ${designer.lastName || ''}`.trim() : 'Designer',
-        shipToAddress: designer?.addressLine1 || '',
-        shipToCity: designer?.city || '',
-        shipToCountry: designer?.country || design.country,
-        status: 'pending',
-      }),
-    );
+    if (!fabricChosenByDesigner && fabric) {
+      // Create FabricSellerOrder — ship fabric to designer
+      await this.fabricSellerOrderRepo.save(
+        this.fabricSellerOrderRepo.create({
+          order: { id: order.id },
+          fabricSeller: { id: fabric.seller.id },
+          fabric: { id: fabric.id },
+          earnings: fabricSellerEarnings,
+          shipToName: designer ? `${designer.firstName || ''} ${designer.lastName || ''}`.trim() : 'Designer',
+          shipToAddress: designer?.addressLine1 || '',
+          shipToCity: designer?.city || '',
+          shipToCountry: designer?.country || '',
+          status: 'pending',
+        }),
+      );
+
+      // Decrement fabric stock
+      fabric.stock = fabric.stock - 1;
+      await this.fabricRepo.save(fabric);
+    }
 
     // Create DesignerOrder — ship finished product to QA
     const qaAddr = this.getQaAddress(qaUser || undefined);
@@ -181,13 +189,9 @@ export class OrdersService {
         shipToAddress: qaAddr.address,
         shipToCity: qaAddr.city,
         shipToCountry: qaAddr.country,
-        status: 'awaiting_fabric',
+        status: fabricChosenByDesigner ? OrderStatus.AWAITING_MATERIALS : OrderStatus.AWAITING_MATERIALS,
       }),
     );
-
-    // Decrement fabric stock
-    fabric.stock = fabric.stock - 1;
-    await this.fabricRepo.save(fabric);
 
     // Trigger notifications (fire-and-forget)
     const customer = await this.userRepo.findOne({ where: { id: customerId } });
@@ -199,14 +203,14 @@ export class OrdersService {
   }
 
   async createReadyToWearOrder(customerId: string, dto: CreateReadyToWearOrderDto): Promise<Order> {
-    const design = await this.productRepo.findOne({
-      where: { id: dto.designId, isActive: true },
+    const rtwProduct = await this.readyToWearRepo.findOne({
+      where: { id: dto.readyToWearProductId, isActive: true },
       relations: ['designer'],
     });
-    if (!design) throw new NotFoundException(`Design ${dto.designId} not found or inactive`);
+    if (!rtwProduct) throw new NotFoundException(`Ready-to-wear product ${dto.readyToWearProductId} not found or inactive`);
 
     const quantity = dto.quantity || 1;
-    const designPrice = Number(design.customerPrice) * quantity;
+    const designPrice = Number(rtwProduct.customerPrice) * quantity;
 
     const platformSettings = await this.settingsService.findActive();
     const platformFeeRate = platformSettings
@@ -217,7 +221,8 @@ export class OrdersService {
       : (designPrice * DEFAULT_PLATFORM_FEE_RATE) / 100;
 
     const subtotal = designPrice + platformFee;
-    const taxConfig = await this.taxesService.findByCountry(design.country);
+    const designerCountry = rtwProduct.designer?.country || '';
+    const taxConfig = await this.taxesService.findByCountry(designerCountry);
     const totalTaxRate = taxConfig
       ? Number(taxConfig.baseTaxRate) + Number(taxConfig.adminMarkupRate)
       : 0;
@@ -233,7 +238,7 @@ export class OrdersService {
         orderType: OrderType.READY_TO_WEAR,
         status: OrderStatus.PENDING_PAYMENT,
         customer: { id: customerId },
-        design: { id: dto.designId },
+        readyToWearProduct: { id: dto.readyToWearProductId },
         designPrice,
         subtotal,
         platformFee,
@@ -252,8 +257,7 @@ export class OrdersService {
     await this.designerOrderRepo.save(
       this.designerOrderRepo.create({
         order: { id: order.id },
-        designer: { id: design.designer.id },
-        design: { id: dto.designId },
+        designer: { id: rtwProduct.designer.id },
         earnings: designerEarnings,
         shipToName: qaAddr.name,
         shipToAddress: qaAddr.address,
@@ -292,7 +296,8 @@ export class OrdersService {
       : (fabricPrice * DEFAULT_PLATFORM_FEE_RATE) / 100;
 
     const subtotal = fabricPrice + platformFee;
-    const taxConfig = await this.taxesService.findByCountry(fabric.country);
+    const sellerCountry = fabric.seller?.country || '';
+    const taxConfig = await this.taxesService.findByCountry(sellerCountry);
     const totalTaxRate = taxConfig
       ? Number(taxConfig.baseTaxRate) + Number(taxConfig.adminMarkupRate)
       : 0;
@@ -355,7 +360,7 @@ export class OrdersService {
       case UserRole.CUSTOMER: {
         const orders = await this.orderRepo.find({
           where: { customer: { id: userId } },
-          relations: ['design', 'fabric', 'measurement'],
+          relations: ['design', 'readyToWearProduct', 'fabric', 'measurement'],
         });
         return orders.map(o => this.filterOrderForCustomer(o));
       }
@@ -385,14 +390,14 @@ export class OrdersService {
         ];
         const orders = await this.orderRepo.find({
           where: { status: In(qaStatuses) },
-          relations: ['design', 'fabric', 'customer'],
+          relations: ['design', 'readyToWearProduct', 'fabric', 'customer'],
         });
         return orders.map(o => this.filterOrderForQa(o));
       }
 
       case UserRole.ADMIN: {
         return this.orderRepo.find({
-          relations: ['customer', 'design', 'fabric', 'measurement'],
+          relations: ['customer', 'design', 'readyToWearProduct', 'fabric', 'measurement'],
         });
       }
 
@@ -404,7 +409,7 @@ export class OrdersService {
   async getOrderById(orderId: string, userId: string, userRole: UserRole): Promise<any> {
     const order = await this.orderRepo.findOne({
       where: { id: orderId },
-      relations: ['customer', 'design', 'fabric', 'measurement'],
+      relations: ['customer', 'design', 'readyToWearProduct', 'fabric', 'measurement'],
     });
     if (!order) throw new NotFoundException(`Order ${orderId} not found`);
 
@@ -449,7 +454,9 @@ export class OrdersService {
       orderType: order.orderType,
       status: order.status,
       design: order.design,
+      readyToWearProduct: order.readyToWearProduct,
       fabric: order.fabric,
+      fabricChosenByDesigner: order.fabricChosenByDesigner,
       designPrice: order.designPrice,
       fabricPrice: order.fabricPrice,
       totalPrice: order.totalPrice,
@@ -474,11 +481,11 @@ export class OrdersService {
       orderType: order.orderType,
       status: order.status,
       design: order.design,
+      readyToWearProduct: order.readyToWearProduct,
       fabric: order.fabric,
       measurement: order.measurement,
       qaComments: order.qaComments,
       quantity: order.quantity,
-      // Customer address revealed once item is shipped to QA
       customerAddress: showAddress ? {
         addressLine1: order.customer?.addressLine1,
         city: order.customer?.city,

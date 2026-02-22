@@ -3,18 +3,19 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRequireRole } from '../../../lib/with-role';
-import { ordersApi, productsApi } from '../../../lib/api';
+import { ordersApi, designsApi, readyToWearApi } from '../../../lib/api';
 import { Spinner } from '../../../components/ui/Spinner';
 import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
 import { StatsCard } from '../../../components/dashboard/StatsCard';
 import { DashboardLayout } from '../../../components/dashboard/DashboardLayout';
 import { StatusTransitionButton } from '../../../components/dashboard/StatusTransitionButton';
-import type { Order, Product, OrderStatus } from '../../../types';
+import type { Order, Design, ReadyToWearProduct, OrderStatus } from '../../../types';
 
 const SIDEBAR_ITEMS = [
   { href: '/dashboard/designer', label: 'Overview', icon: '📊' },
-  { href: '/dashboard/designer/products', label: 'My Products', icon: '👗' },
+  { href: '/dashboard/designer/designs', label: 'My Designs', icon: '🎨' },
+  { href: '/dashboard/designer/ready-to-wear', label: 'My Ready-to-Wear', icon: '👗' },
   { href: '/dashboard/designer/orders', label: 'Orders', icon: '📦' },
 ];
 
@@ -34,16 +35,19 @@ const STATUS_VARIANTS: Record<string, 'default' | 'info' | 'warning' | 'success'
 export default function DesignerDashboardPage() {
   const { user, isLoading } = useRequireRole(['designer']);
   const [orders, setOrders] = useState<Order[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [designs, setDesigns] = useState<Design[]>([]);
+  const [rtwProducts, setRtwProducts] = useState<ReadyToWearProduct[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadData = () => {
     Promise.all([
       ordersApi.getMyOrders().catch(() => [] as Order[]),
-      productsApi.list().catch(() => ({ items: [], total: 0, page: 1, limit: 20, totalPages: 0 })),
-    ]).then(([o, p]) => {
+      designsApi.list().catch(() => ({ items: [], total: 0, page: 1, limit: 20, totalPages: 0 })),
+      readyToWearApi.list().catch(() => ({ items: [], total: 0, page: 1, limit: 20, totalPages: 0 })),
+    ]).then(([o, d, r]) => {
       setOrders(o);
-      setProducts((p as { items: Product[] }).items);
+      setDesigns((d as { items: Design[] }).items);
+      setRtwProducts((r as { items: ReadyToWearProduct[] }).items);
     }).finally(() => setLoading(false));
   };
 
@@ -68,16 +72,20 @@ export default function DesignerDashboardPage() {
     <DashboardLayout sidebarItems={SIDEBAR_ITEMS} userRole={user.role} title="Designer Dashboard">
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatsCard label="My Products" value={products.length} icon="👗" />
+        <StatsCard label="My Designs" value={designs.length} icon="🎨" />
+        <StatsCard label="My RTW" value={rtwProducts.length} icon="👗" />
         <StatsCard label="Pending Orders" value={pendingOrders.length} icon="⏳" />
         <StatsCard label="In Production" value={inProgressOrders.length} icon="⚙️" />
         <StatsCard label="Earnings" value={`$${earnings.toFixed(2)}`} icon="💰" />
       </div>
 
       {/* Quick links */}
-      <div className="flex gap-3 mb-8">
-        <Link href="/dashboard/designer/products">
-          <Button variant="outline" size="sm">Manage Products</Button>
+      <div className="flex flex-wrap gap-3 mb-8">
+        <Link href="/dashboard/designer/designs">
+          <Button variant="outline" size="sm">Manage Designs</Button>
+        </Link>
+        <Link href="/dashboard/designer/ready-to-wear">
+          <Button variant="outline" size="sm">Manage Ready-to-Wear</Button>
         </Link>
         <Link href="/dashboard/designer/orders">
           <Button variant="outline" size="sm">View All Orders</Button>

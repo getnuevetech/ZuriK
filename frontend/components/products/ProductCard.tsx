@@ -57,7 +57,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
       <CardBody className="flex flex-col flex-1">
         <div className="flex items-center gap-2 mb-2 flex-wrap">
           {product.category && <Badge variant="primary">{product.category}</Badge>}
-          {product.country && <Badge variant="secondary">{product.country}</Badge>}
+          {product.designer?.country && <Badge variant="secondary">{product.designer.country}</Badge>}
         </div>
         <h3 className="font-semibold text-neutral-900 mb-1 line-clamp-1">{product.name}</h3>
         {/* Rating */}

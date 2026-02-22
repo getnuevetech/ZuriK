@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { productsApi, ordersApi, reviewsApi, recentlyViewedApi } from '../../../lib/api';
+import { designsApi as productsApi, ordersApi, reviewsApi, recentlyViewedApi } from '../../../lib/api';
 import { useCart } from '../../../lib/cart-context';
 import { useAuth } from '../../../lib/auth-context';
 import { useToast } from '../../../components/ui/Toast';
@@ -25,7 +25,7 @@ import { ShareButton } from '../../../components/common/ShareButton';
 import { getShareUrl } from '../../../lib/share-utils';
 import { RecentlyViewedCarousel } from '../../../components/products/RecentlyViewedCarousel';
 import { addLocalRecentlyViewed, clearLocalRecentlyViewed } from '../../../lib/recently-viewed-local';
-import type { Product, Order, RatingSummary as RatingSummaryType } from '../../../types';
+import type { Product, Design, Order, RatingSummary as RatingSummaryType } from '../../../types';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -53,7 +53,7 @@ export default function ProductDetailPage() {
 
   useEffect(() => {
     if (params?.id) {
-      productsApi.get(String(params.id))
+      productsApi.getById(String(params.id))
         .then((data) => {
           setProduct(data);
           return Promise.all([
@@ -114,7 +114,7 @@ export default function ProductDetailPage() {
     if (isAuthenticated) {
       recentlyViewedApi.track(productId).catch(() => {});
       recentlyViewedApi.list(10)
-        .then((products) => setRecentlyViewed(products.filter((p) => p.id !== productId)))
+        .then((products) => setRecentlyViewed((products as Design[]).filter((p) => p.id !== productId)))
         .catch(() => {});
     } else {
       addLocalRecentlyViewed(productId);
@@ -226,7 +226,7 @@ export default function ProductDetailPage() {
         <div>
           <div className="flex items-center gap-2 mb-3 flex-wrap">
             {product.category && <Badge variant="primary">{product.category}</Badge>}
-            {product.country && <Badge variant="secondary">{product.country}</Badge>}
+            {product.designer?.country && <Badge variant="secondary">{product.designer.country}</Badge>}
           </div>
           <h1 className="font-heading text-3xl font-bold text-neutral-900 mb-2">{product.name}</h1>
           <div className="flex items-center gap-2 mb-3">

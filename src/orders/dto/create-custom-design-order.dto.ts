@@ -1,11 +1,16 @@
-import { IsString, IsOptional, IsNumber, Min } from 'class-validator';
+import { IsString, IsOptional, IsNumber, Min, IsBoolean } from 'class-validator';
 
 export class CreateCustomDesignOrderDto {
   @IsString()
   designId: string;
 
+  @IsOptional()
   @IsString()
-  fabricId: string;
+  fabricId?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  fabricChosenByDesigner?: boolean;
 
   @IsNumber()
   @Min(0)

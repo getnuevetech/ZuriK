@@ -41,7 +41,7 @@ export default function FabricDetailPage() {
           const current = all.find((f: Fabric) => f.id === params.id);
           if (current) {
             const rel = all
-              .filter((f: Fabric) => f.id !== params.id && (f.country === current.country || f.seller?.id === current.seller?.id))
+              .filter((f: Fabric) => f.id !== params.id && (f.seller?.country === current.seller?.country || f.seller?.id === current.seller?.id))
               .slice(0, 4);
             setRelated(rel);
           }
@@ -147,9 +147,9 @@ export default function FabricDetailPage() {
           </div>
           <div className="flex items-center gap-2 mb-4 flex-wrap">
             {fabric.material && <Badge variant="primary">{fabric.material}</Badge>}
-            {fabric.pattern && <Badge variant="secondary">{fabric.pattern}</Badge>}
-            {fabric.color && <Badge variant="default">{fabric.color}</Badge>}
-            {fabric.country && <Badge variant="info">{fabric.country}</Badge>}
+            {fabric.patterns?.[0] && <Badge variant="secondary">{fabric.patterns[0]}</Badge>}
+            {fabric.colors?.[0] && <Badge variant="default">{fabric.colors[0]}</Badge>}
+            {fabric.seller?.country && <Badge variant="info">{fabric.seller.country}</Badge>}
           </div>
           {sellerName && <p className="text-sm text-neutral-500 mb-2">Seller: {sellerName}</p>}
           <div className="flex items-center gap-4 mb-6">

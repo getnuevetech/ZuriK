@@ -30,7 +30,6 @@ const SORT_OPTIONS = [
 const FILTER_CONFIGS = [
   { key: 'material', label: 'Material', type: 'select' as const, options: MATERIALS.map((m) => ({ value: m, label: m })) },
   { key: 'pattern', label: 'Pattern', type: 'select' as const, options: PATTERNS.map((p) => ({ value: p, label: p })) },
-  { key: 'country', label: 'Country', type: 'select' as const, options: COUNTRIES.map((c) => ({ value: c, label: c })) },
   { key: 'price', label: 'Price Range', type: 'range' as const },
   { key: 'inStock', label: 'In Stock Only', type: 'checkbox' as const },
 ];
@@ -53,7 +52,6 @@ function FabricsContent() {
   const [filterValues, setFilterValues] = useState<Record<string, string | number | boolean>>({
     material: searchParams.get('material') ?? '',
     pattern: searchParams.get('pattern') ?? '',
-    country: searchParams.get('country') ?? '',
     priceMin: searchParams.get('priceMin') ? Number(searchParams.get('priceMin')) : '',
     priceMax: searchParams.get('priceMax') ? Number(searchParams.get('priceMax')) : '',
     inStock: searchParams.get('inStock') === 'true',
@@ -67,7 +65,6 @@ function FabricsContent() {
       search: debouncedSearch || undefined,
       material: filterValues.material ? String(filterValues.material) : undefined,
       pattern: filterValues.pattern ? String(filterValues.pattern) : undefined,
-      country: filterValues.country ? String(filterValues.country) : undefined,
       minPrice: filterValues.priceMin !== '' ? Number(filterValues.priceMin) : undefined,
       maxPrice: filterValues.priceMax !== '' ? Number(filterValues.priceMax) : undefined,
       inStock: filterValues.inStock ? true : undefined,
@@ -96,7 +93,6 @@ function FabricsContent() {
     if (page > 1) params.set('page', String(page));
     if (filterValues.material) params.set('material', String(filterValues.material));
     if (filterValues.pattern) params.set('pattern', String(filterValues.pattern));
-    if (filterValues.country) params.set('country', String(filterValues.country));
     if (filterValues.inStock) params.set('inStock', 'true');
     if (filterValues.priceMin !== '') params.set('priceMin', String(filterValues.priceMin));
     if (filterValues.priceMax !== '') params.set('priceMax', String(filterValues.priceMax));
@@ -122,7 +118,7 @@ function FabricsContent() {
   };
 
   const handleClearFilters = () => {
-    setFilterValues({ material: '', pattern: '', country: '', priceMin: '', priceMax: '', inStock: false });
+    setFilterValues({ material: '', pattern: '', priceMin: '', priceMax: '', inStock: false });
     setSearch('');
     setSort('newest');
     setPage(1);
@@ -137,7 +133,6 @@ function FabricsContent() {
   const activeTags: FilterTag[] = [];
   if (filterValues.material) activeTags.push({ key: 'material', label: 'Material', value: String(filterValues.material) });
   if (filterValues.pattern) activeTags.push({ key: 'pattern', label: 'Pattern', value: String(filterValues.pattern) });
-  if (filterValues.country) activeTags.push({ key: 'country', label: 'Country', value: String(filterValues.country) });
   if (filterValues.priceMin !== '') activeTags.push({ key: 'priceMin', label: 'Min Price', value: `₦${filterValues.priceMin}` });
   if (filterValues.priceMax !== '') activeTags.push({ key: 'priceMax', label: 'Max Price', value: `₦${filterValues.priceMax}` });
 

@@ -8,7 +8,8 @@ import { AppService } from './app.service';
 import { HealthController } from './health/health.controller';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { ProductsModule } from './products/products.module';
+import { DesignsModule } from './designs/designs.module';
+import { ReadyToWearModule } from './ready-to-wear/ready-to-wear.module';
 import { FabricsModule } from './fabrics/fabrics.module';
 import { MeasurementsModule } from './measurements/measurements.module';
 import { OrdersModule } from './orders/orders.module';
@@ -46,7 +47,8 @@ import { CollectionDisplay } from './homepage/entities/collection-display.entity
 import { ThemeSettings } from './homepage/entities/theme-settings.entity';
 import { HomepageLayout } from './homepage/entities/homepage-layout.entity';
 import { User } from './users/entities/user.entity';
-import { Product } from './products/entities/product.entity';
+import { Design } from './designs/entities/design.entity';
+import { ReadyToWearProduct } from './ready-to-wear/entities/ready-to-wear-product.entity';
 import { Fabric } from './fabrics/entities/fabric.entity';
 import { Measurement } from './measurements/entities/measurement.entity';
 import { Order } from './orders/entities/order.entity';
@@ -89,7 +91,7 @@ const isProduction = process.env.NODE_ENV === 'production';
       type: 'postgres',
       url: process.env.DATABASE_URL,
       entities: [
-        User, Product, Fabric, Measurement, Order, FabricSellerOrder, DesignerOrder,
+        User, Design, ReadyToWearProduct, Fabric, Measurement, Order, FabricSellerOrder, DesignerOrder,
         PlatformSettings, TaxConfiguration, ShippingCarrier, ShippingMethod, ShipmentTracking, TrackingEvent, PaymentGateway, Payment, Payout, HeroBanner, Notification, Review,
         FeaturedSection, CountryHero, CollectionDisplay, ThemeSettings, HomepageLayout,
         WishlistItem,
@@ -119,7 +121,8 @@ const isProduction = process.env.NODE_ENV === 'production';
     }),
     AuthModule.register(),
     UsersModule,
-    ProductsModule,
+    DesignsModule,
+    ReadyToWearModule,
     FabricsModule,
     MeasurementsModule,
     OrdersModule,
@@ -158,4 +161,3 @@ const isProduction = process.env.NODE_ENV === 'production';
   ],
 })
 export class AppModule {}
-
