@@ -955,3 +955,17 @@ export const loyaltyApi = {
   redeem: (points: number): Promise<LoyaltyTransaction> =>
     api.post<LoyaltyTransaction>('/loyalty/redeem', { points }).then((r) => r.data),
 };
+
+export interface AbandonedCartStats {
+  totalAbandoned: number;
+  recovered: number;
+  recoveryRate: number;
+  totalRecoveredRevenue: number;
+}
+
+export const abandonedCartsAdminApi = {
+  getStats: (): Promise<AbandonedCartStats> =>
+    api.get<AbandonedCartStats>('/admin/abandoned-carts/stats').then((r) => r.data),
+  list: (page = 1, limit = 20) =>
+    api.get('/admin/abandoned-carts', { params: { page, limit } }).then((r) => r.data),
+};
