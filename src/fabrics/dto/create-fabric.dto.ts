@@ -32,9 +32,6 @@ export class CreateFabricDto {
   @Min(0)
   width?: number;
 
-  @IsString()
-  country: string;
-
   @IsNumber()
   @Min(0)
   sellerPrice: number;

@@ -1,16 +1,46 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Product } from '../products/entities/product.entity';
+import { Design } from '../designs/entities/design.entity';
+import { ReadyToWearProduct } from '../ready-to-wear/entities/ready-to-wear-product.entity';
 
 @Injectable()
 export class ComparisonService {
   constructor(
-    @InjectRepository(Product)
-    private readonly productRepo: Repository<Product>,
+    @InjectRepository(Design)
+    private readonly designRepo: Repository<Design>,
+    @InjectRepository(ReadyToWearProduct)
+    private readonly rtwRepo: Repository<ReadyToWearProduct>,
   ) {}
 
-  async compareProducts(productIds: string[]): Promise<Product[]> {
+  async compareDesigns(designIds: string[]): Promise<Design[]> {
+    if (designIds.length < 2) {
+      throw new BadRequestException('At least 2 design IDs are required for comparison');
+    }
+    if (designIds.length > 4) {
+      throw new BadRequestException('At most 4 design IDs are allowed for comparison');
+    }
+
+    const designs = await Promise.all(
+      designIds.map((id) =>
+        this.designRepo.findOne({ where: { id }, relations: ['designer'] }),
+      ),
+    );
+
+    for (let i = 0; i < designs.length; i++) {
+      const design = designs[i];
+      if (!design) {
+        throw new BadRequestException(`Design with ID "${designIds[i]}" not found`);
+      }
+      if (!design.isActive) {
+        throw new BadRequestException(`Design "${design.name}" is not available`);
+      }
+    }
+
+    return designs as Design[];
+  }
+
+  async compareReadyToWear(productIds: string[]): Promise<ReadyToWearProduct[]> {
     if (productIds.length < 2) {
       throw new BadRequestException('At least 2 product IDs are required for comparison');
     }
@@ -20,7 +50,7 @@ export class ComparisonService {
 
     const products = await Promise.all(
       productIds.map((id) =>
-        this.productRepo.findOne({ where: { id }, relations: ['designer'] }),
+        this.rtwRepo.findOne({ where: { id }, relations: ['designer'] }),
       ),
     );
 
@@ -34,6 +64,6 @@ export class ComparisonService {
       }
     }
 
-    return products as Product[];
+    return products as ReadyToWearProduct[];
   }
 }

@@ -10,7 +10,6 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
-import { Product } from '../../products/entities/product.entity';
 import { Order } from '../../orders/entities/order.entity';
 
 export enum ReviewStatus {
@@ -19,9 +18,15 @@ export enum ReviewStatus {
   REJECTED = 'REJECTED',
 }
 
+export enum ReviewItemType {
+  DESIGN = 'design',
+  READY_TO_WEAR = 'ready_to_wear',
+  FABRIC = 'fabric',
+}
+
 @Entity('reviews')
-@Unique(['user', 'product'])
-@Index(['product', 'status', 'createdAt'])
+@Unique(['userId', 'itemId', 'itemType'])
+@Index(['itemId', 'itemType', 'status', 'createdAt'])
 export class Review {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -33,12 +38,11 @@ export class Review {
   @Column()
   userId: string;
 
-  @ManyToOne(() => Product, { eager: true, onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'productId' })
-  product: Product;
-
   @Column()
-  productId: string;
+  itemId: string;
+
+  @Column({ type: 'enum', enum: ReviewItemType, default: ReviewItemType.DESIGN })
+  itemType: ReviewItemType;
 
   @ManyToOne(() => Order, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'orderId' })

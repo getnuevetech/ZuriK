@@ -9,7 +9,8 @@ import { HomepageLayout } from './entities/homepage-layout.entity';
 import { PromoBanner } from './entities/promo-banner.entity';
 import { CollectionPost } from './entities/collection-post.entity';
 import { HeritageStory } from './entities/heritage-story.entity';
-import { Product } from '../products/entities/product.entity';
+import { Design } from '../designs/entities/design.entity';
+import { ReadyToWearProduct } from '../ready-to-wear/entities/ready-to-wear-product.entity';
 import { Order } from '../orders/entities/order.entity';
 import { User, UserRole } from '../users/entities/user.entity';
 import { CreateFeaturedSectionDto } from './dto/create-featured-section.dto';
@@ -47,8 +48,10 @@ export class HomepageService {
     private collectionPostRepo: Repository<CollectionPost>,
     @InjectRepository(HeritageStory)
     private heritageStoryRepo: Repository<HeritageStory>,
-    @InjectRepository(Product)
-    private productRepo: Repository<Product>,
+    @InjectRepository(Design)
+    private designRepo: Repository<Design>,
+    @InjectRepository(ReadyToWearProduct)
+    private rtwRepo: Repository<ReadyToWearProduct>,
     @InjectRepository(Order)
     private orderRepo: Repository<Order>,
     @InjectRepository(User)
@@ -79,7 +82,7 @@ export class HomepageService {
     return this.featuredRepo.find({ order: { displayOrder: 'ASC' } });
   }
 
-  async getFeaturedProductsForHomepage(): Promise<{ section: FeaturedSection; products: Product[] }[]> {
+  async getFeaturedProductsForHomepage(): Promise<{ section: FeaturedSection; items: (Design | ReadyToWearProduct)[] }[]> {
     const sections = await this.featuredRepo.find({
       where: { isActive: true },
       order: { displayOrder: 'ASC' },
@@ -88,40 +91,39 @@ export class HomepageService {
     return Promise.all(
       sections.map(async (section) => {
         const limit = section.maxRows * 4;
-        let products: Product[] = [];
+        let items: (Design | ReadyToWearProduct)[] = [];
 
         if (section.selectionMode === SelectionMode.MANUAL) {
           if (section.manualProductIds?.length) {
-            products = await this.productRepo.find({
+            const designs = await this.designRepo.find({
               where: { id: In(section.manualProductIds), isActive: true },
             });
+            items = designs;
           }
         } else if (section.selectionMode === SelectionMode.AUTO_NEWEST) {
-          const qb = this.productRepo.createQueryBuilder('p')
+          const qb = this.designRepo.createQueryBuilder('p')
             .where('p.isActive = :active', { active: true })
             .orderBy('p.createdAt', 'DESC')
             .limit(limit);
           if (section.category) qb.andWhere('p.category = :cat', { cat: section.category });
-          products = await qb.getMany();
+          items = await qb.getMany();
         } else if (section.selectionMode === SelectionMode.AUTO_BEST_SELLING) {
-          const qb = this.productRepo.createQueryBuilder('p')
-            .leftJoin('orders', 'o', 'o.designId = p.id')
+          const qb = this.designRepo.createQueryBuilder('p')
             .where('p.isActive = :active', { active: true })
-            .groupBy('p.id')
-            .orderBy('COUNT(o.id)', 'DESC')
+            .orderBy('p.totalReviews', 'DESC')
             .limit(limit);
           if (section.category) qb.andWhere('p.category = :cat', { cat: section.category });
-          products = await qb.getMany();
+          items = await qb.getMany();
         } else if (section.selectionMode === SelectionMode.AUTO_HIGHEST_RATED) {
-          const qb = this.productRepo.createQueryBuilder('p')
+          const qb = this.designRepo.createQueryBuilder('p')
             .where('p.isActive = :active', { active: true })
             .orderBy('p.averageRating', 'DESC')
             .limit(limit);
           if (section.category) qb.andWhere('p.category = :cat', { cat: section.category });
-          products = await qb.getMany();
+          items = await qb.getMany();
         }
 
-        return { section, products };
+        return { section, items };
       }),
     );
   }
@@ -181,7 +183,7 @@ export class HomepageService {
     return this.collectionRepo.find({ order: { displayOrder: 'ASC' } });
   }
 
-  async getActiveCollections(): Promise<{ collection: CollectionDisplay; products: Product[] }[]> {
+  async getActiveCollections(): Promise<{ collection: CollectionDisplay; items: Design[] }[]> {
     const collections = await this.collectionRepo.find({
       where: { isActive: true },
       order: { displayOrder: 'ASC' },
@@ -189,18 +191,18 @@ export class HomepageService {
 
     return Promise.all(
       collections.map(async (collection) => {
-        let products: Product[] = [];
+        let items: Design[] = [];
         if (collection.productIds?.length) {
-          products = await this.productRepo.find({
+          items = await this.designRepo.find({
             where: { id: In(collection.productIds), isActive: true },
           });
         } else if (collection.category) {
-          products = await this.productRepo.find({
+          items = await this.designRepo.find({
             where: { category: collection.category, isActive: true },
             take: 8,
           });
         }
-        return { collection, products };
+        return { collection, items };
       }),
     );
   }
@@ -334,18 +336,19 @@ export class HomepageService {
       if (row.role === UserRole.FABRIC_SELLER) countryMap[row.country].sellerCount += Number(row.cnt);
     }
 
-    // Get product counts per country
-    const productsRaw = await this.productRepo
+    // Get design counts - derived from designer's country via join
+    const designsRaw = await this.designRepo
       .createQueryBuilder('p')
-      .select('p.country', 'country')
+      .leftJoin('p.designer', 'designer')
+      .select('designer.country', 'country')
       .addSelect('COUNT(p.id)', 'cnt')
       .where('p.isActive = :active', { active: true })
-      .andWhere('p.country IS NOT NULL')
-      .groupBy('p.country')
+      .andWhere('designer.country IS NOT NULL')
+      .groupBy('designer.country')
       .getRawMany();
 
     const productCountMap: Record<string, number> = {};
-    for (const row of productsRaw) {
+    for (const row of designsRaw) {
       if (row.country) productCountMap[row.country] = Number(row.cnt);
     }
 
@@ -372,21 +375,18 @@ export class HomepageService {
 
   // ─── Trending Products ────────────────────────────────────────────────────────
 
-  async getTrendingProducts(limit = 10): Promise<Product[]> {
-    // Try to get products ordered by order count
-    const trending = await this.productRepo
+  async getTrendingProducts(limit = 10): Promise<Design[]> {
+    const trending = await this.designRepo
       .createQueryBuilder('p')
-      .leftJoin('orders', 'o', 'o.designId = p.id')
       .where('p.isActive = :active', { active: true })
-      .groupBy('p.id')
-      .orderBy('COUNT(o.id)', 'DESC')
+      .orderBy('p.totalReviews', 'DESC')
       .limit(limit)
       .getMany();
 
     if (trending.length > 0) return trending;
 
-    // Fallback to highest-rated products
-    return this.productRepo.find({
+    // Fallback to highest-rated designs
+    return this.designRepo.find({
       where: { isActive: true },
       order: { averageRating: 'DESC' },
       take: limit,

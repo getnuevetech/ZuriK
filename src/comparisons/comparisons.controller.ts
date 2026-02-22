@@ -3,12 +3,12 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { ComparisonService } from './comparisons.service';
 import { IsArray, IsString, ArrayMinSize, ArrayMaxSize } from 'class-validator';
 
-class CompareProductsDto {
+class CompareItemsDto {
   @IsArray()
   @IsString({ each: true })
   @ArrayMinSize(2)
   @ArrayMaxSize(4)
-  productIds: string[];
+  ids: string[];
 }
 
 @ApiTags('comparisons')
@@ -16,9 +16,15 @@ class CompareProductsDto {
 export class ComparisonController {
   constructor(private readonly comparisonService: ComparisonService) {}
 
-  @Post('products')
-  @ApiOperation({ summary: 'Compare products side-by-side (max 4)' })
-  compareProducts(@Body() dto: CompareProductsDto) {
-    return this.comparisonService.compareProducts(dto.productIds);
+  @Post('designs')
+  @ApiOperation({ summary: 'Compare designs side-by-side (max 4)' })
+  compareDesigns(@Body() dto: CompareItemsDto) {
+    return this.comparisonService.compareDesigns(dto.ids);
+  }
+
+  @Post('ready-to-wear')
+  @ApiOperation({ summary: 'Compare ready-to-wear products side-by-side (max 4)' })
+  compareReadyToWear(@Body() dto: CompareItemsDto) {
+    return this.comparisonService.compareReadyToWear(dto.ids);
   }
 }

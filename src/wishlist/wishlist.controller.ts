@@ -12,6 +12,7 @@ import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RequestWithUser } from '../auth/auth.types';
 import { WishlistService } from './wishlist.service';
+import { WishlistItemType } from './entities/wishlist-item.entity';
 
 @ApiTags('wishlist')
 @ApiBearerAuth()
@@ -21,7 +22,7 @@ export class WishlistController {
   constructor(private readonly wishlistService: WishlistService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get paginated wishlist' })
+  @ApiOperation({ summary: 'Get wishlist' })
   getWishlist(
     @Request() req: RequestWithUser,
     @Query('page') page?: string,
@@ -35,9 +36,9 @@ export class WishlistController {
   }
 
   @Get('ids')
-  @ApiOperation({ summary: 'Get wishlist product IDs' })
+  @ApiOperation({ summary: 'Get wishlist item IDs' })
   getWishlistIds(@Request() req: RequestWithUser) {
-    return this.wishlistService.getWishlistProductIds(req.user.id);
+    return this.wishlistService.getWishlistItemIds(req.user.id);
   }
 
   @Get('count')
@@ -47,32 +48,42 @@ export class WishlistController {
     return { count };
   }
 
-  @Post(':productId')
-  @ApiOperation({ summary: 'Add product to wishlist' })
+  @Post(':itemId')
+  @ApiOperation({ summary: 'Add item to wishlist' })
   addToWishlist(
     @Request() req: RequestWithUser,
-    @Param('productId') productId: string,
+    @Param('itemId') itemId: string,
+    @Query('itemType') itemType?: string,
   ) {
-    return this.wishlistService.addToWishlist(req.user.id, productId);
+    return this.wishlistService.addToWishlist(
+      req.user.id,
+      itemId,
+      (itemType as WishlistItemType) || WishlistItemType.DESIGN,
+    );
   }
 
-  @Delete(':productId')
-  @ApiOperation({ summary: 'Remove product from wishlist' })
+  @Delete(':itemId')
+  @ApiOperation({ summary: 'Remove item from wishlist' })
   async removeFromWishlist(
     @Request() req: RequestWithUser,
-    @Param('productId') productId: string,
+    @Param('itemId') itemId: string,
   ) {
-    await this.wishlistService.removeFromWishlist(req.user.id, productId);
+    await this.wishlistService.removeFromWishlist(req.user.id, itemId);
     return { success: true };
   }
 
-  @Post(':productId/toggle')
-  @ApiOperation({ summary: 'Toggle product in wishlist' })
+  @Post(':itemId/toggle')
+  @ApiOperation({ summary: 'Toggle item in wishlist' })
   toggleWishlist(
     @Request() req: RequestWithUser,
-    @Param('productId') productId: string,
+    @Param('itemId') itemId: string,
+    @Query('itemType') itemType?: string,
   ) {
-    return this.wishlistService.toggleWishlist(req.user.id, productId);
+    return this.wishlistService.toggleWishlist(
+      req.user.id,
+      itemId,
+      (itemType as WishlistItemType) || WishlistItemType.DESIGN,
+    );
   }
 
   @Delete()

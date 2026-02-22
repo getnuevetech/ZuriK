@@ -18,7 +18,7 @@ import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { ModerateReviewDto } from './dto/moderate-review.dto';
-import { ReviewStatus } from './entities/review.entity';
+import { ReviewStatus, ReviewItemType } from './entities/review.entity';
 import { RequestWithUser } from '../auth/auth.types';
 
 @Controller()
@@ -27,36 +27,42 @@ export class ReviewsController {
 
   // ── Public endpoints ───────────────────────────────────────────────────────
 
-  @Get('products/:productId/reviews')
-  getProductReviews(
-    @Param('productId') productId: string,
+  @Get('items/:itemId/reviews')
+  getItemReviews(
+    @Param('itemId') itemId: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('sort') sort?: string,
   ) {
-    return this.reviewsService.getProductReviews(
-      productId,
+    return this.reviewsService.getItemReviews(
+      itemId,
       page ? parseInt(page, 10) : 1,
       limit ? parseInt(limit, 10) : 10,
       sort as any,
     );
   }
 
-  @Get('products/:productId/reviews/summary')
-  getRatingSummary(@Param('productId') productId: string) {
-    return this.reviewsService.getProductRatingsSummary(productId);
+  @Get('items/:itemId/reviews/summary')
+  getRatingSummary(@Param('itemId') itemId: string) {
+    return this.reviewsService.getItemRatingsSummary(itemId);
   }
 
   // ── Auth-required endpoints ────────────────────────────────────────────────
 
-  @Post('products/:productId/reviews')
+  @Post('items/:itemId/reviews')
   @UseGuards(JwtAuthGuard)
   createReview(
-    @Param('productId') productId: string,
+    @Param('itemId') itemId: string,
     @Request() req: RequestWithUser,
     @Body() dto: CreateReviewDto,
+    @Query('itemType') itemType?: string,
   ) {
-    return this.reviewsService.createReview(req.user.id, productId, dto);
+    return this.reviewsService.createReview(
+      req.user.id,
+      itemId,
+      (itemType as ReviewItemType) || ReviewItemType.DESIGN,
+      dto,
+    );
   }
 
   @Get('reviews/my')
@@ -103,7 +109,7 @@ export class ReviewsController {
   @Roles(UserRole.ADMIN)
   adminGetReviews(
     @Query('status') status?: string,
-    @Query('productId') productId?: string,
+    @Query('itemId') itemId?: string,
     @Query('userId') userId?: string,
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
@@ -113,7 +119,7 @@ export class ReviewsController {
     return this.reviewsService.adminGetReviews(
       {
         status: status as ReviewStatus | undefined,
-        productId,
+        itemId,
         userId,
         startDate,
         endDate,

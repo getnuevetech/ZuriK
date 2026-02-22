@@ -11,7 +11,7 @@ import {
 import { User } from '../../users/entities/user.entity';
 
 export enum StockAlertProductType {
-  PRODUCT = 'product',
+  READY_TO_WEAR = 'ready_to_wear',
   FABRIC = 'fabric',
 }
 

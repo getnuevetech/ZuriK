@@ -4,7 +4,7 @@ import { Repository, In, LessThan, MoreThan } from 'typeorm';
 import { AbandonedCart, AbandonedCartStatus } from './entities/abandoned-cart.entity';
 import { CartItem } from '../cart/entities/cart-item.entity';
 import { User } from '../users/entities/user.entity';
-import { Product } from '../products/entities/product.entity';
+import { ReadyToWearProduct } from '../ready-to-wear/entities/ready-to-wear-product.entity';
 import { Fabric } from '../fabrics/entities/fabric.entity';
 import { EmailService } from '../notifications/email.service';
 import { NotificationsService } from '../notifications/notifications.service';
@@ -21,8 +21,8 @@ export class AbandonedCartService {
     private readonly cartItemRepo: Repository<CartItem>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
-    @InjectRepository(Product)
-    private readonly productRepo: Repository<Product>,
+    @InjectRepository(ReadyToWearProduct)
+    private readonly rtwRepo: Repository<ReadyToWearProduct>,
     @InjectRepository(Fabric)
     private readonly fabricRepo: Repository<Fabric>,
     private readonly emailService: EmailService,
@@ -60,7 +60,7 @@ export class AbandonedCartService {
         let name = 'Item';
         let price = 0;
         if (i.productId) {
-          const product = await this.productRepo.findOne({ where: { id: i.productId } });
+          const product = await this.rtwRepo.findOne({ where: { id: i.productId } });
           if (product) { name = product.name; price = Number(product.customerPrice ?? 0); }
         } else if (i.fabricId) {
           const fabric = await this.fabricRepo.findOne({ where: { id: i.fabricId } });

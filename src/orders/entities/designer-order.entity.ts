@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { Order } from './order.entity';
 import { User } from '../../users/entities/user.entity';
-import { Product } from '../../products/entities/product.entity';
+import { Design } from '../../designs/entities/design.entity';
 import { Measurement } from '../../measurements/entities/measurement.entity';
 
 @Entity('designer_orders')
@@ -24,8 +24,8 @@ export class DesignerOrder {
   @ManyToOne(() => User)
   designer: User;
 
-  @ManyToOne(() => Product, { eager: true })
-  design: Product;
+  @ManyToOne(() => Design, { eager: true, nullable: true })
+  design: Design;
 
   @OneToOne(() => Measurement, { nullable: true, eager: true })
   @JoinColumn()
