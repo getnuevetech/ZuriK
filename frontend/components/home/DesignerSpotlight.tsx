@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { productsApi } from '../../lib/api';
+import { designsApi } from '../../lib/api';
 import { Spinner } from '../ui/Spinner';
 import { getUserDisplayName } from '../../lib/utils';
-import type { Product } from '../../types';
+import type { Design } from '../../types';
 
 interface DesignerInfo {
   id: string;
@@ -19,7 +19,7 @@ function getInitials(name: string): string {
   return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
 }
 
-function extractDesigners(products: Product[]): DesignerInfo[] {
+function extractDesigners(products: Design[]): DesignerInfo[] {
   const map = new Map<string, DesignerInfo>();
   for (const p of products) {
     if (!p.designer) continue;
@@ -31,7 +31,7 @@ function extractDesigners(products: Product[]): DesignerInfo[] {
       map.set(id, {
         id,
         name,
-        country: p.country || '',
+        country: p.designer.country || '',
         initials: getInitials(name),
         productCount: 1,
       });
@@ -52,7 +52,7 @@ export function DesignerSpotlight() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    productsApi.list()
+    designsApi.list()
       .then((res) => setDesigners(extractDesigners(res.items)))
       .catch(() => setDesigners([]))
       .finally(() => setLoading(false));

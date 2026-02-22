@@ -5,6 +5,8 @@ export interface User {
   lastName?: string;
   role: 'customer' | 'designer' | 'fabric_seller' | 'qa' | 'admin';
   isActive: boolean;
+  country?: string;
+  city?: string;
   createdAt?: string;
   updatedAt?: string;
 }

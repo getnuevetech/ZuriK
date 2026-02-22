@@ -4,7 +4,7 @@ import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { productsApi, fabricsApi, ordersApi } from '../../../lib/api';
+import { designsApi, fabricsApi, ordersApi } from '../../../lib/api';
 import { useAuth } from '../../../lib/auth-context';
 import { useToast } from '../../../components/ui/Toast';
 import { Button } from '../../../components/ui/Button';
@@ -17,7 +17,7 @@ import { Card, CardBody, CardHeader } from '../../../components/ui/Card';
 import { PriceDisplay } from '../../../components/common/PriceDisplay';
 import { SearchBar } from '../../../components/common/SearchBar';
 import { TryOnPreview } from '../../../components/try-on';
-import type { Product, Fabric, CreateCustomDesignOrderDto } from '../../../types';
+import type { Design, Fabric, CreateCustomDesignOrderDto } from '../../../types';
 
 const STEPS = ['Select Design', 'Select Fabric', 'Measurements', 'Preview', 'Review & Confirm'];
 
@@ -39,10 +39,11 @@ function CustomDesignContent() {
   const { toast } = useToast();
 
   const [step, setStep] = useState(0);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [designs, setDesigns] = useState<Design[]>([]);
   const [fabrics, setFabrics] = useState<Fabric[]>([]);
-  const [selectedDesign, setSelectedDesign] = useState<Product | null>(null);
+  const [selectedDesign, setSelectedDesign] = useState<Design | null>(null);
   const [selectedFabric, setSelectedFabric] = useState<Fabric | null>(null);
+  const [fabricChosenByDesigner, setFabricChosenByDesigner] = useState(false);
   const [measurements, setMeasurements] = useState<Measurements>({
     chest: '', waist: '', hips: '', shoulder: '', sleeveLength: '', length: '',
     unit: 'cm', measurementNotes: '',
@@ -62,12 +63,12 @@ function CustomDesignContent() {
       router.push('/login?redirect=/orders/custom-design');
       return;
     }
-    Promise.all([productsApi.list(), fabricsApi.list()])
-      .then(([prodsRes, fabsRes]) => {
-        setProducts(prodsRes.items);
+    Promise.all([designsApi.list(), fabricsApi.list()])
+      .then(([designsRes, fabsRes]) => {
+        setDesigns(designsRes.items);
         setFabrics(fabsRes.items);
         if (preselectedDesignId) {
-          const design = prodsRes.items.find((p: Product) => p.id === preselectedDesignId);
+          const design = designsRes.items.find((p: Design) => p.id === preselectedDesignId);
           if (design) { setSelectedDesign(design); setStep(1); }
         }
         if (preselectedFabricId) {
@@ -79,18 +80,16 @@ function CustomDesignContent() {
       .finally(() => setLoading(false));
   }, [isAuthenticated, authLoading, router, toast, preselectedDesignId, preselectedFabricId]);
 
-  const filteredProducts = products.filter((p) => {
+  const filteredProducts = designs.filter((p) => {
     if (!productSearch) return true;
     const q = productSearch.toLowerCase();
     return p.name.toLowerCase().includes(q) || p.description?.toLowerCase().includes(q);
   });
 
   const filteredFabrics = fabrics.filter((f) => {
-    // Filter by selected design's country if possible
-    const countryMatch = selectedDesign?.country ? f.country === selectedDesign.country : true;
-    if (!fabricSearch) return countryMatch;
+    if (!fabricSearch) return true;
     const q = fabricSearch.toLowerCase();
-    return countryMatch && (f.name.toLowerCase().includes(q) || f.description?.toLowerCase().includes(q));
+    return f.name.toLowerCase().includes(q) || f.description?.toLowerCase().includes(q);
   });
 
   const handleMeasurementChange = (field: keyof Measurements) => (
@@ -100,12 +99,14 @@ function CustomDesignContent() {
   };
 
   const handleSubmit = async () => {
-    if (!selectedDesign || !selectedFabric) return;
+    if (!selectedDesign) return;
+    if (!selectedFabric && !fabricChosenByDesigner) return;
     setSubmitting(true);
     try {
       const dto: CreateCustomDesignOrderDto = {
         designId: selectedDesign.id,
-        fabricId: selectedFabric.id,
+        fabricId: selectedFabric?.id,
+        fabricChosenByDesigner: fabricChosenByDesigner || undefined,
         chest: Number(measurements.chest),
         waist: Number(measurements.waist),
         hips: Number(measurements.hips),
@@ -209,11 +210,9 @@ function CustomDesignContent() {
       {step === 1 && (
         <div>
           <h2 className="font-heading text-xl font-semibold text-neutral-800 mb-2">Choose a Fabric</h2>
-          {selectedDesign?.country && (
-            <p className="text-sm text-neutral-500 mb-4">
-              Showing fabrics from <strong>{selectedDesign.country}</strong> to match your selected design
-            </p>
-          )}
+          <p className="text-sm text-neutral-500 mb-4">
+            Select a fabric yourself, or let the designer choose the best match for you.
+          </p>
           {selectedDesign && (
             <div className="flex items-center gap-3 mb-4 p-3 bg-primary-50 rounded-xl border border-primary-100">
               <span className="text-2xl">👗</span>
@@ -224,14 +223,38 @@ function CustomDesignContent() {
               <button onClick={() => { setSelectedDesign(null); setStep(0); }} className="ml-auto text-xs text-primary-600 hover:underline">Change</button>
             </div>
           )}
-          <div className="mb-4">
-            <SearchBar onSearch={setFabricSearch} placeholder="Search fabrics..." />
+
+          {/* Let designer choose option */}
+          <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={fabricChosenByDesigner}
+                onChange={(e) => {
+                  setFabricChosenByDesigner(e.target.checked);
+                  if (e.target.checked) setSelectedFabric(null);
+                }}
+                className="mt-0.5 h-4 w-4 text-indigo-600 rounded border-neutral-300"
+              />
+              <div>
+                <span className="text-sm font-semibold text-amber-900">Let the designer choose the fabric</span>
+                <p className="text-xs text-amber-700 mt-0.5">
+                  The designer will select the most suitable fabric based on your design and measurements.
+                </p>
+              </div>
+            </label>
           </div>
-          {filteredFabrics.length === 0 ? (
-            <p className="text-neutral-500 text-center py-8">No matching fabrics found</p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-              {filteredFabrics.map((fabric) => (
+
+          {!fabricChosenByDesigner && (
+            <>
+              <div className="mb-4">
+                <SearchBar onSearch={setFabricSearch} placeholder="Search fabrics..." />
+              </div>
+              {filteredFabrics.length === 0 ? (
+                <p className="text-neutral-500 text-center py-8">No matching fabrics found</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                  {filteredFabrics.map((fabric) => (
                 <button
                   key={fabric.id}
                   onClick={() => { if (fabric.stock > 0) { setSelectedFabric(fabric); setStep(2); } }}
@@ -265,7 +288,14 @@ function CustomDesignContent() {
               ))}
             </div>
           )}
-          <Button variant="ghost" onClick={() => setStep(0)}>← Back</Button>
+            </>
+          )}
+          <div className="flex items-center justify-between mt-4">
+            <Button variant="ghost" onClick={() => setStep(0)}>← Back</Button>
+            {fabricChosenByDesigner && (
+              <Button onClick={() => setStep(2)}>Continue to Measurements →</Button>
+            )}
+          </div>
         </div>
       )}
 
@@ -273,7 +303,16 @@ function CustomDesignContent() {
       {step === 2 && (
         <div>
           <h2 className="font-heading text-xl font-semibold text-neutral-800 mb-4">Enter Your Measurements</h2>
-          {selectedFabric && (
+          {fabricChosenByDesigner ? (
+            <div className="flex items-center gap-3 mb-6 p-3 bg-amber-50 rounded-xl border border-amber-200">
+              <span className="text-2xl">🎨</span>
+              <div>
+                <p className="text-sm font-medium text-amber-800">Fabric: Designer's choice</p>
+                <p className="text-xs text-amber-600">The designer will pick the fabric</p>
+              </div>
+              <button onClick={() => setStep(1)} className="ml-auto text-xs text-amber-600 hover:underline">Change</button>
+            </div>
+          ) : selectedFabric ? (
             <div className="flex items-center gap-3 mb-6 p-3 bg-secondary-50 rounded-xl border border-secondary-100">
               <span className="text-2xl">🧵</span>
               <div>
@@ -282,7 +321,7 @@ function CustomDesignContent() {
               </div>
               <button onClick={() => { setSelectedFabric(null); setStep(1); }} className="ml-auto text-xs text-secondary-600 hover:underline">Change</button>
             </div>
-          )}
+          ) : null}
           <div className="mb-4">
             <Select
               label="Unit"
@@ -353,7 +392,7 @@ function CustomDesignContent() {
       )}
 
       {/* Step 4: Review & Confirm */}
-      {step === 4 && selectedDesign && selectedFabric && (
+      {step === 4 && selectedDesign && (selectedFabric || fabricChosenByDesigner) && (
         <div>
           <h2 className="font-heading text-xl font-semibold text-neutral-800 mb-6">Review Your Order</h2>
           <div className="space-y-4 mb-6">
@@ -368,7 +407,7 @@ function CustomDesignContent() {
                   </div>
                   <div className="flex-1">
                     <p className="font-medium text-neutral-900">{selectedDesign.name}</p>
-                    <p className="text-sm text-neutral-500">{selectedDesign.country}</p>
+                    {selectedDesign.designer?.country && <p className="text-sm text-neutral-500">{selectedDesign.designer.country}</p>}
                   </div>
                   <PriceDisplay amount={selectedDesign.customerPrice} className="font-semibold" />
                 </div>
@@ -378,18 +417,28 @@ function CustomDesignContent() {
             <Card>
               <CardHeader><h3 className="font-medium text-neutral-800">Fabric</h3></CardHeader>
               <CardBody>
-                <div className="flex items-center gap-4">
-                  <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gradient-to-br from-secondary-100 to-accent-100 flex-shrink-0">
-                    {selectedFabric.images?.[0] ? (
-                      <Image src={selectedFabric.images[0]} alt={selectedFabric.name} fill className="object-cover" sizes="64px" />
-                    ) : <span className="absolute inset-0 flex items-center justify-center text-2xl">🧵</span>}
+                {fabricChosenByDesigner ? (
+                  <div className="flex items-center gap-4">
+                    <span className="text-3xl">🎨</span>
+                    <div>
+                      <p className="font-medium text-neutral-900">Designer's choice</p>
+                      <p className="text-sm text-neutral-500">The designer will select the best fabric</p>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <p className="font-medium text-neutral-900">{selectedFabric.name}</p>
-                    <p className="text-sm text-neutral-500">{selectedFabric.material} · {selectedFabric.color}</p>
+                ) : selectedFabric ? (
+                  <div className="flex items-center gap-4">
+                    <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gradient-to-br from-secondary-100 to-accent-100 flex-shrink-0">
+                      {selectedFabric.images?.[0] ? (
+                        <Image src={selectedFabric.images[0]} alt={selectedFabric.name} fill className="object-cover" sizes="64px" />
+                      ) : <span className="absolute inset-0 flex items-center justify-center text-2xl">🧵</span>}
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-neutral-900">{selectedFabric.name}</p>
+                      <p className="text-sm text-neutral-500">{selectedFabric.material}</p>
+                    </div>
+                    <PriceDisplay amount={selectedFabric.customerPrice} className="font-semibold" />
                   </div>
-                  <PriceDisplay amount={selectedFabric.customerPrice} className="font-semibold" />
-                </div>
+                ) : null}
               </CardBody>
             </Card>
 
@@ -425,13 +474,15 @@ function CustomDesignContent() {
                   <span className="text-neutral-600">Design</span>
                   <PriceDisplay amount={selectedDesign.customerPrice} />
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-neutral-600">Fabric</span>
-                  <PriceDisplay amount={selectedFabric.customerPrice} />
-                </div>
+                {selectedFabric && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-neutral-600">Fabric</span>
+                    <PriceDisplay amount={selectedFabric.customerPrice} />
+                  </div>
+                )}
                 <div className="flex justify-between font-bold pt-2 border-t border-neutral-200">
                   <span>Estimated Total</span>
-                  <PriceDisplay amount={selectedDesign.customerPrice + selectedFabric.customerPrice} />
+                  <PriceDisplay amount={selectedDesign.customerPrice + (selectedFabric?.customerPrice ?? 0)} />
                 </div>
               </CardBody>
             </Card>

@@ -1,4 +1,4 @@
-import { Product } from './product';
+import { Design, ReadyToWearProduct } from './product';
 import { Fabric } from './fabric';
 
 export type OrderStatus =
@@ -12,15 +12,18 @@ export type OrderStatus =
   | 'qa_rejected'
   | 'shipped_to_customer'
   | 'delivered'
-  | 'cancelled';
+  | 'cancelled'
+  | 'closed';
 
 export interface Order {
   id: string;
   orderNumber: string;
   orderType: 'CUSTOM_DESIGN' | 'READY_TO_WEAR' | 'FABRIC_ONLY';
   status: OrderStatus;
-  design?: Product;
+  design?: Design;
+  readyToWearProduct?: ReadyToWearProduct;
   fabric?: Fabric;
+  fabricChosenByDesigner?: boolean;
   designPrice?: number;
   fabricPrice?: number;
   totalPrice: number;
@@ -40,7 +43,8 @@ export interface Order {
 
 export interface CreateCustomDesignOrderDto {
   designId: string;
-  fabricId: string;
+  fabricId?: string;
+  fabricChosenByDesigner?: boolean;
   chest: number;
   waist: number;
   hips: number;
@@ -53,7 +57,7 @@ export interface CreateCustomDesignOrderDto {
 }
 
 export interface CreateReadyToWearOrderDto {
-  designId: string;
+  readyToWearProductId: string;
   quantity?: number;
   customerNotes?: string;
 }

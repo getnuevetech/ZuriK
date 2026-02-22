@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import type {
-  Product, Fabric, Order, OrderStatus,
+  Design, ReadyToWearProduct, Product, Fabric, Order, OrderStatus,
   CreateCustomDesignOrderDto, CreateReadyToWearOrderDto, CreateFabricOnlyOrderDto,
   User, PlatformSettings, HeroBanner, AnalyticsOverview,
   Payment, Payout, PaymentInitiateResponse, PaymentProvider,
@@ -26,7 +26,6 @@ export interface PaginatedResponse<T> {
 
 export interface ProductFilters {
   category?: string;
-  country?: string;
   search?: string;
   minPrice?: number;
   maxPrice?: number;
@@ -38,10 +37,12 @@ export interface ProductFilters {
   limit?: number;
 }
 
+export type DesignFilters = ProductFilters;
+export type ReadyToWearFilters = ProductFilters;
+
 export interface FabricFilters {
   material?: string;
   color?: string;
-  country?: string;
   search?: string;
   minPrice?: number;
   maxPrice?: number;
@@ -199,12 +200,11 @@ export const authApi = {
     api.post<{ message: string }>('/auth/resend-verification').then((r) => r.data),
 };
 
-// --- Products API ---
-export const productsApi = {
-  list: (filters?: ProductFilters): Promise<PaginatedResponse<Product>> => {
+// --- Designs API ---
+export const designsApi = {
+  list: (filters?: DesignFilters): Promise<PaginatedResponse<Design>> => {
     const params = new URLSearchParams();
     if (filters?.category) params.set('category', filters.category);
-    if (filters?.country) params.set('country', filters.country);
     if (filters?.search) params.set('search', filters.search);
     if (filters?.minPrice !== undefined) params.set('minPrice', String(filters.minPrice));
     if (filters?.maxPrice !== undefined) params.set('maxPrice', String(filters.maxPrice));
@@ -215,21 +215,64 @@ export const productsApi = {
     if (filters?.page !== undefined) params.set('page', String(filters.page));
     if (filters?.limit !== undefined) params.set('limit', String(filters.limit));
     const query = params.toString();
-    return api.get<PaginatedResponse<Product>>(`/products${query ? `?${query}` : ''}`).then((r) => r.data);
+    return api.get<PaginatedResponse<Design>>(`/designs${query ? `?${query}` : ''}`).then((r) => r.data);
   },
-  get: (id: string): Promise<Product> => api.get<Product>(`/products/${id}`).then((r) => r.data),
-  create: (data: Partial<Product>): Promise<Product> =>
-    api.post<Product>('/products', data).then((r) => r.data),
-  update: (id: string, data: Partial<Product>): Promise<Product> =>
-    api.patch<Product>(`/products/${id}`, data).then((r) => r.data),
+  featured: (): Promise<Design[]> =>
+    api.get<Design[]>('/designs/featured').then((r) => r.data),
+  getById: (id: string): Promise<Design> =>
+    api.get<Design>(`/designs/${id}`).then((r) => r.data),
+  create: (data: Partial<Design>): Promise<Design> =>
+    api.post<Design>('/designs', data).then((r) => r.data),
+  update: (id: string, data: Partial<Design>): Promise<Design> =>
+    api.patch<Design>(`/designs/${id}`, data).then((r) => r.data),
   delete: (id: string): Promise<void> =>
-    api.delete(`/products/${id}`).then(() => undefined),
-  toggleActive: (id: string): Promise<Product> =>
-    api.patch<Product>(`/products/${id}/toggle-active`).then((r) => r.data),
-  updateStock: (id: string, quantity: number): Promise<Product> =>
-    api.patch<Product>(`/products/${id}/stock`, { quantity }).then((r) => r.data),
-  getLowStock: (): Promise<Product[]> =>
-    api.get<Product[]>('/products/low-stock').then((r) => r.data),
+    api.delete(`/designs/${id}`).then(() => undefined),
+  toggleFeatured: (id: string): Promise<Design> =>
+    api.patch<Design>(`/designs/${id}/featured`).then((r) => r.data),
+};
+
+/** @deprecated Use designsApi instead */
+export const productsApi = {
+  list: (filters?: DesignFilters): Promise<PaginatedResponse<Design>> => designsApi.list(filters),
+  get: (id: string): Promise<Design> => designsApi.getById(id),
+  create: (data: Partial<Design>): Promise<Design> => designsApi.create(data),
+  update: (id: string, data: Partial<Design>): Promise<Design> => designsApi.update(id, data),
+  delete: (id: string): Promise<void> => designsApi.delete(id),
+};
+
+// --- Ready-to-Wear API ---
+export const readyToWearApi = {
+  list: (filters?: ReadyToWearFilters): Promise<PaginatedResponse<ReadyToWearProduct>> => {
+    const params = new URLSearchParams();
+    if (filters?.category) params.set('category', filters.category);
+    if (filters?.search) params.set('search', filters.search);
+    if (filters?.minPrice !== undefined) params.set('minPrice', String(filters.minPrice));
+    if (filters?.maxPrice !== undefined) params.set('maxPrice', String(filters.maxPrice));
+    if (filters?.sort) params.set('sort', filters.sort);
+    if (filters?.minRating !== undefined) params.set('minRating', String(filters.minRating));
+    if (filters?.tags) params.set('tags', filters.tags);
+    if (filters?.designerId) params.set('designerId', filters.designerId);
+    if (filters?.page !== undefined) params.set('page', String(filters.page));
+    if (filters?.limit !== undefined) params.set('limit', String(filters.limit));
+    const query = params.toString();
+    return api.get<PaginatedResponse<ReadyToWearProduct>>(`/ready-to-wear${query ? `?${query}` : ''}`).then((r) => r.data);
+  },
+  featured: (): Promise<ReadyToWearProduct[]> =>
+    api.get<ReadyToWearProduct[]>('/ready-to-wear/featured').then((r) => r.data),
+  getById: (id: string): Promise<ReadyToWearProduct> =>
+    api.get<ReadyToWearProduct>(`/ready-to-wear/${id}`).then((r) => r.data),
+  create: (data: Partial<ReadyToWearProduct>): Promise<ReadyToWearProduct> =>
+    api.post<ReadyToWearProduct>('/ready-to-wear', data).then((r) => r.data),
+  update: (id: string, data: Partial<ReadyToWearProduct>): Promise<ReadyToWearProduct> =>
+    api.patch<ReadyToWearProduct>(`/ready-to-wear/${id}`, data).then((r) => r.data),
+  delete: (id: string): Promise<void> =>
+    api.delete(`/ready-to-wear/${id}`).then(() => undefined),
+  toggleFeatured: (id: string): Promise<ReadyToWearProduct> =>
+    api.patch<ReadyToWearProduct>(`/ready-to-wear/${id}/featured`).then((r) => r.data),
+  updateStock: (id: string, quantity: number): Promise<ReadyToWearProduct> =>
+    api.patch<ReadyToWearProduct>(`/ready-to-wear/${id}/stock`, { quantity }).then((r) => r.data),
+  getLowStock: (): Promise<ReadyToWearProduct[]> =>
+    api.get<ReadyToWearProduct[]>('/ready-to-wear/low-stock').then((r) => r.data),
 };
 
 // --- Fabrics API ---
@@ -238,7 +281,6 @@ export const fabricsApi = {
     const params = new URLSearchParams();
     if (filters?.material) params.set('material', filters.material);
     if (filters?.color) params.set('color', filters.color);
-    if (filters?.country) params.set('country', filters.country);
     if (filters?.search) params.set('search', filters.search);
     if (filters?.minPrice !== undefined) params.set('minPrice', String(filters.minPrice));
     if (filters?.maxPrice !== undefined) params.set('maxPrice', String(filters.maxPrice));
@@ -250,6 +292,8 @@ export const fabricsApi = {
     const query = params.toString();
     return api.get<PaginatedResponse<Fabric>>(`/fabrics${query ? `?${query}` : ''}`).then((r) => r.data);
   },
+  featured: (): Promise<Fabric[]> =>
+    api.get<Fabric[]>('/fabrics/featured').then((r) => r.data),
   get: (id: string): Promise<Fabric> => api.get<Fabric>(`/fabrics/${id}`).then((r) => r.data),
   create: (data: Partial<Fabric>): Promise<Fabric> =>
     api.post<Fabric>('/fabrics', data).then((r) => r.data),
@@ -261,6 +305,8 @@ export const fabricsApi = {
     api.patch<Fabric>(`/fabrics/${id}/stock`, { quantity: stock }).then((r) => r.data),
   getLowStock: (): Promise<Fabric[]> =>
     api.get<Fabric[]>('/fabrics/low-stock').then((r) => r.data),
+  toggleFeatured: (id: string): Promise<Fabric> =>
+    api.patch<Fabric>(`/fabrics/${id}/featured`).then((r) => r.data),
 };
 
 // --- Designers API ---
@@ -362,13 +408,13 @@ export const uploadApi = {
 // --- Analytics API ---
 export const analyticsApi = {
   getOverview: async (): Promise<AnalyticsOverview> => {
-    const [users, orders, productsRes, fabricsRes] = await Promise.all([
+    const [users, orders, designsRes, fabricsRes] = await Promise.all([
       usersApi.list().catch(() => [] as User[]),
       ordersApi.listAll().catch(() => [] as Order[]),
-      productsApi.list().catch(() => ({ items: [], total: 0, page: 1, limit: 20, totalPages: 0 } as PaginatedResponse<Product>)),
+      designsApi.list().catch(() => ({ items: [], total: 0, page: 1, limit: 20, totalPages: 0 } as PaginatedResponse<Design>)),
       fabricsApi.list().catch(() => ({ items: [], total: 0, page: 1, limit: 20, totalPages: 0 } as PaginatedResponse<Fabric>)),
     ]);
-    const products = productsRes.items;
+    const designs = designsRes.items;
     const fabrics = fabricsRes.items;
     const totalRevenue = orders.reduce((sum, o) => sum + (o.totalPrice || 0), 0);
     const recentOrders = [...orders]
@@ -385,7 +431,7 @@ export const analyticsApi = {
       totalUsers: users.length,
       totalOrders: orders.length,
       totalRevenue,
-      activeProducts: products.filter((p) => p.isActive).length,
+      activeProducts: designs.filter((p) => p.isActive).length,
       activeFabrics: fabrics.filter((f) => f.stock > 0).length,
       recentOrders,
     };
@@ -397,12 +443,12 @@ export type { HeroBanner } from '../types';
 
 // --- Reviews API ---
 export const reviewsApi = {
-  getProductReviews: (productId: string, params?: { page?: number; limit?: number; sort?: string }) =>
-    api.get(`/products/${productId}/reviews`, { params }),
-  getRatingSummary: (productId: string) =>
-    api.get(`/products/${productId}/reviews/summary`),
-  createReview: (productId: string, data: { rating: number; title?: string; comment: string; images?: string[] }) =>
-    api.post(`/products/${productId}/reviews`, data),
+  getItemReviews: (itemId: string, params?: { page?: number; limit?: number; sort?: string }) =>
+    api.get(`/items/${itemId}/reviews`, { params }),
+  getRatingSummary: (itemId: string) =>
+    api.get(`/items/${itemId}/reviews/summary`),
+  createReview: (itemId: string, data: { rating: number; title?: string; comment: string; images?: string[]; itemType?: string }) =>
+    api.post(`/items/${itemId}/reviews`, data, { params: data.itemType ? { itemType: data.itemType } : {} }),
   updateReview: (reviewId: string, data: Partial<{ rating: number; title: string; comment: string; images: string[] }>) =>
     api.patch(`/reviews/${reviewId}`, data),
   deleteReview: (reviewId: string) =>
@@ -611,32 +657,36 @@ export const wishlistApi = {
 
 // --- Search API ---
 export const searchApi = {
-  search: (q: string, type?: 'all' | 'products' | 'fabrics', limit?: number) => {
+  search: (q: string, type?: 'all' | 'designs' | 'ready-to-wear' | 'fabrics', limit?: number) => {
     const params = new URLSearchParams({ q });
     if (type) params.set('type', type);
     if (limit !== undefined) params.set('limit', String(limit));
-    return api.get<{ products: Product[]; fabrics: Fabric[]; total: number }>(`/search?${params.toString()}`).then((r) => r.data);
+    return api.get<{ designs: Design[]; readyToWear: ReadyToWearProduct[]; fabrics: Fabric[]; total: number }>(`/search?${params.toString()}`).then((r) => r.data);
   },
 };
 
 // --- Recently Viewed API ---
 export const recentlyViewedApi = {
-  list: (limit?: number): Promise<Product[]> => {
+  list: (limit?: number) => {
     const params = limit ? `?limit=${limit}` : '';
-    return api.get<Product[]>(`/recently-viewed${params}`).then((r) => r.data);
+    return api.get(`/recently-viewed${params}`).then((r) => r.data);
   },
-  track: (productId: string): Promise<void> =>
-    api.post(`/recently-viewed/${productId}`).then(() => undefined),
+  track: (itemId: string, itemType?: string): Promise<void> => {
+    const params = itemType ? `?itemType=${itemType}` : '';
+    return api.post(`/recently-viewed/${itemId}${params}`).then(() => undefined);
+  },
   clear: (): Promise<void> =>
     api.delete('/recently-viewed').then(() => undefined),
-  remove: (productId: string): Promise<void> =>
-    api.delete(`/recently-viewed/${productId}`).then(() => undefined),
+  remove: (itemId: string): Promise<void> =>
+    api.delete(`/recently-viewed/${itemId}`).then(() => undefined),
 };
 
 // --- Comparison API ---
 export const comparisonApi = {
-  compare: (productIds: string[]): Promise<Product[]> =>
-    api.post<Product[]>('/comparisons/products', { productIds }).then((r) => r.data),
+  compareDesigns: (ids: string[]): Promise<Design[]> =>
+    api.post<Design[]>('/comparisons/designs', { ids }).then((r) => r.data),
+  compareReadyToWear: (ids: string[]): Promise<ReadyToWearProduct[]> =>
+    api.post<ReadyToWearProduct[]>('/comparisons/ready-to-wear', { ids }).then((r) => r.data),
 };
 
 // --- Coupons ---
@@ -900,7 +950,7 @@ export const addressesApi = {
 
 
 // --- Stock Alerts API ---
-export type StockAlertProductType = 'product' | 'fabric';
+export type StockAlertProductType = 'ready_to_wear' | 'fabric';
 
 export interface StockAlert {
   id: string;

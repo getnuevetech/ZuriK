@@ -43,8 +43,8 @@ export function FabricCard({ fabric, onOrder }: FabricCardProps) {
       <CardBody className="flex flex-col flex-1">
         <div className="flex items-center gap-2 mb-2 flex-wrap">
           {fabric.material && <Badge variant="primary">{fabric.material}</Badge>}
-          {fabric.pattern && <Badge variant="secondary">{fabric.pattern}</Badge>}
-          {fabric.country && <Badge variant="default">{fabric.country}</Badge>}
+          {fabric.patterns?.[0] && <Badge variant="secondary">{fabric.patterns[0]}</Badge>}
+          {fabric.seller?.country && <Badge variant="default">{fabric.seller.country}</Badge>}
         </div>
         <h3 className="font-semibold text-neutral-900 mb-1 line-clamp-1">{fabric.name}</h3>
         {sellerName && (
