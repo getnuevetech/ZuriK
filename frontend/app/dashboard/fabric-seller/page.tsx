@@ -18,15 +18,16 @@ const SIDEBAR_ITEMS = [
 ];
 
 const STATUS_VARIANTS: Record<string, 'default' | 'info' | 'warning' | 'success' | 'danger'> = {
-  PENDING_PAYMENT: 'warning',
-  PAID: 'info',
-  IN_PRODUCTION: 'info',
-  SHIPPED_TO_QA: 'info',
-  QA_APPROVED: 'success',
-  QA_REJECTED: 'danger',
-  SHIPPED_TO_CUSTOMER: 'success',
-  DELIVERED: 'success',
-  CANCELLED: 'danger',
+  pending_payment: 'warning',
+  paid: 'info',
+  awaiting_materials: 'info',
+  in_production: 'info',
+  shipped_to_qa: 'info',
+  qa_approved: 'success',
+  qa_rejected: 'danger',
+  shipped_to_customer: 'success',
+  delivered: 'success',
+  cancelled: 'danger',
 };
 
 export default function FabricSellerDashboardPage() {
@@ -50,9 +51,9 @@ export default function FabricSellerDashboardPage() {
   }
 
   const lowStockFabrics = fabrics.filter((f) => f.stock < 10);
-  const pendingOrders = orders.filter((o) => o.status === 'PAID');
+  const pendingOrders = orders.filter((o) => o.status === 'paid');
   const earnings = orders
-    .filter((o) => ['DELIVERED', 'SHIPPED_TO_CUSTOMER'].includes(o.status))
+    .filter((o) => ['delivered', 'shipped_to_customer'].includes(o.status))
     .reduce((sum, o) => sum + (o.fabricPrice || 0), 0);
 
   return (

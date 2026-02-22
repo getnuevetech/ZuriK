@@ -2,16 +2,17 @@ import { Product } from './product';
 import { Fabric } from './fabric';
 
 export type OrderStatus =
-  | 'PENDING_PAYMENT'
-  | 'PAID'
-  | 'IN_PRODUCTION'
-  | 'SHIPPED_TO_QA'
-  | 'QA_INSPECTION'
-  | 'QA_APPROVED'
-  | 'QA_REJECTED'
-  | 'SHIPPED_TO_CUSTOMER'
-  | 'DELIVERED'
-  | 'CANCELLED';
+  | 'pending_payment'
+  | 'paid'
+  | 'awaiting_materials'
+  | 'in_production'
+  | 'shipped_to_qa'
+  | 'qa_inspection'
+  | 'qa_approved'
+  | 'qa_rejected'
+  | 'shipped_to_customer'
+  | 'delivered'
+  | 'cancelled';
 
 export interface Order {
   id: string;

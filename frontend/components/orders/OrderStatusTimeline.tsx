@@ -1,14 +1,15 @@
 import React from 'react';
 
 const ORDER_STEPS = [
-  { status: 'PENDING_PAYMENT', label: 'Pending Payment' },
-  { status: 'PAID', label: 'Paid' },
-  { status: 'IN_PRODUCTION', label: 'In Production' },
-  { status: 'SHIPPED_TO_QA', label: 'Shipped to QA' },
-  { status: 'QA_INSPECTION', label: 'QA Inspection' },
-  { status: 'APPROVED', label: 'Approved' },
-  { status: 'SHIPPED_TO_CUSTOMER', label: 'Shipped' },
-  { status: 'DELIVERED', label: 'Delivered' },
+  { status: 'pending_payment', label: 'Pending Payment' },
+  { status: 'paid', label: 'Paid' },
+  { status: 'awaiting_materials', label: 'Awaiting Materials' },
+  { status: 'in_production', label: 'In Production' },
+  { status: 'shipped_to_qa', label: 'Shipped to QA' },
+  { status: 'qa_inspection', label: 'QA Inspection' },
+  { status: 'qa_approved', label: 'Approved' },
+  { status: 'shipped_to_customer', label: 'Shipped' },
+  { status: 'delivered', label: 'Delivered' },
 ];
 
 const STATUS_ORDER = ORDER_STEPS.map((s) => s.status);
@@ -19,14 +20,14 @@ interface OrderStatusTimelineProps {
 
 export function OrderStatusTimeline({ currentStatus }: OrderStatusTimelineProps) {
   const currentIdx = STATUS_ORDER.indexOf(currentStatus);
-  const isCancelled = currentStatus === 'CANCELLED' || currentStatus === 'REJECTED';
+  const isCancelled = currentStatus === 'cancelled' || currentStatus === 'qa_rejected';
 
   if (isCancelled) {
     return (
       <div className="flex items-center gap-3 p-4 bg-red-50 rounded-xl border border-red-200">
         <span className="text-red-500 text-2xl">✕</span>
         <span className="font-medium text-red-700">
-          Order {currentStatus === 'CANCELLED' ? 'Cancelled' : 'Rejected'}
+          Order {currentStatus === 'cancelled' ? 'Cancelled' : 'Rejected'}
         </span>
       </div>
     );

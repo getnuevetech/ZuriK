@@ -2,16 +2,17 @@ import React from 'react';
 import { Badge } from '../ui/Badge';
 
 const STATUS_CONFIG: Record<string, { variant: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info'; label: string }> = {
-  PENDING_PAYMENT: { variant: 'warning', label: 'Pending Payment' },
-  PAID: { variant: 'info', label: 'Paid' },
-  IN_PRODUCTION: { variant: 'primary', label: 'In Production' },
-  SHIPPED_TO_QA: { variant: 'info', label: 'Shipped to QA' },
-  QA_INSPECTION: { variant: 'warning', label: 'QA Inspection' },
-  APPROVED: { variant: 'success', label: 'Approved' },
-  SHIPPED_TO_CUSTOMER: { variant: 'info', label: 'Shipped' },
-  DELIVERED: { variant: 'success', label: 'Delivered' },
-  CANCELLED: { variant: 'danger', label: 'Cancelled' },
-  REJECTED: { variant: 'danger', label: 'Rejected' },
+  pending_payment: { variant: 'warning', label: 'Pending Payment' },
+  paid: { variant: 'info', label: 'Paid' },
+  awaiting_materials: { variant: 'info', label: 'Awaiting Materials' },
+  in_production: { variant: 'primary', label: 'In Production' },
+  shipped_to_qa: { variant: 'info', label: 'Shipped to QA' },
+  qa_inspection: { variant: 'warning', label: 'QA Inspection' },
+  qa_approved: { variant: 'success', label: 'Approved' },
+  qa_rejected: { variant: 'danger', label: 'Rejected' },
+  shipped_to_customer: { variant: 'info', label: 'Shipped' },
+  delivered: { variant: 'success', label: 'Delivered' },
+  cancelled: { variant: 'danger', label: 'Cancelled' },
 };
 
 interface OrderStatusBadgeProps {

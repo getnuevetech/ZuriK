@@ -104,7 +104,7 @@ export default function OrderDetailPage() {
         </div>
         <div className="flex flex-col items-end gap-2">
           <PriceDisplay amount={order.totalPrice} className="text-2xl font-bold text-neutral-900" />
-          {order.status === 'PENDING_PAYMENT' && (
+          {order.status === 'pending_payment' && (
             <Button size="sm" loading={paymentLoading} onClick={handleCompletePayment}>
               Complete Payment
             </Button>

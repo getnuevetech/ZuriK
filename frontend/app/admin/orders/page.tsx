@@ -15,16 +15,17 @@ import { Order, PaginatedResponse } from '../../../types';
 
 const STATUS_OPTIONS = [
   { value: '', label: 'All Statuses' },
-  { value: 'PENDING_PAYMENT', label: 'Pending Payment' },
-  { value: 'PAID', label: 'Paid' },
-  { value: 'IN_PRODUCTION', label: 'In Production' },
-  { value: 'SHIPPED_TO_QA', label: 'Shipped to QA' },
-  { value: 'QA_INSPECTION', label: 'QA Inspection' },
-  { value: 'QA_APPROVED', label: 'QA Approved' },
-  { value: 'QA_REJECTED', label: 'QA Rejected' },
-  { value: 'SHIPPED_TO_CUSTOMER', label: 'Shipped to Customer' },
-  { value: 'DELIVERED', label: 'Delivered' },
-  { value: 'CANCELLED', label: 'Cancelled' },
+  { value: 'pending_payment', label: 'Pending Payment' },
+  { value: 'paid', label: 'Paid' },
+  { value: 'awaiting_materials', label: 'Awaiting Materials' },
+  { value: 'in_production', label: 'In Production' },
+  { value: 'shipped_to_qa', label: 'Shipped to QA' },
+  { value: 'qa_inspection', label: 'QA Inspection' },
+  { value: 'qa_approved', label: 'QA Approved' },
+  { value: 'qa_rejected', label: 'QA Rejected' },
+  { value: 'shipped_to_customer', label: 'Shipped to Customer' },
+  { value: 'delivered', label: 'Delivered' },
+  { value: 'cancelled', label: 'Cancelled' },
 ];
 
 const ORDER_TYPE_OPTIONS = [

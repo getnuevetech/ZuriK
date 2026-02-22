@@ -17,26 +17,28 @@ const SIDEBAR_ITEMS = [
 ];
 
 const STATUS_VARIANTS: Record<string, 'default' | 'info' | 'warning' | 'success' | 'danger'> = {
-  PENDING_PAYMENT: 'warning',
-  PAID: 'info',
-  IN_PRODUCTION: 'info',
-  SHIPPED_TO_QA: 'info',
-  QA_APPROVED: 'success',
-  QA_REJECTED: 'danger',
-  SHIPPED_TO_CUSTOMER: 'success',
-  DELIVERED: 'success',
-  CANCELLED: 'danger',
+  pending_payment: 'warning',
+  paid: 'info',
+  awaiting_materials: 'info',
+  in_production: 'info',
+  shipped_to_qa: 'info',
+  qa_approved: 'success',
+  qa_rejected: 'danger',
+  shipped_to_customer: 'success',
+  delivered: 'success',
+  cancelled: 'danger',
 };
 
 const STATUS_OPTIONS = [
   { value: '', label: 'All Statuses' },
-  { value: 'PAID', label: 'Paid' },
-  { value: 'IN_PRODUCTION', label: 'In Production' },
-  { value: 'SHIPPED_TO_QA', label: 'Shipped to QA' },
-  { value: 'QA_REJECTED', label: 'QA Rejected' },
-  { value: 'SHIPPED_TO_CUSTOMER', label: 'Shipped' },
-  { value: 'DELIVERED', label: 'Delivered' },
-  { value: 'CANCELLED', label: 'Cancelled' },
+  { value: 'paid', label: 'Paid' },
+  { value: 'awaiting_materials', label: 'Awaiting Materials' },
+  { value: 'in_production', label: 'In Production' },
+  { value: 'shipped_to_qa', label: 'Shipped to QA' },
+  { value: 'qa_rejected', label: 'QA Rejected' },
+  { value: 'shipped_to_customer', label: 'Shipped' },
+  { value: 'delivered', label: 'Delivered' },
+  { value: 'cancelled', label: 'Cancelled' },
 ];
 
 export default function DesignerOrdersPage() {
@@ -107,36 +109,36 @@ export default function DesignerOrdersPage() {
                     <td className="px-4 py-3 text-neutral-500">{new Date(order.createdAt).toLocaleDateString()}</td>
                     <td className="px-4 py-3">
                       <div className="flex gap-2 flex-wrap">
-                        {order.status === 'PAID' && (
+                        {order.status === 'paid' && (
                           <>
                             <StatusTransitionButton
                               orderId={order.id}
-                              targetStatus="IN_PRODUCTION"
+                              targetStatus="in_production"
                               label="Start Production"
                               onSuccess={(s) => handleStatusUpdate(order.id, s)}
                             />
                             <StatusTransitionButton
                               orderId={order.id}
-                              targetStatus="CANCELLED"
+                              targetStatus="cancelled"
                               label="Reject"
                               variant="danger"
                               onSuccess={(s) => handleStatusUpdate(order.id, s)}
                             />
                           </>
                         )}
-                        {order.status === 'IN_PRODUCTION' && (
+                        {order.status === 'in_production' && (
                           <StatusTransitionButton
                             orderId={order.id}
-                            targetStatus="SHIPPED_TO_QA"
+                            targetStatus="shipped_to_qa"
                             label="Ship to QA"
                             variant="secondary"
                             onSuccess={(s) => handleStatusUpdate(order.id, s)}
                           />
                         )}
-                        {order.status === 'QA_REJECTED' && (
+                        {order.status === 'qa_rejected' && (
                           <StatusTransitionButton
                             orderId={order.id}
-                            targetStatus="IN_PRODUCTION"
+                            targetStatus="in_production"
                             label="Restart Production"
                             onSuccess={(s) => handleStatusUpdate(order.id, s)}
                           />
