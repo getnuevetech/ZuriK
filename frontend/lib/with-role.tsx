@@ -20,7 +20,7 @@ export function withRole<P extends object>(
     useEffect(() => {
       if (isLoading) return;
       if (!isAuthenticated) {
-        router.push('/login');
+        router.push('/login?' + new URLSearchParams({ redirect: window.location.pathname }).toString());
         return;
       }
       if (user && !allowedRoles.includes(user.role)) {
@@ -59,7 +59,7 @@ export function useRequireRole(allowedRoles: string[]) {
   useEffect(() => {
     if (isLoading) return;
     if (!isAuthenticated) {
-      router.push('/login');
+      router.push('/login?' + new URLSearchParams({ redirect: window.location.pathname }).toString());
       return;
     }
     if (user && !rolesKey.split(',').includes(user.role)) {

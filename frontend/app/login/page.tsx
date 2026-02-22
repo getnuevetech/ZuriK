@@ -1,8 +1,10 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '../../lib/auth-context';
 import { useToast } from '../../components/ui/Toast';
 import { Button } from '../../components/ui/Button';
@@ -15,6 +17,9 @@ export default function LoginPage() {
   const { login } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirect');
+  const safeRedirect = redirectTo && redirectTo.startsWith('/') && !redirectTo.startsWith('//') ? redirectTo : '/';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -38,7 +43,7 @@ export default function LoginPage() {
     try {
       await login({ email, password });
       toast('success', 'Welcome back!');
-      router.push('/');
+      router.push(safeRedirect);
     } catch (err: unknown) {
       toast('error', extractErrorMessage(err, 'Invalid email or password'));
     } finally {
