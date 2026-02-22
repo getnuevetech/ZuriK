@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { productsApi } from '../../lib/api';
 import { getUserDisplayName } from '../../lib/utils';
-import type { Design } from '../../types';
+import type { Design, Product } from '../../types';
 
 interface DesignerInfo {
   id: string;
