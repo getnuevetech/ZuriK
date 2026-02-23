@@ -40,7 +40,7 @@ export class LoyaltyTransaction {
   @Column()
   description: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   referenceId: string | null;
 
   @CreateDateColumn()
