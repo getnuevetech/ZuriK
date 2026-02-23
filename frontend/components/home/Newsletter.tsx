@@ -1,24 +1,27 @@
 'use client';
 
 import React, { useState } from 'react';
+import { newsletterApi } from '../../lib/api';
 
 export function Newsletter() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) return;
+    setLoading(true);
+    setError(null);
     try {
-      const existing = JSON.parse(localStorage.getItem('newsletter_emails') || '[]') as string[];
-      if (!existing.includes(email.trim())) {
-        existing.push(email.trim());
-        localStorage.setItem('newsletter_emails', JSON.stringify(existing));
-      }
+      await newsletterApi.subscribe(email.trim(), 'homepage');
+      setSubmitted(true);
     } catch {
-      // ignore localStorage errors
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
     }
-    setSubmitted(true);
   };
 
   return (
@@ -44,24 +47,29 @@ export function Newsletter() {
               <p className="text-neutral-500 text-sm font-light">Watch your inbox for curated African fashion.</p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Your email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="flex-1 border border-neutral-200 text-neutral-900 placeholder:text-neutral-400 px-5 py-3.5 text-sm focus:outline-none focus:border-[#C97B3A] transition-colors rounded-full"
-                aria-label="Email address"
-              />
-              <button
-                type="submit"
-                className="px-8 py-3.5 text-sm font-semibold text-white transition-colors whitespace-nowrap rounded-full hover:opacity-90"
-                style={{ backgroundColor: '#C97B3A' }}
-              >
-                Subscribe →
-              </button>
-            </form>
+            <>
+              <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                <input
+                  type="email"
+                  placeholder="Your email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={loading}
+                  className="flex-1 border border-neutral-200 text-neutral-900 placeholder:text-neutral-400 px-5 py-3.5 text-sm focus:outline-none focus:border-[#C97B3A] transition-colors rounded-full disabled:opacity-60"
+                  aria-label="Email address"
+                />
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-8 py-3.5 text-sm font-semibold text-white transition-colors whitespace-nowrap rounded-full hover:opacity-90 disabled:opacity-60"
+                  style={{ backgroundColor: '#C97B3A' }}
+                >
+                  {loading ? 'Subscribing…' : 'Subscribe →'}
+                </button>
+              </form>
+              {error && <p className="text-red-500 text-sm mt-3">{error}</p>}
+            </>
           )}
 
           <p className="text-neutral-400 text-xs mt-6 font-light">No spam, ever. Unsubscribe at any time.</p>

@@ -21,6 +21,9 @@ import { CreateCollectionPostDto } from './dto/create-collection-post.dto';
 import { UpdateCollectionPostDto } from './dto/update-collection-post.dto';
 import { CreateHeritageStoryDto } from './dto/create-heritage-story.dto';
 import { UpdateHeritageStoryDto } from './dto/update-heritage-story.dto';
+import { CreateHowItWorksStepDto } from './dto/create-how-it-works-step.dto';
+import { UpdateHowItWorksStepDto } from './dto/update-how-it-works-step.dto';
+import { UpdateTryOnConfigDto } from './dto/update-tryon-config.dto';
 
 @ApiTags('homepage')
 @Controller('homepage')
@@ -386,5 +389,80 @@ export class HomepageController {
   @ApiOperation({ summary: 'Delete heritage story (admin)' })
   adminDeleteHeritageStory(@Param('id') id: string) {
     return this.homepageService.deleteHeritageStory(id);
+  }
+
+  // ─── Public Endpoints — How It Works ─────────────────────────────────────────
+
+  @Get('how-it-works')
+  @ApiOperation({ summary: 'Get active How It Works steps (public)' })
+  getHowItWorksSteps() {
+    return this.homepageService.getActiveHowItWorksSteps();
+  }
+
+  // ─── Admin Endpoints — How It Works ──────────────────────────────────────────
+
+  @Get('admin/how-it-works')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'List all How It Works steps (admin)' })
+  adminGetHowItWorksSteps() {
+    return this.homepageService.getHowItWorksSteps();
+  }
+
+  @Post('admin/how-it-works')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create How It Works step (admin)' })
+  adminCreateHowItWorksStep(@Body() dto: CreateHowItWorksStepDto) {
+    return this.homepageService.createHowItWorksStep(dto);
+  }
+
+  @Patch('admin/how-it-works/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update How It Works step (admin)' })
+  adminUpdateHowItWorksStep(@Param('id') id: string, @Body() dto: UpdateHowItWorksStepDto) {
+    return this.homepageService.updateHowItWorksStep(id, dto);
+  }
+
+  @Delete('admin/how-it-works/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete How It Works step (admin)' })
+  adminDeleteHowItWorksStep(@Param('id') id: string) {
+    return this.homepageService.deleteHowItWorksStep(id);
+  }
+
+  // ─── Public Endpoints — TryOn Config ─────────────────────────────────────────
+
+  @Get('tryon-config')
+  @ApiOperation({ summary: 'Get TryOn integration config (public, returns isEnabled status only)' })
+  async getTryOnConfig() {
+    const config = await this.homepageService.getTryOnConfig();
+    return config ? { isEnabled: config.isEnabled, hasConfig: !!(config.apiEndpoint && config.apiKey) } : { isEnabled: false, hasConfig: false };
+  }
+
+  // ─── Admin Endpoints — TryOn Config ──────────────────────────────────────────
+
+  @Get('admin/tryon-config')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get TryOn config (admin)' })
+  adminGetTryOnConfig() {
+    return this.homepageService.getTryOnConfig();
+  }
+
+  @Patch('admin/tryon-config')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update TryOn config (admin)' })
+  adminUpdateTryOnConfig(@Body() dto: UpdateTryOnConfigDto) {
+    return this.homepageService.upsertTryOnConfig(dto);
   }
 }

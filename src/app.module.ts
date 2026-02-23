@@ -72,6 +72,10 @@ import { AbandonedCart } from './abandoned-cart/entities/abandoned-cart.entity';
 import { ReviewPrompt } from './review-prompts/entities/review-prompt.entity';
 import { StockAlert } from './stock-alerts/entities/stock-alert.entity';
 import { LoyaltyTransaction } from './loyalty/entities/loyalty-transaction.entity';
+import { NewsletterModule } from './newsletter/newsletter.module';
+import { NewsletterSubscriber } from './newsletter/entities/newsletter-subscriber.entity';
+import { HowItWorksStep } from './homepage/entities/how-it-works-step.entity';
+import { TryOnConfig } from './homepage/entities/tryon-config.entity';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -104,6 +108,9 @@ const isProduction = process.env.NODE_ENV === 'production';
         ReviewPrompt,
         StockAlert,
         LoyaltyTransaction,
+        NewsletterSubscriber,
+        HowItWorksStep,
+        TryOnConfig,
       ],
       synchronize: !isProduction,
       ssl: isProduction
@@ -146,6 +153,7 @@ const isProduction = process.env.NODE_ENV === 'production';
     ReviewPromptsModule,
     StockAlertsModule,
     LoyaltyModule,
+    NewsletterModule,
   ],
   controllers: [AppController],
   providers: [
