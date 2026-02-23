@@ -5,7 +5,6 @@ import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { HealthController } from './health/health.controller';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { DesignsModule } from './designs/designs.module';
@@ -106,7 +105,7 @@ const isProduction = process.env.NODE_ENV === 'production';
         StockAlert,
         LoyaltyTransaction,
       ],
-      synchronize: true,
+      synchronize: !isProduction,
       ssl: isProduction
         ? {
             rejectUnauthorized: !!process.env.DATABASE_CA_CERT,
@@ -148,7 +147,7 @@ const isProduction = process.env.NODE_ENV === 'production';
     StockAlertsModule,
     LoyaltyModule,
   ],
-  controllers: [AppController, HealthController],
+  controllers: [AppController],
   providers: [
     AppService,
     {
