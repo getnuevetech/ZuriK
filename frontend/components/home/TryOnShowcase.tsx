@@ -5,6 +5,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { homepageApi } from '../../lib/api';
 
+interface TryOnConfigResponse {
+  isEnabled: boolean;
+  hasConfig: boolean;
+  providerName: string | null;
+  showcaseImages: string[];
+}
+
 const FEATURES = [
   { num: '①', label: 'Choose Fabric', desc: 'Select from hundreds of authentic African textiles' },
   { num: '②', label: 'Visualise Design', desc: 'See exactly how the garment will look on you' },
@@ -20,7 +27,7 @@ export function TryOnShowcase() {
 
   useEffect(() => {
     homepageApi.getTryOnConfig()
-      .then((data: any) => {
+      .then((data: TryOnConfigResponse) => {
         setIsEnabled(data?.isEnabled ?? false);
         setProviderName(data?.providerName ?? null);
         if (data?.showcaseImages?.length) {

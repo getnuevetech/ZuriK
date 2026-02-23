@@ -10,6 +10,13 @@ interface Step {
   icon: React.ReactNode;
 }
 
+interface HowItWorksStepResponse {
+  stepNumber: number;
+  title: string;
+  description: string;
+  icon: string;
+}
+
 const ICON_MAP: Record<string, React.ReactNode> = {
   search: (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -78,14 +85,21 @@ export function HowItWorks() {
 
   useEffect(() => {
     homepageApi.getHowItWorksSteps()
-      .then((data: any[]) => {
+      .then((data: HowItWorksStepResponse[]) => {
         if (data && data.length > 0) {
-          const mapped: Step[] = data.map((s) => ({
-            step: String(s.stepNumber).padStart(2, '0'),
-            title: s.title,
-            desc: s.description,
-            icon: ICON_MAP[s.icon] ?? <span className="text-3xl leading-none">{s.icon}</span>,
-          }));
+          const mapped: Step[] = data.map((s) => {
+            const iconStr = typeof s.icon === 'string' ? s.icon : '';
+            const knownIcon = ICON_MAP[iconStr];
+            const iconNode = knownIcon ?? (
+              <span className="text-3xl leading-none">{iconStr}</span>
+            );
+            return {
+              step: String(s.stepNumber).padStart(2, '0'),
+              title: s.title,
+              desc: s.description,
+              icon: iconNode,
+            };
+          });
           setSteps(mapped);
         }
       })
