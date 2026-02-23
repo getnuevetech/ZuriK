@@ -112,7 +112,8 @@ const isProduction = process.env.NODE_ENV === 'production';
         HowItWorksStep,
         TryOnConfig,
       ],
-      synchronize: !isProduction,
+      // TODO: switch back to `synchronize: false` and use proper TypeORM migrations once tables are created
+      synchronize: true,
       ssl: isProduction
         ? {
             rejectUnauthorized: !!process.env.DATABASE_CA_CERT,
