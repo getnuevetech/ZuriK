@@ -9,6 +9,8 @@ import { HomepageLayout } from './entities/homepage-layout.entity';
 import { PromoBanner } from './entities/promo-banner.entity';
 import { CollectionPost } from './entities/collection-post.entity';
 import { HeritageStory } from './entities/heritage-story.entity';
+import { HowItWorksStep } from './entities/how-it-works-step.entity';
+import { TryOnConfig } from './entities/tryon-config.entity';
 import { Design } from '../designs/entities/design.entity';
 import { ReadyToWearProduct } from '../ready-to-wear/entities/ready-to-wear-product.entity';
 import { Order } from '../orders/entities/order.entity';
@@ -27,6 +29,9 @@ import { CreateCollectionPostDto } from './dto/create-collection-post.dto';
 import { UpdateCollectionPostDto } from './dto/update-collection-post.dto';
 import { CreateHeritageStoryDto } from './dto/create-heritage-story.dto';
 import { UpdateHeritageStoryDto } from './dto/update-heritage-story.dto';
+import { CreateHowItWorksStepDto } from './dto/create-how-it-works-step.dto';
+import { UpdateHowItWorksStepDto } from './dto/update-how-it-works-step.dto';
+import { UpdateTryOnConfigDto } from './dto/update-tryon-config.dto';
 import { THEME_PRESETS } from './theme-presets.config';
 
 @Injectable()
@@ -48,6 +53,10 @@ export class HomepageService {
     private collectionPostRepo: Repository<CollectionPost>,
     @InjectRepository(HeritageStory)
     private heritageStoryRepo: Repository<HeritageStory>,
+    @InjectRepository(HowItWorksStep)
+    private howItWorksRepo: Repository<HowItWorksStep>,
+    @InjectRepository(TryOnConfig)
+    private tryOnConfigRepo: Repository<TryOnConfig>,
     @InjectRepository(Design)
     private designRepo: Repository<Design>,
     @InjectRepository(ReadyToWearProduct)
@@ -453,5 +462,53 @@ export class HomepageService {
       where: { isActive: true },
       order: { displayOrder: 'ASC' },
     });
+  }
+
+  // ─── How It Works Steps ───────────────────────────────────────────────────────
+
+  async createHowItWorksStep(dto: CreateHowItWorksStepDto): Promise<HowItWorksStep> {
+    const step = this.howItWorksRepo.create(dto);
+    return this.howItWorksRepo.save(step);
+  }
+
+  async updateHowItWorksStep(id: string, dto: UpdateHowItWorksStepDto): Promise<HowItWorksStep> {
+    const step = await this.howItWorksRepo.findOne({ where: { id } });
+    if (!step) throw new NotFoundException('How It Works step not found');
+    Object.assign(step, dto);
+    return this.howItWorksRepo.save(step);
+  }
+
+  async deleteHowItWorksStep(id: string): Promise<void> {
+    const step = await this.howItWorksRepo.findOne({ where: { id } });
+    if (!step) throw new NotFoundException('How It Works step not found');
+    await this.howItWorksRepo.remove(step);
+  }
+
+  async getHowItWorksSteps(): Promise<HowItWorksStep[]> {
+    return this.howItWorksRepo.find({ order: { displayOrder: 'ASC', stepNumber: 'ASC' } });
+  }
+
+  async getActiveHowItWorksSteps(): Promise<HowItWorksStep[]> {
+    return this.howItWorksRepo.find({
+      where: { isActive: true },
+      order: { displayOrder: 'ASC', stepNumber: 'ASC' },
+    });
+  }
+
+  // ─── TryOn Config ─────────────────────────────────────────────────────────────
+
+  async getTryOnConfig(): Promise<TryOnConfig | null> {
+    const configs = await this.tryOnConfigRepo.find({ take: 1 });
+    return configs[0] ?? null;
+  }
+
+  async upsertTryOnConfig(dto: UpdateTryOnConfigDto): Promise<TryOnConfig> {
+    const existing = await this.tryOnConfigRepo.find({ take: 1 });
+    if (existing.length > 0) {
+      Object.assign(existing[0], dto);
+      return this.tryOnConfigRepo.save(existing[0]);
+    }
+    const config = this.tryOnConfigRepo.create(dto);
+    return this.tryOnConfigRepo.save(config);
   }
 }

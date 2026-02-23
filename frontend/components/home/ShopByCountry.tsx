@@ -31,6 +31,11 @@ export function ShopByCountry() {
   const [countries, setCountries] = useState<CountryItem[]>(FALLBACK_COUNTRIES);
   const [index, setIndex] = useState(0);
   const [visibleCount, setVisibleCount] = useState(4);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     homepageApi.getShopByCountry()
@@ -53,6 +58,7 @@ export function ShopByCountry() {
   }, []);
 
   useEffect(() => {
+    if (!mounted) return;
     function updateVisible() {
       if (window.innerWidth < 640) setVisibleCount(1);
       else if (window.innerWidth < 1024) setVisibleCount(3);
@@ -61,7 +67,7 @@ export function ShopByCountry() {
     updateVisible();
     window.addEventListener('resize', updateVisible);
     return () => window.removeEventListener('resize', updateVisible);
-  }, []);
+  }, [mounted]);
 
   const maxIndex = Math.max(0, countries.length - visibleCount);
   const cardWidthPct = 100 / visibleCount;

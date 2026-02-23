@@ -2,7 +2,10 @@ import React from 'react';
 import { HeroBannerCarousel } from '../components/home/HeroBannerCarousel';
 import { PromoBanner } from '../components/home/PromoBanner';
 import { ShopByCountry } from '../components/home/ShopByCountry';
-import { FeaturedSections } from '../components/home/FeaturedSections';
+import { FeaturedReadyToWear } from '../components/home/FeaturedReadyToWear';
+import { FeaturedDesigns } from '../components/home/FeaturedDesigns';
+import { FeaturedReadyToWearSecondary } from '../components/home/FeaturedReadyToWearSecondary';
+import { FeaturedFabrics } from '../components/home/FeaturedFabrics';
 import { CategoryBanners } from '../components/home/CategoryBanners';
 import { TrendingProducts } from '../components/home/TrendingProducts';
 import { TryOnShowcase } from '../components/home/TryOnShowcase';
@@ -15,9 +18,12 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       <HeroBannerCarousel />
-      <PromoBanner />
       <ShopByCountry />
-      <FeaturedSections />
+      <FeaturedReadyToWear />
+      <FeaturedDesigns />
+      <FeaturedReadyToWearSecondary />
+      <FeaturedFabrics />
+      <PromoBanner />
       <CategoryBanners />
       <TrendingProducts />
       <TryOnShowcase />

@@ -312,6 +312,8 @@ export const fabricsApi = {
 // --- Designers API ---
 export const designersApi = {
   list: () => api.get('/users?role=designer').then((r) => r.data),
+  featured: (limit?: number): Promise<User[]> =>
+    api.get<User[]>('/users', { params: { role: 'designer', limit: limit ?? 8 } }).then((r) => r.data),
 };
 
 // --- Users API ---
@@ -641,6 +643,35 @@ export const homepageApi = {
     api.patch(`/homepage/admin/heritage-stories/${id}`, data).then((r) => r.data),
   adminDeleteHeritageStory: (id: string) =>
     api.delete(`/homepage/admin/heritage-stories/${id}`).then((r) => r.data),
+
+  // Public — How It Works
+  getHowItWorksSteps: () => api.get('/homepage/how-it-works').then((r) => r.data),
+
+  // Admin — How It Works
+  adminGetHowItWorksSteps: () => api.get('/homepage/admin/how-it-works').then((r) => r.data),
+  adminCreateHowItWorksStep: (data: Record<string, unknown>) =>
+    api.post('/homepage/admin/how-it-works', data).then((r) => r.data),
+  adminUpdateHowItWorksStep: (id: string, data: Record<string, unknown>) =>
+    api.patch(`/homepage/admin/how-it-works/${id}`, data).then((r) => r.data),
+  adminDeleteHowItWorksStep: (id: string) =>
+    api.delete(`/homepage/admin/how-it-works/${id}`).then((r) => r.data),
+
+  // Public — TryOn Config
+  getTryOnConfig: (): Promise<{ isEnabled: boolean; hasConfig: boolean }> =>
+    api.get('/homepage/tryon-config').then((r) => r.data),
+
+  // Admin — TryOn Config
+  adminGetTryOnConfig: () => api.get('/homepage/admin/tryon-config').then((r) => r.data),
+  adminUpdateTryOnConfig: (data: Record<string, unknown>) =>
+    api.patch('/homepage/admin/tryon-config', data).then((r) => r.data),
+};
+
+// --- Newsletter API ---
+export const newsletterApi = {
+  subscribe: (email: string, source?: string): Promise<{ message: string }> =>
+    api.post<{ message: string }>('/newsletter/subscribe', { email, source }).then((r) => r.data),
+  adminListSubscribers: (page?: number, limit?: number) =>
+    api.get('/newsletter/subscribers', { params: { page, limit } }).then((r) => r.data),
 };
 
 // --- Wishlist API ---

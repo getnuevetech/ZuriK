@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { productsApi } from '../../lib/api';
+import { designersApi } from '../../lib/api';
 import { getUserDisplayName } from '../../lib/utils';
-import type { Design, Product } from '../../types';
+import type { User } from '../../types';
 
 interface DesignerInfo {
   id: string;
@@ -46,38 +46,26 @@ function StarRating({ rating = 4.8 }: { rating?: number }) {
   );
 }
 
-function extractDesigners(products: Product[]): DesignerInfo[] {
-  const map = new Map<string, DesignerInfo>();
-  for (const p of products) {
-    if (!p.designer) continue;
-    const id = (p.designer as any).id;
-    if (map.has(id)) {
-      map.get(id)!.productCount += 1;
-    } else {
-      const name = getUserDisplayName(p.designer as any);
-      const country = (p as any).country || '';
-      map.set(id, {
-        id, name, country,
-        flag: COUNTRY_FLAGS[country] || '🌍',
-        initials: getInitials(name),
-        productCount: 1,
-        specialties: 'African Fashion',
-        image: null,
-      });
-    }
-  }
-  return Array.from(map.values()).slice(0, 4);
-}
-
 export function DesignerSpotlight() {
   const [designers, setDesigners] = useState<DesignerInfo[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    productsApi.list()
-      .then((res) => {
-        const extracted = extractDesigners(res.items);
-        setDesigners(extracted.length > 0 ? extracted : PLACEHOLDER_DESIGNERS);
+    designersApi.featured(8)
+      .then((users: User[]) => {
+        const mapped = users
+          .filter((u) => u.id)
+          .map((u) => ({
+            id: u.id,
+            name: getUserDisplayName(u),
+            country: (u as any).country || '',
+            flag: COUNTRY_FLAGS[(u as any).country || ''] || '',
+            initials: getInitials(getUserDisplayName(u)),
+            productCount: (u as any).productCount ?? 0,
+            specialties: (u as any).specialties || '',
+            image: (u as any).avatarUrl || null,
+          }));
+        setDesigners(mapped.length > 0 ? mapped : PLACEHOLDER_DESIGNERS);
       })
       .catch(() => setDesigners(PLACEHOLDER_DESIGNERS))
       .finally(() => setLoading(false));
