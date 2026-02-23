@@ -198,7 +198,7 @@ export default function AdminHowItWorksPage() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold" style={{ color: '#C97B3A' }}>0{step.stepNumber}</span>
+                  <span className="text-xs font-bold" style={{ color: '#C97B3A' }}>{String(step.stepNumber).padStart(2, '0')}</span>
                   <span className="font-semibold text-neutral-900 text-sm">{step.title}</span>
                   {!step.isActive && <span className="text-xs bg-neutral-100 text-neutral-500 px-2 py-0.5 rounded-full">Inactive</span>}
                 </div>

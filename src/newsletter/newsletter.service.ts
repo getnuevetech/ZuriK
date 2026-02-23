@@ -12,7 +12,8 @@ export class NewsletterService {
   ) {}
 
   async subscribe(dto: SubscribeNewsletterDto): Promise<{ message: string }> {
-    const existing = await this.subscriberRepo.findOne({ where: { email: dto.email } });
+    const normalizedEmail = dto.email.toLowerCase().trim();
+    const existing = await this.subscriberRepo.findOne({ where: { email: normalizedEmail } });
     if (existing) {
       if (!existing.isActive) {
         existing.isActive = true;
@@ -22,7 +23,7 @@ export class NewsletterService {
       return { message: 'Already subscribed' };
     }
     const subscriber = this.subscriberRepo.create({
-      email: dto.email,
+      email: normalizedEmail,
       source: dto.source ?? 'homepage',
     });
     await this.subscriberRepo.save(subscriber);
