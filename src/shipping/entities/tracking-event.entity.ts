@@ -21,7 +21,7 @@ export class TrackingEvent {
   @Column({ type: 'text' })
   description: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   location: string | null;
 
   @CreateDateColumn()
