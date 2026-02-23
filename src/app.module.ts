@@ -106,7 +106,7 @@ const isProduction = process.env.NODE_ENV === 'production';
         StockAlert,
         LoyaltyTransaction,
       ],
-      synchronize: !isProduction,
+      synchronize: true,
       ssl: isProduction
         ? {
             rejectUnauthorized: !!process.env.DATABASE_CA_CERT,
