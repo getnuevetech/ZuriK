@@ -39,6 +39,17 @@ function DesignCard({ image, name, price, href, badge }: CardProps) {
   );
 }
 
+const DEMO_DESIGNS: Design[] = [
+  { id: 'demo-design-1', name: 'Custom Dashiki Suit', description: '', customerPrice: 350, images: ['https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80'], isActive: true, createdAt: '', updatedAt: '' },
+  { id: 'demo-design-2', name: 'Bespoke Agbada Set', description: '', customerPrice: 500, images: ['https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&q=80'], isActive: true, createdAt: '', updatedAt: '' },
+  { id: 'demo-design-3', name: 'Tailored Ankara Gown', description: '', customerPrice: 280, images: ['https://images.unsplash.com/photo-1594938298603-c8148c4b4357?w=600&q=80'], isActive: true, createdAt: '', updatedAt: '' },
+  { id: 'demo-design-4', name: 'Royal Kente Ensemble', description: '', customerPrice: 650, images: ['https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&q=80'], isActive: true, createdAt: '', updatedAt: '' },
+  { id: 'demo-design-5', name: 'Modern Aso Ebi', description: '', customerPrice: 420, images: ['https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80'], isActive: true, createdAt: '', updatedAt: '' },
+  { id: 'demo-design-6', name: 'Couture Boubou', description: '', customerPrice: 380, images: ['https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=600&q=80'], isActive: true, createdAt: '', updatedAt: '' },
+  { id: 'demo-design-7', name: 'Silk Kaftan Design', description: '', customerPrice: 300, images: ['https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=600&q=80'], isActive: true, createdAt: '', updatedAt: '' },
+  { id: 'demo-design-8', name: 'Embroidered Senegalese Set', description: '', customerPrice: 450, images: ['https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80'], isActive: true, createdAt: '', updatedAt: '' },
+];
+
 export function FeaturedDesigns() {
   const [designs, setDesigns] = useState<Design[]>([]);
   const [loading, setLoading] = useState(true);
@@ -58,7 +69,7 @@ export function FeaturedDesigns() {
     );
   }
 
-  if (designs.length === 0) return null;
+  const displayDesigns = designs.length > 0 ? designs : DEMO_DESIGNS;
 
   return (
     <section className="py-16 px-4 bg-white">
@@ -73,7 +84,7 @@ export function FeaturedDesigns() {
           </Link>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {designs.slice(0, 8).map((design) => (
+          {displayDesigns.slice(0, 8).map((design) => (
             <DesignCard
               key={design.id}
               image={design.images?.[0]}

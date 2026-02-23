@@ -33,6 +33,17 @@ function FabricCard({ image, name, price, href }: CardProps) {
   );
 }
 
+const DEMO_FABRICS: Fabric[] = [
+  { id: 'demo-fabric-1', name: 'Ankara Wax Print - Blue', description: '', customerPrice: 25, images: ['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80'], isActive: true, stock: 50, createdAt: '', updatedAt: '' },
+  { id: 'demo-fabric-2', name: 'Kente Cloth - Gold', description: '', customerPrice: 45, images: ['https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&q=80'], isActive: true, stock: 30, createdAt: '', updatedAt: '' },
+  { id: 'demo-fabric-3', name: 'Adire Indigo Cotton', description: '', customerPrice: 30, images: ['https://images.unsplash.com/photo-1594938298603-c8148c4b4357?w=600&q=80'], isActive: true, stock: 40, createdAt: '', updatedAt: '' },
+  { id: 'demo-fabric-4', name: 'Bogolan Mud Cloth', description: '', customerPrice: 35, images: ['https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=600&q=80'], isActive: true, stock: 25, createdAt: '', updatedAt: '' },
+  { id: 'demo-fabric-5', name: 'Kitenge Print - Sunset', description: '', customerPrice: 20, images: ['https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80'], isActive: true, stock: 60, createdAt: '', updatedAt: '' },
+  { id: 'demo-fabric-6', name: 'Aso Oke Handwoven', description: '', customerPrice: 55, images: ['https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600&q=80'], isActive: true, stock: 15, createdAt: '', updatedAt: '' },
+  { id: 'demo-fabric-7', name: 'Shweshwe Three Cats', description: '', customerPrice: 18, images: ['https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80'], isActive: true, stock: 45, createdAt: '', updatedAt: '' },
+  { id: 'demo-fabric-8', name: 'Batik Print - Earth', description: '', customerPrice: 22, images: ['https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=600&q=80'], isActive: true, stock: 35, createdAt: '', updatedAt: '' },
+];
+
 export function FeaturedFabrics() {
   const [fabrics, setFabrics] = useState<Fabric[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,7 +63,7 @@ export function FeaturedFabrics() {
     );
   }
 
-  if (fabrics.length === 0) return null;
+  const displayFabrics = fabrics.length > 0 ? fabrics : DEMO_FABRICS;
 
   return (
     <section className="py-16 px-4 bg-white">
@@ -67,7 +78,7 @@ export function FeaturedFabrics() {
           </Link>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {fabrics.slice(0, 8).map((fabric) => (
+          {displayFabrics.slice(0, 8).map((fabric) => (
             <FabricCard
               key={fabric.id}
               image={fabric.images?.[0]}

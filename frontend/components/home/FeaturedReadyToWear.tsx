@@ -39,6 +39,17 @@ function ProductCard({ image, name, price, href, badge }: CardProps) {
   );
 }
 
+const DEMO_PRODUCTS: ReadyToWearProduct[] = [
+  { id: 'demo-rtw-1', name: 'Ankara Maxi Dress', description: '', customerPrice: 85, images: ['https://images.unsplash.com/photo-1594938298603-c8148c4b4357?w=600&q=80'], isActive: true, stock: 10, createdAt: '', updatedAt: '' },
+  { id: 'demo-rtw-2', name: 'Kente Print Blazer', description: '', customerPrice: 145, images: ['https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&q=80'], isActive: true, stock: 10, createdAt: '', updatedAt: '' },
+  { id: 'demo-rtw-3', name: 'Dashiki Tunic', description: '', customerPrice: 55, images: ['https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=600&q=80'], isActive: true, stock: 10, createdAt: '', updatedAt: '' },
+  { id: 'demo-rtw-4', name: 'Adire Wrap Skirt', description: '', customerPrice: 65, images: ['https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=600&q=80'], isActive: true, stock: 10, createdAt: '', updatedAt: '' },
+  { id: 'demo-rtw-5', name: 'Bogolan Jacket', description: '', customerPrice: 175, images: ['https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600&q=80'], isActive: true, stock: 10, createdAt: '', updatedAt: '' },
+  { id: 'demo-rtw-6', name: 'Kitenge Jumpsuit', description: '', customerPrice: 120, images: ['https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80'], isActive: true, stock: 10, createdAt: '', updatedAt: '' },
+  { id: 'demo-rtw-7', name: 'Aso Oke Blouse', description: '', customerPrice: 45, images: ['https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=600&q=80'], isActive: true, stock: 10, createdAt: '', updatedAt: '' },
+  { id: 'demo-rtw-8', name: 'Shweshwe Midi Dress', description: '', customerPrice: 250, images: ['https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80'], isActive: true, stock: 10, createdAt: '', updatedAt: '' },
+];
+
 export function FeaturedReadyToWear() {
   const [products, setProducts] = useState<ReadyToWearProduct[]>([]);
   const [loading, setLoading] = useState(true);
@@ -58,7 +69,7 @@ export function FeaturedReadyToWear() {
     );
   }
 
-  if (products.length === 0) return null;
+  const displayProducts = products.length > 0 ? products : DEMO_PRODUCTS;
 
   return (
     <section className="py-16 px-4 bg-neutral-50">
@@ -73,7 +84,7 @@ export function FeaturedReadyToWear() {
           </Link>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {products.slice(0, 12).map((product) => (
+          {displayProducts.slice(0, 12).map((product) => (
             <ProductCard
               key={product.id}
               image={product.images?.[0]}
