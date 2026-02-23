@@ -1,18 +1,29 @@
-# Stage 1: Build
+# ── Stage 1: Build ──────────────────────────────────────────────
 FROM node:20-alpine AS builder
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci --ignore-scripts=false
+
+# Install ALL dependencies (including devDependencies needed by nest build)
+COPY package.json package-lock.json* ./
+RUN npm install
+
+# Copy source and config files needed for nest build
 COPY tsconfig.json tsconfig.build.json nest-cli.json ./
 COPY src/ ./src/
+
+# Compile TypeScript → dist/
 RUN npm run build
 
-# Stage 2: Production
+# ── Stage 2: Production ────────────────────────────────────────
 FROM node:20-alpine
 WORKDIR /app
 ENV NODE_ENV=production
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev --ignore-scripts=false
+
+# Install production-only dependencies
+COPY package.json package-lock.json* ./
+RUN npm install --omit=dev
+
+# Copy compiled JS from builder stage
 COPY --from=builder /app/dist ./dist
+
 EXPOSE 3000
 CMD ["node", "dist/main"]
