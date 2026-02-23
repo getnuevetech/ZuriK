@@ -39,6 +39,17 @@ function ProductCard({ image, name, price, href, badge }: CardProps) {
   );
 }
 
+const DEMO_SECONDARY_PRODUCTS: ReadyToWearProduct[] = [
+  { id: 'demo-rtw-s1', name: 'Printed Kaftan Dress', description: '', customerPrice: 95, images: ['https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600&q=80'], isActive: true, stock: 10, createdAt: '', updatedAt: '' },
+  { id: 'demo-rtw-s2', name: 'Tie-Dye Boubou', description: '', customerPrice: 110, images: ['https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=600&q=80'], isActive: true, stock: 10, createdAt: '', updatedAt: '' },
+  { id: 'demo-rtw-s3', name: 'Embroidered Agbada', description: '', customerPrice: 220, images: ['https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80'], isActive: true, stock: 10, createdAt: '', updatedAt: '' },
+  { id: 'demo-rtw-s4', name: 'Wax Print Co-ord Set', description: '', customerPrice: 130, images: ['https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=600&q=80'], isActive: true, stock: 10, createdAt: '', updatedAt: '' },
+  { id: 'demo-rtw-s5', name: 'Dashiki Shirt', description: '', customerPrice: 48, images: ['https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&q=80'], isActive: true, stock: 10, createdAt: '', updatedAt: '' },
+  { id: 'demo-rtw-s6', name: 'Batik Wrap Dress', description: '', customerPrice: 78, images: ['https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80'], isActive: true, stock: 10, createdAt: '', updatedAt: '' },
+  { id: 'demo-rtw-s7', name: 'Iro and Buba Set', description: '', customerPrice: 160, images: ['https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80'], isActive: true, stock: 10, createdAt: '', updatedAt: '' },
+  { id: 'demo-rtw-s8', name: 'Indigo Linen Kaftan', description: '', customerPrice: 195, images: ['https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=600&q=80'], isActive: true, stock: 10, createdAt: '', updatedAt: '' },
+];
+
 export function FeaturedReadyToWearSecondary() {
   const [products, setProducts] = useState<ReadyToWearProduct[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,7 +61,9 @@ export function FeaturedReadyToWearSecondary() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading || products.length === 0) return null;
+  if (loading) return null;
+
+  const displayProducts = products.length > 0 ? products : DEMO_SECONDARY_PRODUCTS;
 
   return (
     <section className="py-16 px-4 bg-neutral-50">
@@ -65,7 +78,7 @@ export function FeaturedReadyToWearSecondary() {
           </Link>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {products.slice(0, 8).map((product) => (
+          {displayProducts.slice(0, 8).map((product) => (
             <ProductCard
               key={product.id}
               image={product.images?.[0]}
