@@ -102,6 +102,13 @@ export function DesignerSpotlight() {
           </Link>
         </div>
 
+        <style>{`
+          @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+        `}</style>
+
         {loading ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[1,2,3,4].map((i) => (
@@ -114,26 +121,16 @@ export function DesignerSpotlight() {
           </div>
         ) : (
           <div className="overflow-hidden">
-            <style>{`
-              @keyframes marquee-scroll {
-                0% { transform: translateX(0); }
-                100% { transform: translateX(-50%); }
-              }
-              @media (prefers-reduced-motion: reduce) {
-                .marquee-inner { animation: none !important; }
-              }
-            `}</style>
             <div
-              className="marquee-inner flex gap-6"
+              className="flex gap-6"
               style={{
-                animation: 'marquee-scroll 20s linear infinite alternate',
-                width: 'max-content',
+                animation: 'marquee 30s linear infinite',
               }}
               onMouseEnter={(e) => (e.currentTarget.style.animationPlayState = 'paused')}
               onMouseLeave={(e) => (e.currentTarget.style.animationPlayState = 'running')}
             >
-              {displayDesigners.map((designer, idx) => (
-                <Link key={`${designer.id}-${idx}`} href={`/designers/${designer.id}`} className="group block min-w-[260px] w-[260px]">
+              {[...displayDesigners, ...displayDesigners].map((designer, idx) => (
+                <Link key={`${designer.id}-${idx}`} href={`/designers/${designer.id}`} className="group block flex-shrink-0 w-64">
                   {/* Designer image - SHARP CORNERS */}
                   <div className="relative aspect-square overflow-hidden bg-neutral-100 mb-4">
                     {designer.image ? (
@@ -142,7 +139,7 @@ export function DesignerSpotlight() {
                         alt={designer.name}
                         fill
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        sizes="260px"
+                        sizes="(max-width: 640px) 50vw, 25vw"
                       />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center bg-neutral-200">
@@ -154,37 +151,6 @@ export function DesignerSpotlight() {
                       {designer.flag}
                     </div>
                     {/* Product count badge */}
-                    {designer.productCount > 0 && (
-                      <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
-                        {designer.productCount} designs
-                      </div>
-                    )}
-                  </div>
-                  <StarRating />
-                  <div className="font-bold text-neutral-900 text-sm mt-2">{designer.name}</div>
-                  <div className="text-xs text-neutral-500 mt-0.5 font-light">{designer.specialties}</div>
-                </Link>
-              ))}
-              {/* Duplicate set for seamless looping — hidden from assistive tech */}
-              {displayDesigners.map((designer, idx) => (
-                <Link key={`${designer.id}-dup-${idx}`} href={`/designers/${designer.id}`} className="group block min-w-[260px] w-[260px]" aria-hidden="true" tabIndex={-1}>
-                  <div className="relative aspect-square overflow-hidden bg-neutral-100 mb-4">
-                    {designer.image ? (
-                      <Image
-                        src={designer.image}
-                        alt=""
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        sizes="260px"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center bg-neutral-200">
-                        <span className="text-3xl font-bold text-neutral-500">{designer.initials}</span>
-                      </div>
-                    )}
-                    <div className="absolute top-2 left-2 bg-white rounded-full w-7 h-7 flex items-center justify-center shadow-sm text-sm">
-                      {designer.flag}
-                    </div>
                     {designer.productCount > 0 && (
                       <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
                         {designer.productCount} designs
