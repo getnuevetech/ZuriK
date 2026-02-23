@@ -54,8 +54,8 @@ export function TrendingProducts() {
             price: Number(p.customerPrice),
             image: (p.images as string[])?.[0] || STATIC_TRENDING[i % 6].image,
             designer: (p.designer as any)?.firstName || 'Designer',
-            rating: 4.7,
-            reviews: 80,
+            rating: p.averageRating ?? 0,
+            reviews: p.totalReviews ?? 0,
           })));
         } else {
           setProducts(STATIC_TRENDING);
@@ -143,7 +143,9 @@ export function TrendingProducts() {
                 <div className="font-semibold text-neutral-900 text-sm mb-2">{product.name}</div>
                 <div className="flex items-center gap-2 mb-2">
                   <StarRating rating={product.rating} />
-                  <span className="text-xs text-neutral-400">({product.reviews})</span>
+                  {product.reviews > 0 && (
+                    <span className="text-xs text-neutral-400">({product.reviews})</span>
+                  )}
                 </div>
                 <div className="font-bold text-neutral-900">${product.price.toLocaleString()}</div>
               </Link>

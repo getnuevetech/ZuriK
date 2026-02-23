@@ -1,8 +1,16 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { homepageApi } from '../../lib/api';
+
+interface TryOnConfigResponse {
+  isEnabled: boolean;
+  hasConfig: boolean;
+  providerName: string | null;
+  showcaseImages: string[];
+}
 
 const FEATURES = [
   { num: '①', label: 'Choose Fabric', desc: 'Select from hundreds of authentic African textiles' },
@@ -10,17 +18,41 @@ const FEATURES = [
   { num: '③', label: 'Place Order', desc: 'Order with confidence knowing exactly what you will receive' },
 ];
 
+const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80';
+
 export function TryOnShowcase() {
+  const [isEnabled, setIsEnabled] = useState(false);
+  const [providerName, setProviderName] = useState<string | null>(null);
+  const [showcaseImages, setShowcaseImages] = useState<string[]>([]);
+
+  useEffect(() => {
+    homepageApi.getTryOnConfig()
+      .then((data: TryOnConfigResponse) => {
+        setIsEnabled(data?.isEnabled ?? false);
+        setProviderName(data?.providerName ?? null);
+        if (data?.showcaseImages?.length) {
+          setShowcaseImages(data.showcaseImages);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const displayImage = showcaseImages[0] || DEFAULT_IMAGE;
   return (
     <section className="py-24 px-4" style={{ backgroundColor: '#1A1412' }} aria-labelledby="try-on-heading">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Left column */}
           <div>
-            <div className="mb-6">
+            <div className="mb-6 flex flex-wrap items-center gap-3">
               <span className="inline-flex items-center gap-2 border border-[#C97B3A]/40 text-[#C97B3A] text-xs font-medium px-4 py-2 rounded-full bg-[#C97B3A]/10">
-                ✦ New Feature
+                ✦ {isEnabled ? 'Live Feature' : 'Coming Soon'}
               </span>
+              {providerName && (
+                <span className="inline-flex items-center gap-1 border border-white/20 text-white/60 text-xs font-medium px-3 py-1.5 rounded-full">
+                  Powered by {providerName}
+                </span>
+              )}
             </div>
             <h2 id="try-on-heading" className="font-heading text-4xl sm:text-5xl font-bold text-white mb-6 leading-tight">
               See How It Looks <span style={{ color: '#C97B3A' }}>Before You Buy</span>
@@ -51,7 +83,7 @@ export function TryOnShowcase() {
                 className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full font-semibold text-sm text-white transition-colors"
                 style={{ backgroundColor: '#C97B3A' }}
               >
-                Try It Now →
+                {isEnabled ? 'Try It Now →' : 'Explore Designs →'}
               </Link>
               <Link
                 href="/orders/custom-design"
@@ -66,7 +98,7 @@ export function TryOnShowcase() {
           <div className="relative">
             <div className="relative aspect-[3/4] overflow-hidden bg-neutral-800">
               <Image
-                src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80"
+                src={displayImage}
                 alt="Virtual try-on showcase"
                 fill
                 className="object-cover"
@@ -79,7 +111,9 @@ export function TryOnShowcase() {
               </div>
               {/* Bottom bar */}
               <div className="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-sm px-6 py-4">
-                <div className="text-white text-xs font-semibold mb-2">Virtual Try-On / AI-Powered Preview</div>
+                <div className="text-white text-xs font-semibold mb-2">
+                  Virtual Try-On{providerName ? ` / ${providerName}` : ' / AI-Powered Preview'}
+                </div>
                 <div className="w-full bg-white/20 rounded-full h-1.5">
                   <div className="h-1.5 rounded-full" style={{ width: '89%', backgroundColor: '#C97B3A' }} />
                 </div>

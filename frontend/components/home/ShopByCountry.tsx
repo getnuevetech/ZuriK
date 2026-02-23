@@ -92,7 +92,7 @@ export function ShopByCountry() {
             <button
               onClick={() => setIndex((i) => Math.max(0, i - 1))}
               aria-label="Previous"
-              className="absolute left-0 top-1/3 -translate-y-1/2 -translate-x-4 z-10 w-10 h-10 flex items-center justify-center bg-white border border-neutral-200 shadow-md hover:shadow-lg text-neutral-700 transition-all"
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-10 h-10 flex items-center justify-center bg-white border border-neutral-200 shadow-md hover:shadow-lg text-neutral-700 transition-all"
               style={{ borderRadius: '50%' }}
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
@@ -123,11 +123,20 @@ export function ShopByCountry() {
                         className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 33vw, 25vw"
                       />
-                    </div>
-                    {/* Text below image */}
-                    <div className="pt-3 pb-2">
-                      <div className="font-bold text-neutral-900 text-base">{country.name}</div>
-                      <div className="text-neutral-500 text-xs mt-1 font-light">{country.fabrics?.join(' · ')}</div>
+                      {/* Gradient overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+                      {/* Text overlay at bottom of image */}
+                      <div className="absolute bottom-0 left-0 right-0 px-3 pb-3 z-10">
+                        <div className="font-bold text-white text-base leading-tight">{country.name}</div>
+                        {country.fabrics && (
+                          <div className="text-white/70 text-xs mt-0.5 font-light">{country.fabrics.join(' · ')}</div>
+                        )}
+                        {country.productCount != null && country.productCount > 0 && (
+                          <div className="mt-1.5 inline-block text-xs text-white/80 bg-white/20 px-2 py-0.5 rounded-full">
+                            {country.productCount} products
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </Link>
                 </div>
@@ -139,7 +148,7 @@ export function ShopByCountry() {
             <button
               onClick={() => setIndex((i) => Math.min(maxIndex, i + 1))}
               aria-label="Next"
-              className="absolute right-0 top-1/3 -translate-y-1/2 translate-x-4 z-10 w-10 h-10 flex items-center justify-center bg-white border border-neutral-200 shadow-md hover:shadow-lg text-neutral-700 transition-all"
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-10 h-10 flex items-center justify-center bg-white border border-neutral-200 shadow-md hover:shadow-lg text-neutral-700 transition-all"
               style={{ borderRadius: '50%' }}
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">

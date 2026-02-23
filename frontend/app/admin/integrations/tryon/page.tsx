@@ -11,15 +11,19 @@ interface TryOnConfig {
   id?: string;
   apiEndpoint: string;
   apiKey: string;
+  providerName: string;
   isEnabled: boolean;
   configVariables: Record<string, string>;
+  showcaseImages: string[];
 }
 
 const emptyConfig = (): TryOnConfig => ({
   apiEndpoint: '',
   apiKey: '',
+  providerName: '',
   isEnabled: false,
   configVariables: {},
+  showcaseImages: [],
 });
 
 export default function AdminTryOnPage() {
@@ -28,6 +32,7 @@ export default function AdminTryOnPage() {
   const [saving, setSaving] = useState(false);
   const [extraKey, setExtraKey] = useState('');
   const [extraValue, setExtraValue] = useState('');
+  const [newImageUrl, setNewImageUrl] = useState('');
   const { toast } = useToast();
 
   const fetchConfig = useCallback(async () => {
@@ -39,8 +44,10 @@ export default function AdminTryOnPage() {
           id: data.id,
           apiEndpoint: data.apiEndpoint || '',
           apiKey: data.apiKey || '',
+          providerName: data.providerName || '',
           isEnabled: data.isEnabled ?? false,
           configVariables: data.configVariables || {},
+          showcaseImages: data.showcaseImages || [],
         });
       }
     } catch {
@@ -60,8 +67,10 @@ export default function AdminTryOnPage() {
       const payload: Record<string, unknown> = {
         apiEndpoint: config.apiEndpoint,
         apiKey: config.apiKey,
+        providerName: config.providerName,
         isEnabled: config.isEnabled,
         configVariables: config.configVariables,
+        showcaseImages: config.showcaseImages,
       };
       await homepageApi.adminUpdateTryOnConfig(payload);
       toast('success', 'TryOn configuration saved');
@@ -88,6 +97,16 @@ export default function AdminTryOnPage() {
       delete updated[key];
       return { ...c, configVariables: updated };
     });
+  };
+
+  const addShowcaseImage = () => {
+    if (!newImageUrl.trim()) return;
+    setConfig((c) => ({ ...c, showcaseImages: [...c.showcaseImages, newImageUrl.trim()] }));
+    setNewImageUrl('');
+  };
+
+  const removeShowcaseImage = (idx: number) => {
+    setConfig((c) => ({ ...c, showcaseImages: c.showcaseImages.filter((_, i) => i !== idx) }));
   };
 
   if (loading) {
@@ -121,6 +140,19 @@ export default function AdminTryOnPage() {
               className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${config.isEnabled ? 'translate-x-7' : 'translate-x-1'}`}
             />
           </button>
+        </div>
+
+        {/* Provider Name */}
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-1">Provider Name</label>
+          <input
+            type="text"
+            value={config.providerName}
+            onChange={(e) => setConfig((c) => ({ ...c, providerName: e.target.value }))}
+            placeholder="e.g. Zeekit, Vue.ai, Fashwell"
+            className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#C97B3A]"
+          />
+          <p className="text-xs text-neutral-400 mt-1">Displayed as &quot;Powered by {'{Provider Name}'}&quot; on the homepage.</p>
         </div>
 
         {/* API Endpoint */}
@@ -179,6 +211,38 @@ export default function AdminTryOnPage() {
             />
             <button
               onClick={addConfigVar}
+              className="px-3 py-2 text-sm font-medium text-white rounded-lg"
+              style={{ backgroundColor: '#C97B3A' }}
+            >
+              Add
+            </button>
+          </div>
+        </div>
+
+        {/* Showcase Images */}
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">Showcase Images</label>
+          <p className="text-xs text-neutral-400 mb-2">URLs of images displayed in the homepage try-on section.</p>
+          {config.showcaseImages.length > 0 && (
+            <div className="space-y-2 mb-3">
+              {config.showcaseImages.map((url, idx) => (
+                <div key={idx} className="flex items-center gap-2 p-2 bg-neutral-50 rounded-lg">
+                  <span className="text-sm text-neutral-600 flex-1 truncate">{url}</span>
+                  <button onClick={() => removeShowcaseImage(idx)} className="text-red-500 hover:text-red-700 text-xs flex-shrink-0">Remove</button>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="flex gap-2">
+            <input
+              type="url"
+              value={newImageUrl}
+              onChange={(e) => setNewImageUrl(e.target.value)}
+              placeholder="https://example.com/image.jpg"
+              className="flex-1 border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#C97B3A]"
+            />
+            <button
+              onClick={addShowcaseImage}
               className="px-3 py-2 text-sm font-medium text-white rounded-lg"
               style={{ backgroundColor: '#C97B3A' }}
             >

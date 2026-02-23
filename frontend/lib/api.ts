@@ -657,7 +657,7 @@ export const homepageApi = {
     api.delete(`/homepage/admin/how-it-works/${id}`).then((r) => r.data),
 
   // Public — TryOn Config
-  getTryOnConfig: (): Promise<{ isEnabled: boolean; hasConfig: boolean }> =>
+  getTryOnConfig: (): Promise<{ isEnabled: boolean; hasConfig: boolean; providerName: string | null; showcaseImages: string[] }> =>
     api.get('/homepage/tryon-config').then((r) => r.data),
 
   // Admin — TryOn Config

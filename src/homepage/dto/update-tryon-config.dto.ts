@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsBoolean, IsObject } from 'class-validator';
+import { IsString, IsOptional, IsBoolean, IsObject, IsArray } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateTryOnConfigDto {
@@ -14,6 +14,11 @@ export class UpdateTryOnConfigDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsString()
+  providerName?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsBoolean()
   isEnabled?: boolean;
 
@@ -21,4 +26,10 @@ export class UpdateTryOnConfigDto {
   @IsOptional()
   @IsObject()
   configVariables?: Record<string, unknown>;
+
+  @ApiPropertyOptional({ type: [String] })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  showcaseImages?: string[];
 }
