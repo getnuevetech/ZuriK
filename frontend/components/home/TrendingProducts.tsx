@@ -104,7 +104,7 @@ export function TrendingProducts() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1,2,3,4,5,6].map((i) => (
               <div key={i} className="animate-pulse">
-                <div className="bg-neutral-200 aspect-[3/4] mb-4" />
+                <div className="bg-neutral-200 aspect-[4/5] mb-4" />
                 <div className="bg-neutral-200 h-3 w-1/3 rounded mb-2" />
                 <div className="bg-neutral-200 h-4 w-3/4 rounded mb-2" />
                 <div className="bg-neutral-200 h-3 w-1/2 rounded" />
@@ -116,7 +116,7 @@ export function TrendingProducts() {
             {products.map((product) => (
               <Link key={product.id} href={`/products/${product.id}`} className="group block">
                 {/* Image with sharp corners */}
-                <div className="relative overflow-hidden aspect-[3/4] bg-neutral-100 mb-4">
+                <div className="relative overflow-hidden aspect-[4/5] bg-neutral-100 mb-4">
                   <Image
                     src={product.image}
                     alt={product.name}
