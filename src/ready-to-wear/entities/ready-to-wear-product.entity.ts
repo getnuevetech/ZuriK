@@ -9,7 +9,7 @@ export class ReadyToWearProduct {
   @Column()
   name: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', default: '' })
   description: string;
 
   @Column('simple-array', { nullable: true })
