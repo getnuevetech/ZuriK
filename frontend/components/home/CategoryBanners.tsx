@@ -74,8 +74,7 @@ export function CategoryBanners() {
             <Link
               key={card.id}
               href={card.ctaLink || '/products'}
-              className="group relative overflow-hidden flex flex-col justify-end"
-              style={{ minHeight: '420px' }}
+              className="group relative overflow-hidden flex flex-col justify-end aspect-[3/4]"
             >
               {/* Background image - SHARP CORNERS (no border-radius on image wrapper) */}
               {card.image ? (
