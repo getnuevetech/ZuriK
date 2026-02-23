@@ -9,7 +9,7 @@ export class Product {
   @Column()
   name: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', default: '' })
   description: string;
 
   @Column('simple-array', { nullable: true })
@@ -21,7 +21,7 @@ export class Product {
   @Column('simple-array', { nullable: true })
   tags: string[];
 
-  @Column()
+  @Column({ default: '' })
   country: string;
 
   @Column('decimal', { precision: 10, scale: 2 })
