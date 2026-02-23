@@ -440,10 +440,17 @@ export class HomepageController {
   // ─── Public Endpoints — TryOn Config ─────────────────────────────────────────
 
   @Get('tryon-config')
-  @ApiOperation({ summary: 'Get TryOn integration config (public, returns isEnabled status only)' })
+  @ApiOperation({ summary: 'Get TryOn integration config (public, hides apiKey)' })
   async getTryOnConfig() {
     const config = await this.homepageService.getTryOnConfig();
-    return config ? { isEnabled: config.isEnabled, hasConfig: !!(config.apiEndpoint && config.apiKey) } : { isEnabled: false, hasConfig: false };
+    return config
+      ? {
+          isEnabled: config.isEnabled,
+          hasConfig: !!(config.apiEndpoint && config.apiKey),
+          providerName: config.providerName ?? null,
+          showcaseImages: config.showcaseImages ?? [],
+        }
+      : { isEnabled: false, hasConfig: false, providerName: null, showcaseImages: [] };
   }
 
   // ─── Admin Endpoints — TryOn Config ──────────────────────────────────────────

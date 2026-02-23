@@ -14,6 +14,11 @@ export class UpdateTryOnConfigDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsString()
+  providerName?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsBoolean()
   isEnabled?: boolean;
 
@@ -21,4 +26,8 @@ export class UpdateTryOnConfigDto {
   @IsOptional()
   @IsObject()
   configVariables?: Record<string, unknown>;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  showcaseImages?: string[];
 }

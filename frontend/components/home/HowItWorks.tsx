@@ -1,48 +1,43 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { homepageApi } from '../../lib/api';
 
-const STEPS = [
-  {
-    step: '01',
-    title: 'Browse',
-    desc: 'Explore thousands of designs and fabrics from across Africa',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
-      </svg>
-    ),
-  },
-  {
-    step: '02',
-    title: 'Choose',
-    desc: 'Select your design, fabric, and measurements for a perfect fit',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
-  },
-  {
-    step: '03',
-    title: 'QA Verified',
-    desc: 'Every order is quality-checked by our expert inspectors before shipping',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-      </svg>
-    ),
-  },
-  {
-    step: '04',
-    title: 'Delivered',
-    desc: 'Receive authentic African fashion at your doorstep, anywhere worldwide',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-      </svg>
-    ),
-  },
+interface Step {
+  step: string;
+  title: string;
+  desc: string;
+  icon: React.ReactNode;
+}
+
+const ICON_MAP: Record<string, React.ReactNode> = {
+  search: (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+    </svg>
+  ),
+  check: (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  ),
+  shield: (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+    </svg>
+  ),
+  package: (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+    </svg>
+  ),
+};
+
+const FALLBACK_STEPS: Step[] = [
+  { step: '01', title: 'Browse', desc: 'Explore thousands of designs and fabrics from across Africa', icon: ICON_MAP.search },
+  { step: '02', title: 'Choose', desc: 'Select your design, fabric, and measurements for a perfect fit', icon: ICON_MAP.check },
+  { step: '03', title: 'QA Verified', desc: 'Every order is quality-checked by our expert inspectors before shipping', icon: ICON_MAP.shield },
+  { step: '04', title: 'Delivered', desc: 'Receive authentic African fashion at your doorstep, anywhere worldwide', icon: ICON_MAP.package },
 ];
 
 const TRUST_BADGES = [
@@ -79,6 +74,23 @@ const TRUST_BADGES = [
 ];
 
 export function HowItWorks() {
+  const [steps, setSteps] = useState<Step[]>(FALLBACK_STEPS);
+
+  useEffect(() => {
+    homepageApi.getHowItWorksSteps()
+      .then((data: any[]) => {
+        if (data && data.length > 0) {
+          const mapped: Step[] = data.map((s) => ({
+            step: String(s.stepNumber).padStart(2, '0'),
+            title: s.title,
+            desc: s.description,
+            icon: ICON_MAP[s.icon] ?? <span className="text-3xl leading-none">{s.icon}</span>,
+          }));
+          setSteps(mapped);
+        }
+      })
+      .catch(() => {});
+  }, []);
   return (
     <section className="py-24 px-4" style={{ backgroundColor: '#F9F6F2' }} aria-labelledby="how-it-works-heading">
       <div className="max-w-7xl mx-auto">
@@ -96,7 +108,7 @@ export function HowItWorks() {
 
         {/* Steps */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-          {STEPS.map((step) => (
+          {steps.map((step) => (
             <div key={step.step} className="bg-white p-8 shadow-sm hover:shadow-md transition-shadow">
               {/* Step number at top-left */}
               <div className="flex items-center gap-3 mb-6">
