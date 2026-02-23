@@ -16,6 +16,12 @@ const ADMIN_NAV_ITEMS = [
   { href: '/admin/shipping', label: 'Shipping Methods', icon: '🚚' },
   { href: '/admin/shipments', label: 'Shipments', icon: '📬' },
   { href: '/admin/homepage', label: 'Homepage', icon: '🏠' },
+  { href: '/admin/settings', label: 'Settings', icon: '⚙️' },
+  { href: '/admin/taxes', label: 'Taxes', icon: '💰' },
+  { href: '/admin/reviews', label: 'Reviews', icon: '⭐' },
+  { href: '/admin/stock-alerts', label: 'Stock Alerts', icon: '📉' },
+  { href: '/admin/loyalty', label: 'Loyalty', icon: '🎁' },
+  { href: '/admin/newsletter', label: 'Newsletter', icon: '📧' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

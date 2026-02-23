@@ -32,37 +32,61 @@ export class AdminService {
     const now = new Date();
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-    const [totalOrders, last30DaysOrders] = await Promise.all([
-      this.orderRepository.count(),
-      this.orderRepository.count({ where: { createdAt: Between(thirtyDaysAgo, now) } as any }),
-    ]);
-
     const revenueStatuses = [
       OrderStatus.PAID,
       OrderStatus.DELIVERED,
       OrderStatus.QA_APPROVED,
       OrderStatus.SHIPPED_TO_CUSTOMER,
     ];
-    const revenueOrders = await this.orderRepository
-      .createQueryBuilder('order')
-      .select('SUM(order.totalPrice)', 'total')
-      .where('order.status IN (:...statuses)', { statuses: revenueStatuses })
-      .getRawOne();
 
-    const users = await this.userRepository.find();
+    const [
+      totalOrders,
+      totalOrdersLast30Days,
+      revenueOrders,
+      usersByRoleRaw,
+      pendingOrders,
+      ordersByStatusRaw,
+      recentOrdersRaw,
+    ] = await Promise.all([
+      this.orderRepository.count(),
+      this.orderRepository.count({ where: { createdAt: Between(thirtyDaysAgo, now) } as any }),
+      this.orderRepository
+        .createQueryBuilder('order')
+        .select('SUM(order.totalPrice)', 'total')
+        .where('order.status IN (:...statuses)', { statuses: revenueStatuses })
+        .getRawOne(),
+      this.userRepository
+        .createQueryBuilder('user')
+        .select('user.role', 'role')
+        .addSelect('COUNT(*)', 'count')
+        .groupBy('user.role')
+        .getRawMany(),
+      this.orderRepository.count({
+        where: { status: OrderStatus.PENDING_PAYMENT },
+      }),
+      this.orderRepository
+        .createQueryBuilder('order')
+        .select('order.status', 'status')
+        .addSelect('COUNT(*)', 'count')
+        .groupBy('order.status')
+        .getRawMany(),
+      this.orderRepository
+        .createQueryBuilder('order')
+        .leftJoinAndSelect('order.customer', 'customer')
+        .orderBy('order.createdAt', 'DESC')
+        .take(10)
+        .getMany(),
+    ]);
+
     const usersByRole: Record<string, number> = {};
-    for (const role of Object.values(UserRole)) {
-      usersByRole[role] = users.filter((u) => u.role === role).length;
+    for (const row of usersByRoleRaw) {
+      usersByRole[row.role] = parseInt(row.count, 10);
     }
+    const totalUsers = usersByRoleRaw.reduce((sum, row) => sum + parseInt(row.count, 10), 0);
 
-    const pendingOrdersCount = await this.orderRepository.count({
-      where: { status: OrderStatus.PENDING_PAYMENT },
-    });
-
-    const allOrders = await this.orderRepository.find();
     const ordersByStatus: Record<string, number> = {};
-    for (const status of Object.values(OrderStatus)) {
-      ordersByStatus[status] = allOrders.filter((o) => o.status === status).length;
+    for (const row of ordersByStatusRaw) {
+      ordersByStatus[row.status] = parseInt(row.count, 10);
     }
 
     const twelveMonthsAgo = new Date(now);
@@ -91,18 +115,36 @@ export class AdminService {
         }
       }
     }
-    const revenueByMonth = Object.entries(revenueByMonthMap).map(([month, revenue]) => ({
-      month,
-      revenue,
+    const revenueByMonth = Object.entries(revenueByMonthMap).map(([label, value]) => ({
+      label,
+      value,
+    }));
+
+    const recentOrders = recentOrdersRaw.map((o) => ({
+      id: o.id,
+      orderNumber: o.orderNumber,
+      status: o.status,
+      totalPrice: parseFloat(String(o.totalPrice)) || 0,
+      createdAt: o.createdAt,
+      customer: o.customer
+        ? {
+            firstName: o.customer.firstName,
+            lastName: o.customer.lastName,
+            email: o.customer.email,
+          }
+        : null,
     }));
 
     return {
-      totalOrders: { allTime: totalOrders, last30Days: last30DaysOrders },
       totalRevenue: parseFloat(revenueOrders?.total) || 0,
+      totalOrders,
+      totalOrdersLast30Days,
+      totalUsers,
       usersByRole,
-      pendingOrdersCount,
+      pendingOrders,
       ordersByStatus,
       revenueByMonth,
+      recentOrders,
     };
   }
 
