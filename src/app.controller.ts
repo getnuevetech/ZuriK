@@ -11,4 +11,9 @@ export class AppController {
       docs: '/docs',
     };
   }
+
+  @Get('health')
+  getHealth() {
+    return { status: 'ok' };
+  }
 }
