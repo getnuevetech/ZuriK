@@ -15,13 +15,13 @@ export class ShipmentTracking {
   @Column()
   shippingMethodId: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   trackingNumber: string | null;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   carrier: string | null;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   carrierTrackingUrl: string | null;
 
   @Column({
