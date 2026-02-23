@@ -33,10 +33,10 @@ export class Fabric {
   @Column({ default: false })
   isFeatured: boolean;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2, default: 0 })
   sellerPrice: number;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2, default: 0 })
   customerPrice: number;
 
   @ManyToOne(() => User, { eager: true })

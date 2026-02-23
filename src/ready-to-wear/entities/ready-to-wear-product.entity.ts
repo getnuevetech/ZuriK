@@ -21,10 +21,10 @@ export class ReadyToWearProduct {
   @Column('simple-array', { nullable: true })
   tags: string[];
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2, default: 0 })
   designerPrice: number;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2, default: 0 })
   customerPrice: number;
 
   @ManyToOne(() => User, { eager: true })
