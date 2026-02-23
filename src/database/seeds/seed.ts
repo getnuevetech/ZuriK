@@ -494,7 +494,339 @@ export async function runSeed(dataSource: DataSource): Promise<void> {
     console.log('ℹ️  Shipping carriers already exist, skipping');
   }
 
-  console.log('🎉 Database seeded successfully!');
+
+  // ── Hero Banners ──────────────────────────────────────────────────────────────
+  const heroBannerRepo = dataSource.getRepository('HeroBanner');
+  const heroBannerCount = await heroBannerRepo.count();
+  if (heroBannerCount === 0) {
+    await heroBannerRepo.save([
+      heroBannerRepo.create({
+        title: 'Where African Fashion Meets the World',
+        subtitle: "Discover thousands of authentic designs from Africa's most talented designers and artisans.",
+        ctaText: 'Shop Now →',
+        ctaLink: '/ready-to-wear',
+        mediaType: 'image',
+        mediaUrl: 'https://images.unsplash.com/photo-1590735213920-68192a487bc2?w=1920&q=80',
+        sortOrder: 0,
+        isActive: true,
+        overlayOpacity: 40,
+      }),
+      heroBannerRepo.create({
+        title: 'New Collection: Spring/Summer 2026',
+        subtitle: 'Bold prints, vibrant colours, and master craftsmanship — the new season is here.',
+        ctaText: 'Explore Collection',
+        ctaLink: '/designs',
+        mediaType: 'image',
+        mediaUrl: 'https://images.unsplash.com/photo-1594938298603-c8148c4b4357?w=1920&q=80',
+        sortOrder: 1,
+        isActive: true,
+        overlayOpacity: 40,
+      }),
+      heroBannerRepo.create({
+        title: 'Discover Authentic African Designs',
+        subtitle: 'From Kente to Ankara — celebrate your heritage with fashion crafted by African hands.',
+        ctaText: 'Browse Designers',
+        ctaLink: '/designers',
+        mediaType: 'image',
+        mediaUrl: 'https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=1920&q=80',
+        sortOrder: 2,
+        isActive: true,
+        overlayOpacity: 40,
+      }),
+    ]);
+    console.log('✅ Hero banners seeded');
+  } else {
+    console.log('ℹ️  Hero banners already exist, skipping');
+  }
+
+  // ── Country Heroes ────────────────────────────────────────────────────────────
+  const countryHeroRepo = dataSource.getRepository('CountryHero');
+  const countryHeroCount = await countryHeroRepo.count();
+  if (countryHeroCount === 0) {
+    await countryHeroRepo.save([
+      countryHeroRepo.create({
+        countryName: 'Nigeria',
+        countryCode: 'NG',
+        heroImages: [
+          'https://images.unsplash.com/photo-1590735213920-68192a487bc2?w=800&q=80',
+          'https://images.unsplash.com/photo-1594938298603-c8148c4b4357?w=800&q=80',
+        ],
+        displayOrder: 1,
+        isActive: true,
+        rotationInterval: 5000,
+      }),
+      countryHeroRepo.create({
+        countryName: 'Ghana',
+        countryCode: 'GH',
+        heroImages: [
+          'https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=800&q=80',
+          'https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=800&q=80',
+        ],
+        displayOrder: 2,
+        isActive: true,
+        rotationInterval: 5000,
+      }),
+      countryHeroRepo.create({
+        countryName: 'Kenya',
+        countryCode: 'KE',
+        heroImages: [
+          'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&q=80',
+        ],
+        displayOrder: 3,
+        isActive: true,
+        rotationInterval: 5000,
+      }),
+      countryHeroRepo.create({
+        countryName: 'South Africa',
+        countryCode: 'ZA',
+        heroImages: [
+          'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80',
+        ],
+        displayOrder: 4,
+        isActive: true,
+        rotationInterval: 5000,
+      }),
+      countryHeroRepo.create({
+        countryName: 'Tanzania',
+        countryCode: 'TZ',
+        heroImages: [
+          'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=800&q=80',
+        ],
+        displayOrder: 5,
+        isActive: true,
+        rotationInterval: 5000,
+      }),
+      countryHeroRepo.create({
+        countryName: 'Cameroon',
+        countryCode: 'CM',
+        heroImages: [
+          'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800&q=80',
+        ],
+        displayOrder: 6,
+        isActive: true,
+        rotationInterval: 5000,
+      }),
+    ]);
+    console.log('✅ Country heroes seeded');
+  } else {
+    console.log('ℹ️  Country heroes already exist, skipping');
+  }
+
+  // ── Promo Banners ─────────────────────────────────────────────────────────────
+  const promoBannerRepo = dataSource.getRepository('PromoBanner');
+  const promoBannerCount = await promoBannerRepo.count();
+  if (promoBannerCount === 0) {
+    await promoBannerRepo.save(
+      promoBannerRepo.create({
+        title: 'New Collection: Spring/Summer 2026',
+        subtitle: 'Discover our latest curated collection of authentic African designs from 50+ African countries',
+        imageUrl: 'https://images.unsplash.com/photo-1590735213920-68192a487bc2?w=1200&q=80',
+        ctaText: 'Shop the Collection',
+        ctaLink: '/ready-to-wear',
+        displayOrder: 0,
+        isActive: true,
+      }),
+    );
+    console.log('✅ Promo banners seeded');
+  } else {
+    console.log('ℹ️  Promo banners already exist, skipping');
+  }
+
+  // ── Heritage Stories ──────────────────────────────────────────────────────────
+  const heritageStoryRepo = dataSource.getRepository('HeritageStory');
+  const heritageStoryCount = await heritageStoryRepo.count();
+  if (heritageStoryCount === 0) {
+    await heritageStoryRepo.save([
+      heritageStoryRepo.create({
+        title: 'The Royal Art of Kente Weaving',
+        excerpt: "Kente cloth, with its vibrant geometric patterns and rich symbolism, has adorned Ghanaian royalty for centuries and remains one of Africa's most iconic textiles.",
+        body: "Originating from the Ashanti people of Ghana, Kente cloth (known as nwentoma in Twi) has been woven on narrow-band looms since the 17th century. Each pattern carries deep symbolic meaning — colours represent values like gold for royalty, green for renewal, and red for political passion. Today, master weavers in Bonwire, Adanwomase, and Ntonso continue this tradition, producing hand-woven strips that are sewn together into magnificent garments worn at festivals, graduations, and rites of passage.",
+        coverImage: 'https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=800&q=80',
+        country: 'Ghana',
+        fabricType: 'Kente',
+        tags: ['Ghana', 'Kente', 'Weaving', 'Heritage'],
+        displayOrder: 1,
+        isActive: true,
+      }),
+      heritageStoryRepo.create({
+        title: 'Ankara: A Canvas of African Expression',
+        excerpt: 'Bold, vibrant, and deeply personal — Ankara wax print fabric has become the definitive symbol of modern African identity, creativity, and pride.',
+        body: 'Ankara fabric, also known as African wax print or Dutch wax, has a fascinating history that spans three continents. Originally manufactured in the Netherlands for the Indonesian batik market, it found its true home in West Africa — particularly Nigeria — where designers embraced its vivid colours and bold patterns as a canvas for self-expression. Today, Nigerian designers use Ankara to create everything from everyday wear to haute couture, exporting African aesthetic sensibility to fashion capitals around the world.',
+        coverImage: 'https://images.unsplash.com/photo-1590735213920-68192a487bc2?w=800&q=80',
+        country: 'Nigeria',
+        fabricType: 'Ankara',
+        tags: ['Nigeria', 'Ankara', 'Wax Print', 'Heritage'],
+        displayOrder: 2,
+        isActive: true,
+      }),
+      heritageStoryRepo.create({
+        title: "Kitenge: East Africa's Vibrant Tradition",
+        excerpt: 'Kitenge fabric pulses with the energy of East Africa — its bold patterns telling stories of community, celebration, and cultural identity across Kenya, Tanzania, and Uganda.',
+        body: 'Kitenge (also called chitenge or kanga depending on the region) is a brightly coloured cotton fabric widely used across East and Central Africa. In Tanzania and Kenya, kitenge is far more than clothing — it carries messages, proverbs, and commemorates life events. Women wrap it as skirts, use it as baby carriers, and exchange it as gifts at weddings and funerals. Modern East African designers have elevated kitenge to international runways, blending traditional patterns with contemporary silhouettes.',
+        coverImage: 'https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=800&q=80',
+        country: 'Tanzania',
+        fabricType: 'Kitenge',
+        tags: ['Tanzania', 'Kitenge', 'East Africa', 'Heritage'],
+        displayOrder: 3,
+        isActive: true,
+      }),
+      heritageStoryRepo.create({
+        title: "Shweshwe: South Africa's Iconic Printed Fabric",
+        excerpt: 'With its distinctive geometric prints and characteristic starchy finish, Shweshwe has evolved from a trade fabric into a proud symbol of South African cultural identity.',
+        body: 'Shweshwe (also written as seshoeshoe) was originally a simple blue cotton fabric brought to South Africa by German settlers in the 19th century. It was quickly adopted by the Sotho people and became central to their dress culture. Over time it expanded to include a rainbow of colours and intricate geometric patterns. Today, South African designers use Shweshwe in contemporary fashion — from wedding garments to international collections — celebrating it as an emblem of national pride and creative heritage.',
+        coverImage: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80',
+        country: 'South Africa',
+        fabricType: 'Shweshwe',
+        tags: ['South Africa', 'Shweshwe', 'Sotho', 'Heritage'],
+        displayOrder: 4,
+        isActive: true,
+      }),
+    ]);
+    console.log('✅ Heritage stories seeded');
+  } else {
+    console.log('ℹ️  Heritage stories already exist, skipping');
+  }
+
+  // ── How It Works Steps ────────────────────────────────────────────────────────
+  const howItWorksRepo = dataSource.getRepository('HowItWorksStep');
+  const howItWorksCount = await howItWorksRepo.count();
+  if (howItWorksCount === 0) {
+    await howItWorksRepo.save([
+      howItWorksRepo.create({
+        stepNumber: 1,
+        title: 'Browse',
+        description: 'Explore thousands of designs from African artisans and designers across the continent.',
+        icon: 'search',
+        isActive: true,
+        displayOrder: 1,
+      }),
+      howItWorksRepo.create({
+        stepNumber: 2,
+        title: 'Choose',
+        description: 'Select your perfect piece — ready-to-wear, custom design, or premium fabric.',
+        icon: 'check',
+        isActive: true,
+        displayOrder: 2,
+      }),
+      howItWorksRepo.create({
+        stepNumber: 3,
+        title: 'QA Verified',
+        description: 'Every item passes our rigorous quality assurance inspection before shipping.',
+        icon: 'shield',
+        isActive: true,
+        displayOrder: 3,
+      }),
+      howItWorksRepo.create({
+        stepNumber: 4,
+        title: 'Delivered',
+        description: 'Your order is carefully packaged and delivered worldwide to your doorstep.',
+        icon: 'package',
+        isActive: true,
+        displayOrder: 4,
+      }),
+    ]);
+    console.log('✅ How it works steps seeded');
+  } else {
+    console.log('ℹ️  How it works steps already exist, skipping');
+  }
+
+  // ── Collection Displays ───────────────────────────────────────────────────────
+  const collectionDisplayRepo = dataSource.getRepository('CollectionDisplay');
+  const collectionDisplayCount = await collectionDisplayRepo.count();
+  if (collectionDisplayCount === 0) {
+    await collectionDisplayRepo.save([
+      collectionDisplayRepo.create({
+        name: 'Ready-to-Wear',
+        description: 'Curated African Fashion, Ready to Ship',
+        image: 'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800&q=80',
+        ctaText: 'Shop Now →',
+        ctaLink: '/ready-to-wear',
+        displayOrder: 1,
+        isActive: true,
+      }),
+      collectionDisplayRepo.create({
+        name: 'Premium Fabrics',
+        description: 'Authentic African Textiles from Master Weavers',
+        image: 'https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=800&q=80',
+        ctaText: 'Browse Fabrics →',
+        ctaLink: '/fabrics',
+        displayOrder: 2,
+        isActive: true,
+      }),
+      collectionDisplayRepo.create({
+        name: 'Custom Designs',
+        description: 'Your Body, Your Fabric, Your Style',
+        image: 'https://images.unsplash.com/photo-1594938298603-c8148c4b4357?w=800&q=80',
+        ctaText: 'Start Designing →',
+        ctaLink: '/designs',
+        displayOrder: 3,
+        isActive: true,
+      }),
+    ]);
+    console.log('✅ Collection displays seeded');
+  } else {
+    console.log('ℹ️  Collection displays already exist, skipping');
+  }
+
+  // ── TryOn Config ──────────────────────────────────────────────────────────────
+  const tryOnConfigRepo = dataSource.getRepository('TryOnConfig');
+  const tryOnConfigCount = await tryOnConfigRepo.count();
+  if (tryOnConfigCount === 0) {
+    await tryOnConfigRepo.save(
+      tryOnConfigRepo.create({
+        isEnabled: false,
+        providerName: 'Virtual Stylist AI',
+        showcaseImages: [
+          'https://images.unsplash.com/photo-1590735213920-68192a487bc2?w=800&q=80',
+          'https://images.unsplash.com/photo-1594938298603-c8148c4b4357?w=800&q=80',
+          'https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=800&q=80',
+        ],
+        apiEndpoint: null,
+        apiKey: null,
+        configVariables: {},
+      }),
+    );
+    console.log('✅ TryOn config seeded');
+  } else {
+    console.log('ℹ️  TryOn config already exists, skipping');
+  }
+
+  // ── Featured Sections ─────────────────────────────────────────────────────────
+  const featuredSectionRepo = dataSource.getRepository('FeaturedSection');
+  const featuredSectionCount = await featuredSectionRepo.count();
+  if (featuredSectionCount === 0) {
+    await featuredSectionRepo.save([
+      featuredSectionRepo.create({
+        title: 'Featured Ready-to-Wear',
+        category: 'ready-to-wear',
+        selectionMode: 'AUTO_NEWEST',
+        maxRows: 3,
+        displayOrder: 1,
+        isActive: true,
+      }),
+      featuredSectionRepo.create({
+        title: 'Featured Designs',
+        category: 'designs',
+        selectionMode: 'AUTO_NEWEST',
+        maxRows: 2,
+        displayOrder: 2,
+        isActive: true,
+      }),
+      featuredSectionRepo.create({
+        title: 'Featured Fabrics',
+        category: 'fabrics',
+        selectionMode: 'AUTO_NEWEST',
+        maxRows: 2,
+        displayOrder: 3,
+        isActive: true,
+      }),
+    ]);
+    console.log('✅ Featured sections seeded');
+  } else {
+    console.log('ℹ️  Featured sections already exist, skipping');
+  }
+
+  console.log('�� Database seeded successfully!');
 }
 
 
