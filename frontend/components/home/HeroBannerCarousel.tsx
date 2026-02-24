@@ -3,7 +3,21 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { heroBannersApi, HeroBanner } from '../../lib/api';
+import { heroBannersApi, homepageApi, HeroBanner } from '../../lib/api';
+
+interface HeroStat {
+  id: string;
+  label: string;
+  value: string;
+  displayOrder: number;
+  isActive: boolean;
+}
+
+const FALLBACK_STATS: HeroStat[] = [
+  { id: 'countries', value: '150', label: 'Countries', displayOrder: 0, isActive: true },
+  { id: 'designers', value: '500', label: 'Designers', displayOrder: 1, isActive: true },
+  { id: 'products', value: '10K', label: 'Products', displayOrder: 2, isActive: true },
+];
 
 const DEFAULT_BANNERS: HeroBanner[] = [
   {
@@ -21,6 +35,7 @@ const DEFAULT_BANNERS: HeroBanner[] = [
 
 export function HeroBannerCarousel() {
   const [banners, setBanners] = useState<HeroBanner[]>([]);
+  const [stats, setStats] = useState<HeroStat[]>(FALLBACK_STATS);
   const [current, setCurrent] = useState(0);
   const [loading, setLoading] = useState(true);
   const [paused, setPaused] = useState(false);
@@ -32,8 +47,14 @@ export function HeroBannerCarousel() {
   }, []);
 
   useEffect(() => {
-    heroBannersApi.listActive()
-      .then((data) => setBanners(data.length > 0 ? data : DEFAULT_BANNERS))
+    Promise.all([
+      heroBannersApi.listActive(),
+      homepageApi.getHeroStats(),
+    ])
+      .then(([bannersData, statsData]) => {
+        setBanners(bannersData.length > 0 ? bannersData : DEFAULT_BANNERS);
+        if (statsData.length > 0) setStats(statsData);
+      })
       .catch(() => setBanners(DEFAULT_BANNERS))
       .finally(() => setLoading(false));
   }, []);
@@ -142,12 +163,8 @@ export function HeroBannerCarousel() {
 
         {/* Stats row */}
         <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-16 border-t border-white/10 pt-10">
-          {[
-            { value: '150', label: 'Countries' },
-            { value: '500', label: 'Designers' },
-            { value: '10K', label: 'Products' },
-          ].map((stat) => (
-            <div key={stat.label} className="text-center">
+          {stats.map((stat) => (
+            <div key={stat.id} className="text-center">
               <div className="text-3xl font-bold text-white font-heading">
                 {stat.value}<sup className="text-[#C97B3A] text-sm">+</sup>
               </div>

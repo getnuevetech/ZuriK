@@ -10,6 +10,7 @@ import { CollectionPost } from './entities/collection-post.entity';
 import { HeritageStory } from './entities/heritage-story.entity';
 import { HowItWorksStep } from './entities/how-it-works-step.entity';
 import { TryOnConfig } from './entities/tryon-config.entity';
+import { HeroStat } from './entities/hero-stat.entity';
 import { Design } from '../designs/entities/design.entity';
 import { ReadyToWearProduct } from '../ready-to-wear/entities/ready-to-wear-product.entity';
 import { Order } from '../orders/entities/order.entity';
@@ -30,6 +31,7 @@ import { HomepageController } from './homepage.controller';
       HeritageStory,
       HowItWorksStep,
       TryOnConfig,
+      HeroStat,
       Design,
       ReadyToWearProduct,
       Order,

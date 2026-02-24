@@ -24,6 +24,8 @@ import { UpdateHeritageStoryDto } from './dto/update-heritage-story.dto';
 import { CreateHowItWorksStepDto } from './dto/create-how-it-works-step.dto';
 import { UpdateHowItWorksStepDto } from './dto/update-how-it-works-step.dto';
 import { UpdateTryOnConfigDto } from './dto/update-tryon-config.dto';
+import { CreateHeroStatDto } from './dto/create-hero-stat.dto';
+import { UpdateHeroStatDto } from './dto/update-hero-stat.dto';
 
 @ApiTags('homepage')
 @Controller('homepage')
@@ -471,5 +473,51 @@ export class HomepageController {
   @ApiOperation({ summary: 'Update TryOn config (admin)' })
   adminUpdateTryOnConfig(@Body() dto: UpdateTryOnConfigDto) {
     return this.homepageService.upsertTryOnConfig(dto);
+  }
+
+  // ─── Public Endpoints — Hero Stats ──────────────────────────────────────────
+
+  @Get('hero-stats')
+  @ApiOperation({ summary: 'Get active hero stats (public)' })
+  getHeroStats() {
+    return this.homepageService.getActiveHeroStats();
+  }
+
+  // ─── Admin Endpoints — Hero Stats ───────────────────────────────────────────
+
+  @Get('admin/hero-stats')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'List all hero stats (admin)' })
+  adminGetHeroStats() {
+    return this.homepageService.getHeroStats();
+  }
+
+  @Post('admin/hero-stats')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create hero stat (admin)' })
+  adminCreateHeroStat(@Body() dto: CreateHeroStatDto) {
+    return this.homepageService.createHeroStat(dto);
+  }
+
+  @Patch('admin/hero-stats/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update hero stat (admin)' })
+  adminUpdateHeroStat(@Param('id') id: string, @Body() dto: UpdateHeroStatDto) {
+    return this.homepageService.updateHeroStat(id, dto);
+  }
+
+  @Delete('admin/hero-stats/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete hero stat (admin)' })
+  adminDeleteHeroStat(@Param('id') id: string) {
+    return this.homepageService.deleteHeroStat(id);
   }
 }

@@ -664,6 +664,19 @@ export const homepageApi = {
   adminGetTryOnConfig: () => api.get('/homepage/admin/tryon-config').then((r) => r.data),
   adminUpdateTryOnConfig: (data: Record<string, unknown>) =>
     api.patch('/homepage/admin/tryon-config', data).then((r) => r.data),
+
+  // Public — Hero Stats
+  getHeroStats: (): Promise<{ id: string; label: string; value: string; displayOrder: number; isActive: boolean }[]> =>
+    api.get('/homepage/hero-stats').then((r) => r.data),
+
+  // Admin — Hero Stats
+  adminGetHeroStats: () => api.get('/homepage/admin/hero-stats').then((r) => r.data),
+  adminCreateHeroStat: (data: Record<string, unknown>) =>
+    api.post('/homepage/admin/hero-stats', data).then((r) => r.data),
+  adminUpdateHeroStat: (id: string, data: Record<string, unknown>) =>
+    api.patch(`/homepage/admin/hero-stats/${id}`, data).then((r) => r.data),
+  adminDeleteHeroStat: (id: string) =>
+    api.delete(`/homepage/admin/hero-stats/${id}`).then((r) => r.data),
 };
 
 // --- Newsletter API ---
