@@ -308,6 +308,8 @@ export class HomepageService {
     countryName: string;
     countryCode: string;
     flag: string;
+    fabrics: string[];
+    subtitle: string | null;
     designerCount: number;
     sellerCount: number;
     productCount: number;
@@ -366,22 +368,30 @@ export class HomepageService {
       if (row.country) productCountMap[row.country] = Number(row.cnt);
     }
 
-    // Get hero images from CountryHero
+    // Get data from CountryHero records
     const heroes = await this.countryHeroRepo.find({ where: { isActive: true } });
-    const heroMap: Record<string, string> = {};
+    const heroImageMap: Record<string, string> = {};
+    const heroFlagMap: Record<string, string> = {};
+    const heroFabricsMap: Record<string, string[]> = {};
+    const heroSubtitleMap: Record<string, string> = {};
     for (const h of heroes) {
-      if (h.heroImages?.length) heroMap[h.countryName] = h.heroImages[0];
+      if (h.heroImages?.length) heroImageMap[h.countryName] = h.heroImages[0];
+      if (h.flag) heroFlagMap[h.countryName] = h.flag;
+      if (h.fabrics?.length) heroFabricsMap[h.countryName] = h.fabrics;
+      if (h.subtitle) heroSubtitleMap[h.countryName] = h.subtitle;
     }
 
     const countries = Object.keys(countryMap);
     const result = countries.map((countryName) => ({
       countryName,
       countryCode: COUNTRY_FLAGS[countryName]?.code ?? '',
-      flag: COUNTRY_FLAGS[countryName]?.flag ?? '',
+      flag: heroFlagMap[countryName] ?? COUNTRY_FLAGS[countryName]?.flag ?? '',
+      fabrics: heroFabricsMap[countryName] ?? [],
+      subtitle: heroSubtitleMap[countryName] ?? null,
       designerCount: countryMap[countryName].designerCount,
       sellerCount: countryMap[countryName].sellerCount,
       productCount: productCountMap[countryName] ?? 0,
-      heroImage: heroMap[countryName] ?? null,
+      heroImage: heroImageMap[countryName] ?? null,
     }));
 
     return result.sort((a, b) => b.productCount - a.productCount);

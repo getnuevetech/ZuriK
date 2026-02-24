@@ -18,6 +18,22 @@ export class CreateCountryHeroDto {
   @IsString({ each: true })
   heroImages?: string[];
 
+  @ApiPropertyOptional({ description: 'Emoji flag e.g. 🇳🇬' })
+  @IsOptional()
+  @IsString()
+  flag?: string;
+
+  @ApiPropertyOptional({ type: [String], description: 'Fabric types e.g. ["Ankara", "Adire"]' })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  fabrics?: string[];
+
+  @ApiPropertyOptional({ description: 'Optional card subtitle / description' })
+  @IsOptional()
+  @IsString()
+  subtitle?: string;
+
   @ApiPropertyOptional()
   @IsOptional()
   @IsInt()

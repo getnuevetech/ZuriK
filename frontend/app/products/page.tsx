@@ -20,7 +20,7 @@ import type { Product } from '../../types';
 import { useDebounce } from '../../hooks/useDebounce';
 
 const CATEGORIES = ['Ankara', 'Kente', 'Dashiki', 'Kaftan', 'Agbada', 'Boubou', 'Aso-oke', 'Other'];
-const COUNTRIES = ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Senegal', 'Ethiopia', 'Tanzania', 'Egypt', 'Morocco'];
+const COUNTRIES = ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Senegal', 'Ethiopia', 'Tanzania', 'Egypt', 'Morocco', 'Cameroon', 'Ivory Coast', 'Mali', 'DR Congo'];
 
 const SORT_OPTIONS = [
   { value: 'newest', label: 'Newest' },
@@ -33,7 +33,7 @@ const SORT_OPTIONS = [
 
 const FILTER_CONFIGS = [
   { key: 'category', label: 'Category', type: 'select' as const, options: CATEGORIES.map((c) => ({ value: c, label: c })) },
-  
+  { key: 'country', label: 'Country', type: 'select' as const, options: COUNTRIES.map((c) => ({ value: c, label: c })) },
   { key: 'price', label: 'Price Range', type: 'range' as const },
 ];
 
@@ -64,6 +64,7 @@ function ProductsContent() {
   const [minRating, setMinRating] = useState(searchParams.get('minRating') ?? '');
   const [filterValues, setFilterValues] = useState<Record<string, string | number | boolean>>({
     category: searchParams.get('category') ?? '',
+    country: searchParams.get('country') ?? '',
     priceMin: searchParams.get('priceMin') ? Number(searchParams.get('priceMin')) : '',
     priceMax: searchParams.get('priceMax') ? Number(searchParams.get('priceMax')) : '',
   });
@@ -75,6 +76,7 @@ function ProductsContent() {
     productsApi.list({
       search: debouncedSearch || undefined,
       category: filterValues.category ? String(filterValues.category) : undefined,
+      country: filterValues.country ? String(filterValues.country) : undefined,
       minPrice: filterValues.priceMin !== '' ? Number(filterValues.priceMin) : undefined,
       maxPrice: filterValues.priceMax !== '' ? Number(filterValues.priceMax) : undefined,
       sort: sort || undefined,
@@ -117,6 +119,7 @@ function ProductsContent() {
     if (page > 1) params.set('page', String(page));
     if (minRating) params.set('minRating', minRating);
     if (filterValues.category) params.set('category', String(filterValues.category));
+    if (filterValues.country) params.set('country', String(filterValues.country));
     if (filterValues.priceMin !== '') params.set('priceMin', String(filterValues.priceMin));
     if (filterValues.priceMax !== '') params.set('priceMax', String(filterValues.priceMax));
     router.replace(`/products${params.toString() ? `?${params}` : ''}`, { scroll: false });
@@ -141,7 +144,7 @@ function ProductsContent() {
   };
 
   const handleClearFilters = () => {
-    setFilterValues({ category: '', priceMin: '', priceMax: '' });
+    setFilterValues({ category: '', country: '', priceMin: '', priceMax: '' });
     setSearch('');
     setSort('newest');
     setMinRating('');
@@ -156,6 +159,7 @@ function ProductsContent() {
   // Build active filter tags
   const activeTags: FilterTag[] = [];
   if (filterValues.category) activeTags.push({ key: 'category', label: 'Category', value: String(filterValues.category) });
+  if (filterValues.country) activeTags.push({ key: 'country', label: 'Country', value: String(filterValues.country) });
   if (filterValues.priceMin !== '') activeTags.push({ key: 'priceMin', label: 'Min Price', value: `₦${filterValues.priceMin}` });
   if (filterValues.priceMax !== '') activeTags.push({ key: 'priceMax', label: 'Max Price', value: `₦${filterValues.priceMax}` });
   if (minRating) activeTags.push({ key: 'minRating', label: 'Min Rating', value: `${minRating}★` });

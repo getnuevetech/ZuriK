@@ -13,11 +13,12 @@ interface CountryItem {
   designerCount?: number;
   productCount?: number;
   fabrics?: string[];
+  subtitle?: string;
 }
 
 const FALLBACK_COUNTRIES: CountryItem[] = [
   { name: 'Tanzania', code: 'TZ', flag: '🇹🇿', fabrics: ['Kitenge', 'Kanga', 'Khanga'], image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=600&q=80' },
-  { name: 'Cameroon', code: 'CM', flag: '🇨🇲', fabrics: ['Toghu', 'Ndop', 'Atoghu'], image: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&q=80' },
+  { name: 'Cameroon', code: 'CM', flag: '🇨🇲', fabrics: ['Toghu', 'Ndop', 'Atoghu'], image: 'https://images.unsplash.com/photo-1590735213920-68192a487bc2?w=600&q=80' },
   { name: 'Ghana', code: 'GH', flag: '🇬🇭', fabrics: ['Kente', 'Batakari', 'Fugu'], image: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&q=80' },
   { name: 'Morocco', code: 'MA', flag: '🇲🇦', fabrics: ['Djellaba', 'Caftan', 'Berber'], image: 'https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=600&q=80' },
   { name: 'Ethiopia', code: 'ET', flag: '🇪🇹', fabrics: ['Habesha Kemis', 'Netela', 'Gabi'], image: 'https://images.unsplash.com/photo-1523805009345-7448845a9e53?w=600&q=80' },
@@ -49,7 +50,8 @@ export function ShopByCountry() {
             image: d.heroImage ?? fallbackByCode.get(d.countryCode)?.image ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80',
             designerCount: d.designerCount,
             productCount: d.productCount,
-            fabrics: fallbackByCode.get(d.countryCode)?.fabrics,
+            fabrics: d.fabrics?.length ? d.fabrics : fallbackByCode.get(d.countryCode)?.fabrics,
+            subtitle: d.subtitle ?? undefined,
           }));
           setCountries(mapped);
         }
