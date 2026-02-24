@@ -1,0 +1,208 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { useRequireRole } from '../../../../lib/with-role';
+import { readyToWearApi } from '../../../../lib/api';
+import { useToast } from '../../../../components/ui/Toast';
+import { Spinner } from '../../../../components/ui/Spinner';
+import { Button } from '../../../../components/ui/Button';
+import { Input } from '../../../../components/ui/Input';
+import { Modal } from '../../../../components/ui/Modal';
+import { Badge } from '../../../../components/ui/Badge';
+import { DashboardLayout } from '../../../../components/dashboard/DashboardLayout';
+import { ImageUploader } from '../../../../components/dashboard/ImageUploader';
+import type { ReadyToWearProduct } from '../../../../types';
+
+const SIDEBAR_ITEMS = [
+  { href: '/dashboard/designer', label: 'Overview', icon: '📊' },
+  { href: '/dashboard/designer/designs', label: 'My Designs', icon: '🎨' },
+  { href: '/dashboard/designer/ready-to-wear', label: 'My Ready-to-Wear', icon: '👗' },
+  { href: '/dashboard/designer/orders', label: 'Orders', icon: '📦' },
+];
+
+interface RTWFormData {
+  name: string;
+  description: string;
+  customerPrice: string;
+  category: string;
+  stock: string;
+  imageUrl: string;
+}
+
+const EMPTY_FORM: RTWFormData = {
+  name: '', description: '', customerPrice: '',
+  category: '', stock: '', imageUrl: '',
+};
+
+export default function DesignerReadyToWearPage() {
+  const { user, isLoading } = useRequireRole(['designer']);
+  const { toast } = useToast();
+
+  const [products, setProducts] = useState<ReadyToWearProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<ReadyToWearProduct | null>(null);
+  const [form, setForm] = useState<RTWFormData>(EMPTY_FORM);
+  const [saving, setSaving] = useState(false);
+
+  const loadProducts = () => {
+    readyToWearApi.list().then((res) => setProducts(res.items)).catch(() => {}).finally(() => setLoading(false));
+  };
+
+  useEffect(() => { loadProducts(); }, []);
+
+  const openCreate = () => {
+    setEditingProduct(null);
+    setForm(EMPTY_FORM);
+    setModalOpen(true);
+  };
+
+  const openEdit = (p: ReadyToWearProduct) => {
+    setEditingProduct(p);
+    setForm({
+      name: p.name,
+      description: p.description || '',
+      customerPrice: String(p.customerPrice),
+      category: p.category || '',
+      stock: String(p.stock ?? ''),
+      imageUrl: (p.images && p.images[0]) || '',
+    });
+    setModalOpen(true);
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const payload: Partial<ReadyToWearProduct> = {
+        name: form.name,
+        description: form.description,
+        customerPrice: parseFloat(form.customerPrice),
+        category: form.category,
+        images: form.imageUrl ? [form.imageUrl] : [],
+        stock: form.stock ? parseInt(form.stock, 10) : undefined,
+      };
+      if (editingProduct) {
+        await readyToWearApi.update(editingProduct.id, payload);
+        toast('success', 'Product updated');
+      } else {
+        await readyToWearApi.create(payload);
+        toast('success', 'Product created');
+      }
+      setModalOpen(false);
+      loadProducts();
+    } catch {
+      toast('error', 'Failed to save product');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Delete this product?')) return;
+    try {
+      await readyToWearApi.delete(id);
+      toast('success', 'Product deleted');
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+    } catch {
+      toast('error', 'Failed to delete product');
+    }
+  };
+
+  const handleToggleActive = async (p: ReadyToWearProduct) => {
+    try {
+      const updated = await readyToWearApi.update(p.id, { isActive: !p.isActive });
+      setProducts((prev) => prev.map((x) => x.id === updated.id ? updated : x));
+    } catch {
+      toast('error', 'Failed to update product status');
+    }
+  };
+
+  if (isLoading || !user) {
+    return <div className="min-h-screen flex items-center justify-center"><Spinner size="lg" /></div>;
+  }
+
+  return (
+    <DashboardLayout sidebarItems={SIDEBAR_ITEMS} userRole={user.role} title="My Ready-to-Wear">
+      <div className="flex justify-end mb-4">
+        <Button onClick={openCreate}>+ Add New Product</Button>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-16"><Spinner /></div>
+      ) : products.length === 0 ? (
+        <div className="text-center py-16 text-neutral-500 bg-white rounded-xl border border-neutral-200">
+          <p className="mb-4">No ready-to-wear products yet.</p>
+          <Button onClick={openCreate} variant="outline">Add Your First Product</Button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {products.map((p) => (
+            <div key={p.id} className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
+              {p.images && p.images[0] && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={p.images[0]} alt={p.name} className="w-full h-40 object-cover" />
+              )}
+              <div className="p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="font-semibold text-neutral-900 text-sm">{p.name}</h3>
+                  <Badge variant={p.isActive ? 'success' : 'default'}>
+                    {p.isActive ? 'Active' : 'Inactive'}
+                  </Badge>
+                </div>
+                <p className="text-xs text-neutral-500 mt-1">{p.category}</p>
+                <p className="text-sm font-medium text-neutral-900 mt-2">${p.customerPrice}</p>
+                {p.stock !== undefined && (
+                  <p className="text-xs text-neutral-500 mt-1">Stock: {p.stock}</p>
+                )}
+                <div className="flex gap-2 mt-3">
+                  <Button size="sm" variant="outline" onClick={() => openEdit(p)}>Edit</Button>
+                  <Button size="sm" variant="ghost" onClick={() => handleToggleActive(p)}>
+                    {p.isActive ? 'Deactivate' : 'Activate'}
+                  </Button>
+                  <Button size="sm" variant="danger" onClick={() => handleDelete(p.id)}>Delete</Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* RTW Product Modal */}
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={editingProduct ? 'Edit Product' : 'Add New Product'}
+      >
+        <form onSubmit={handleSave} className="space-y-4">
+          <Input label="Product Name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} required />
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 mb-1">Description</label>
+            <textarea
+              className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+              rows={3}
+              value={form.description}
+              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Input label="Customer Price ($)" type="number" step="0.01" value={form.customerPrice} onChange={(e) => setForm((f) => ({ ...f, customerPrice: e.target.value }))} required />
+            <Input label="Stock Quantity" type="number" value={form.stock} onChange={(e) => setForm((f) => ({ ...f, stock: e.target.value }))} />
+          </div>
+          <div>
+            <Input label="Category" value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))} placeholder="e.g. Dress" />
+          </div>
+          <ImageUploader
+            label="Product Image"
+            currentImageUrl={form.imageUrl}
+            onUpload={(url) => setForm((f) => ({ ...f, imageUrl: url }))}
+          />
+          <div className="flex gap-3 pt-2">
+            <Button type="submit" loading={saving} className="flex-1">Save Product</Button>
+            <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>Cancel</Button>
+          </div>
+        </form>
+      </Modal>
+    </DashboardLayout>
+  );
+}
