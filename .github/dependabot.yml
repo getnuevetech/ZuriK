@@ -1,50 +1,100 @@
 version: 2
 updates:
-  # Backend (NestJS) npm dependencies
+  # ─── Backend (NestJS) npm dependencies ───────────────────────────────────────
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
+      time: "09:00"
+      timezone: "America/New_York"
     open-pull-requests-limit: 10
     labels:
       - "dependencies"
       - "backend"
     assignees:
       - "agolomola"
+    reviewers:
+      - "agolomola"
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(dev-deps)"
     groups:
+      # Group all minor + patch updates into a single PR
       minor-and-patch:
         update-types:
           - "minor"
           - "patch"
+    # Block major version bumps for critical backend packages
+    ignore:
+      - dependency-name: "@nestjs/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typeorm"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "pg"
+        update-types: ["version-update:semver-major"]
 
-  # Frontend (Next.js) npm dependencies
+  # ─── Frontend (Next.js) npm dependencies ─────────────────────────────────────
   - package-ecosystem: "npm"
     directory: "/frontend"
     schedule:
       interval: "weekly"
       day: "monday"
+      time: "09:00"
+      timezone: "America/New_York"
     open-pull-requests-limit: 10
     labels:
       - "dependencies"
       - "frontend"
     assignees:
       - "agolomola"
+    reviewers:
+      - "agolomola"
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(dev-deps)"
     groups:
+      # Group all minor + patch updates into a single PR
       minor-and-patch:
         update-types:
           - "minor"
           - "patch"
+    # Block major version bumps for framework/styling packages
+    # These require manual migration (as we learned with Tailwind 3→4!)
+    ignore:
+      - dependency-name: "tailwindcss"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "eslint-config-next"
+        update-types: ["version-update:semver-major"]
 
-  # GitHub Actions versions
+  # ─── GitHub Actions versions ──────────────────────────────────────────────────
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
+      time: "09:00"
+      timezone: "America/New_York"
     open-pull-requests-limit: 5
     labels:
       - "dependencies"
       - "github-actions"
     assignees:
       - "agolomola"
+    reviewers:
+      - "agolomola"
+    commit-message:
+      prefix: "chore(ci)"
+    groups:
+      # Group all GitHub Actions updates together
+      actions-updates:
+        patterns:
+          - "*"
