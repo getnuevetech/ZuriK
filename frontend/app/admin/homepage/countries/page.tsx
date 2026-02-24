@@ -11,6 +11,9 @@ interface CountryHero {
   countryName: string;
   countryCode: string;
   heroImages: string[];
+  flag: string;
+  fabrics: string[];
+  subtitle: string;
   rotationInterval: number;
   displayOrder: number;
   isActive: boolean;
@@ -20,6 +23,9 @@ const emptyForm = (): Omit<CountryHero, 'id'> => ({
   countryName: '',
   countryCode: '',
   heroImages: [],
+  flag: '',
+  fabrics: [],
+  subtitle: '',
   rotationInterval: 5000,
   displayOrder: 0,
   isActive: true,
@@ -63,6 +69,9 @@ export default function AdminCountriesPage() {
       countryName: c.countryName,
       countryCode: c.countryCode,
       heroImages: c.heroImages ?? [],
+      flag: c.flag ?? '',
+      fabrics: c.fabrics ?? [],
+      subtitle: c.subtitle ?? '',
       rotationInterval: c.rotationInterval,
       displayOrder: c.displayOrder,
       isActive: c.isActive,
@@ -151,7 +160,7 @@ export default function AdminCountriesPage() {
             <table className="w-full text-sm">
               <thead className="bg-neutral-50 border-b border-neutral-200">
                 <tr>
-                  {['Country', 'Code', 'Images', 'Interval (ms)', 'Order', 'Status', ''].map((h) => (
+                  {['Country', 'Code', 'Flag', 'Fabrics', 'Images', 'Order', 'Status', ''].map((h) => (
                     <th key={h} className="px-4 py-3 text-left text-xs font-medium text-neutral-500 uppercase">{h}</th>
                   ))}
                 </tr>
@@ -161,8 +170,9 @@ export default function AdminCountriesPage() {
                   <tr key={c.id} className="hover:bg-neutral-50">
                     <td className="px-4 py-3 font-medium text-neutral-800">{c.countryName}</td>
                     <td className="px-4 py-3 text-neutral-500">{c.countryCode}</td>
+                    <td className="px-4 py-3 text-neutral-500">{c.flag || '—'}</td>
+                    <td className="px-4 py-3 text-neutral-500">{c.fabrics?.length ?? 0} types</td>
                     <td className="px-4 py-3 text-neutral-500">{c.heroImages?.length ?? 0} images</td>
-                    <td className="px-4 py-3 text-neutral-500">{c.rotationInterval}</td>
                     <td className="px-4 py-3 text-neutral-500">{c.displayOrder}</td>
                     <td className="px-4 py-3">
                       <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${c.isActive ? 'bg-green-100 text-green-700' : 'bg-neutral-100 text-neutral-500'}`}>
@@ -208,6 +218,37 @@ export default function AdminCountriesPage() {
                     maxLength={3}
                   />
                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-neutral-600 mb-1">Flag Emoji (e.g. 🇳🇬)</label>
+                  <input
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+                    value={form.flag}
+                    onChange={(e) => setForm({ ...form, flag: e.target.value })}
+                    placeholder="🇳🇬"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-neutral-600 mb-1">Subtitle (optional)</label>
+                  <input
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+                    value={form.subtitle}
+                    onChange={(e) => setForm({ ...form, subtitle: e.target.value })}
+                    placeholder="e.g. West African fashion hub"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-neutral-600 mb-1">Fabrics (comma-separated, e.g. Ankara, Adire)</label>
+                <input
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+                  value={form.fabrics.join(', ')}
+                  onChange={(e) => setForm({ ...form, fabrics: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) })}
+                  placeholder="Ankara, Adire, Aso-Oke"
+                />
               </div>
 
               <div>

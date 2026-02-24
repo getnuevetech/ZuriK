@@ -16,6 +16,15 @@ export class CountryHero {
   @Column({ type: 'jsonb', default: [] })
   heroImages: string[];
 
+  @Column({ nullable: true })
+  flag: string;
+
+  @Column({ type: 'jsonb', default: [] })
+  fabrics: string[];
+
+  @Column({ nullable: true })
+  subtitle: string;
+
   @Column({ type: 'int', default: 5000 })
   rotationInterval: number;
 

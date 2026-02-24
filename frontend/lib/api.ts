@@ -26,6 +26,7 @@ export interface PaginatedResponse<T> {
 
 export interface ProductFilters {
   category?: string;
+  country?: string;
   search?: string;
   minPrice?: number;
   maxPrice?: number;
@@ -205,6 +206,7 @@ export const designsApi = {
   list: (filters?: DesignFilters): Promise<PaginatedResponse<Design>> => {
     const params = new URLSearchParams();
     if (filters?.category) params.set('category', filters.category);
+    if (filters?.country) params.set('country', filters.country);
     if (filters?.search) params.set('search', filters.search);
     if (filters?.minPrice !== undefined) params.set('minPrice', String(filters.minPrice));
     if (filters?.maxPrice !== undefined) params.set('maxPrice', String(filters.maxPrice));
