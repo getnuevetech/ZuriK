@@ -85,7 +85,7 @@ export function MobileBottomTabs() {
           // Determine actual href based on auth state
           const resolvedHref =
             tab.authOnly && !isAuth ? (tab.noAuthHref || '/fabrics') :
-            !tab.authOnly && tab.href === '/login' && isAuth ? '/profile' :
+            !tab.authOnly && tab.href === '/login' && isAuth ? '/account' :
             tab.href;
 
           const resolvedLabel =

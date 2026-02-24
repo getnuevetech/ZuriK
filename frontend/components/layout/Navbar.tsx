@@ -234,7 +234,7 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
                       <p className="text-sm font-medium truncate">{displayName}</p>
                       {authUser?.role && <p className="text-xs text-white/40 capitalize font-light">{authUser.role.replace('_', ' ')}</p>}
                     </div>
-                    <Link href="/profile" className="block px-4 py-2 text-sm hover:bg-white/10 transition-colors" onClick={() => setUserMenuOpen(false)}>Profile</Link>
+                    <Link href="/account" className="block px-4 py-2 text-sm hover:bg-white/10 transition-colors" onClick={() => setUserMenuOpen(false)}>Profile</Link>
                     <Link href="/orders" className="block px-4 py-2 text-sm hover:bg-white/10 transition-colors" onClick={() => setUserMenuOpen(false)}>My Orders</Link>
                     <Link href="/wishlist" className="block px-4 py-2 text-sm hover:bg-white/10 transition-colors" onClick={() => setUserMenuOpen(false)}>Wishlist</Link>
                     <Link href="/account/addresses" className="block px-4 py-2 text-sm hover:bg-white/10 transition-colors" onClick={() => setUserMenuOpen(false)}>Addresses</Link>
