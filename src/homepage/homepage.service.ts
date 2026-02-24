@@ -11,6 +11,7 @@ import { CollectionPost } from './entities/collection-post.entity';
 import { HeritageStory } from './entities/heritage-story.entity';
 import { HowItWorksStep } from './entities/how-it-works-step.entity';
 import { TryOnConfig } from './entities/tryon-config.entity';
+import { HeroStat } from './entities/hero-stat.entity';
 import { Design } from '../designs/entities/design.entity';
 import { ReadyToWearProduct } from '../ready-to-wear/entities/ready-to-wear-product.entity';
 import { Order } from '../orders/entities/order.entity';
@@ -32,6 +33,8 @@ import { UpdateHeritageStoryDto } from './dto/update-heritage-story.dto';
 import { CreateHowItWorksStepDto } from './dto/create-how-it-works-step.dto';
 import { UpdateHowItWorksStepDto } from './dto/update-how-it-works-step.dto';
 import { UpdateTryOnConfigDto } from './dto/update-tryon-config.dto';
+import { CreateHeroStatDto } from './dto/create-hero-stat.dto';
+import { UpdateHeroStatDto } from './dto/update-hero-stat.dto';
 import { THEME_PRESETS } from './theme-presets.config';
 
 @Injectable()
@@ -57,6 +60,8 @@ export class HomepageService {
     private howItWorksRepo: Repository<HowItWorksStep>,
     @InjectRepository(TryOnConfig)
     private tryOnConfigRepo: Repository<TryOnConfig>,
+    @InjectRepository(HeroStat)
+    private heroStatRepo: Repository<HeroStat>,
     @InjectRepository(Design)
     private designRepo: Repository<Design>,
     @InjectRepository(ReadyToWearProduct)
@@ -510,5 +515,36 @@ export class HomepageService {
     }
     const config = this.tryOnConfigRepo.create(dto);
     return this.tryOnConfigRepo.save(config);
+  }
+
+  // ─── Hero Stats ───────────────────────────────────────────────────────────────
+
+  async createHeroStat(dto: CreateHeroStatDto): Promise<HeroStat> {
+    const stat = this.heroStatRepo.create(dto);
+    return this.heroStatRepo.save(stat);
+  }
+
+  async updateHeroStat(id: string, dto: UpdateHeroStatDto): Promise<HeroStat> {
+    const stat = await this.heroStatRepo.findOne({ where: { id } });
+    if (!stat) throw new NotFoundException('Hero stat not found');
+    Object.assign(stat, dto);
+    return this.heroStatRepo.save(stat);
+  }
+
+  async deleteHeroStat(id: string): Promise<void> {
+    const stat = await this.heroStatRepo.findOne({ where: { id } });
+    if (!stat) throw new NotFoundException('Hero stat not found');
+    await this.heroStatRepo.remove(stat);
+  }
+
+  async getHeroStats(): Promise<HeroStat[]> {
+    return this.heroStatRepo.find({ order: { displayOrder: 'ASC' } });
+  }
+
+  async getActiveHeroStats(): Promise<HeroStat[]> {
+    return this.heroStatRepo.find({
+      where: { isActive: true },
+      order: { displayOrder: 'ASC' },
+    });
   }
 }
