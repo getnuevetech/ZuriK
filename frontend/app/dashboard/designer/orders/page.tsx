@@ -12,7 +12,8 @@ import type { Order, OrderStatus } from '../../../../types';
 
 const SIDEBAR_ITEMS = [
   { href: '/dashboard/designer', label: 'Overview', icon: '📊' },
-  { href: '/dashboard/designer/products', label: 'My Products', icon: '👗' },
+  { href: '/dashboard/designer/designs', label: 'My Designs', icon: '🎨' },
+  { href: '/dashboard/designer/ready-to-wear', label: 'My Ready-to-Wear', icon: '👗' },
   { href: '/dashboard/designer/orders', label: 'Orders', icon: '📦' },
 ];
 
