@@ -1,5 +1,6 @@
-import { IsString, IsOptional, IsInt, IsBoolean } from 'class-validator';
+import { IsString, IsOptional, IsInt, IsBoolean, IsEnum } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { PromoBannerLocation } from '../entities/promo-banner.entity';
 
 export class CreatePromoBannerDto {
   @ApiProperty()
@@ -14,6 +15,10 @@ export class CreatePromoBannerDto {
   @ApiProperty()
   @IsString()
   imageUrl: string;
+
+  @ApiProperty({ enum: PromoBannerLocation })
+  @IsEnum(PromoBannerLocation)
+  location: PromoBannerLocation;
 
   @ApiPropertyOptional()
   @IsOptional()

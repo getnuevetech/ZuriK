@@ -306,6 +306,26 @@ export class HomepageService {
     });
   }
 
+  async getActivePromoBannersByLocation(): Promise<Record<string, PromoBanner | null>> {
+    const banners = await this.promoBannerRepo.find({
+      where: { isActive: true },
+      order: { displayOrder: 'ASC' },
+    });
+    const result: Record<string, PromoBanner | null> = {
+      AFTER_HERO: null,
+      AFTER_RTW: null,
+      AFTER_FABRICS: null,
+      AFTER_HOW_IT_WORKS: null,
+      AFTER_HERITAGE: null,
+    };
+    for (const banner of banners) {
+      if (banner.location && result[banner.location] === null) {
+        result[banner.location] = banner;
+      }
+    }
+    return result;
+  }
+
   // ─── Shop by Country ─────────────────────────────────────────────────────────
 
   async getShopByCountryData(): Promise<{

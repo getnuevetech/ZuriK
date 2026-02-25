@@ -133,6 +133,7 @@ export default function AdminHomepagePage() {
           { href: '/admin/homepage/theme', label: 'Theme Settings', icon: '🎨' },
           { href: '/admin/homepage/collection-posts', label: 'Collection Stories', icon: '📝' },
           { href: '/admin/homepage/heritage', label: 'Heritage Stories', icon: '🏺' },
+          { href: '/admin/homepage/promo-banners', label: 'Promo Banners', icon: '📢' },
         ].map((item) => (
           <Link
             key={item.href}
