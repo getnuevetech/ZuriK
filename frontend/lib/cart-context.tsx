@@ -19,6 +19,7 @@ interface CartContextValue {
   cartItems: CartItem[];
   cartTotal: number;
   cartCount: number;
+  cartLoading: boolean;
   addToCart: (item: CartItem) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, qty: number) => void;
@@ -72,11 +73,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [serverMode, setServerMode] = useState(false);
+  const [cartLoading, setCartLoading] = useState(true);
 
   // Load initial cart from localStorage
   useEffect(() => {
     if (!serverMode) {
       setCartItems(loadCart());
+      setCartLoading(false);
     }
   }, []);
 
@@ -86,26 +89,50 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (isAuthenticated) {
       const localItems = loadCart();
       setServerMode(true);
+      setCartLoading(true);
       // Sync local cart to server then load server cart
       const syncAndLoad = async () => {
         try {
           if (localItems.length > 0) {
             const synced = await cartApi.sync(localItems.map(cartItemToAddPayload));
-            setCartItems(synced.map(serverItemToCartItem));
-            localStorage.removeItem(CART_KEY);
+            const mapped = synced.map(serverItemToCartItem);
+            setCartItems(mapped);
+            saveCart(mapped);
           } else {
             const serverItems = await cartApi.getCart();
-            setCartItems(serverItems.map(serverItemToCartItem));
+            const mapped = serverItems.map(serverItemToCartItem);
+            setCartItems(mapped);
+            saveCart(mapped);
           }
         } catch {
-          // Fallback to local cart on error
-          setCartItems(localItems);
+          // Retry once after a delay to allow token refresh to complete
+          try {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            const serverItems = await cartApi.getCart();
+            const mapped = serverItems.map(serverItemToCartItem);
+            setCartItems(mapped);
+            saveCart(mapped);
+          } catch {
+            // Final fallback: use whatever is in localStorage
+            const cached = loadCart();
+            if (cached.length > 0) {
+              setCartItems(cached);
+            }
+          }
+        } finally {
+          setCartLoading(false);
         }
       };
       syncAndLoad();
     } else {
       setServerMode(false);
-      setCartItems(loadCart());
+      // Only update from localStorage if there are items; don't clear existing cart
+      // items that may have been loaded from a previous server fetch
+      const localItems = loadCart();
+      if (localItems.length > 0) {
+        setCartItems(localItems);
+      }
+      setCartLoading(false);
     }
   }, [isAuthenticated, authLoading]);
 
@@ -196,7 +223,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const cartCount = cartItems.reduce((sum, i) => sum + i.quantity, 0);
 
   return (
-    <CartContext.Provider value={{ cartItems, cartTotal, cartCount, addToCart, removeFromCart, updateQuantity, clearCart }}>
+    <CartContext.Provider value={{ cartItems, cartTotal, cartCount, cartLoading, addToCart, removeFromCart, updateQuantity, clearCart }}>
       {children}
     </CartContext.Provider>
   );
