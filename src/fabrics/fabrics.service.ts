@@ -52,6 +52,8 @@ export class FabricsService {
 
     if (!includeInactive) {
       qb.where('fabric.isActive = :isActive', { isActive: true });
+    } else {
+      qb.where('1=1');
     }
 
     if (search) {
