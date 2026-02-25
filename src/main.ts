@@ -93,6 +93,25 @@ async function bootstrap() {
   }
 }
 bootstrap().catch((err) => {
-  console.error('❌ Application failed to start:', err);
+  const logger = new Logger('Bootstrap');
+  if (err.message?.includes('Missing required environment variables')) {
+    logger.error(err.message);
+  } else if (err.code === 'ECONNREFUSED' || err.message?.includes('ECONNREFUSED') || err.message?.includes('connect ETIMEDOUT')) {
+    logger.error('='.repeat(60));
+    logger.error('DATABASE CONNECTION FAILED');
+    logger.error('='.repeat(60));
+    logger.error(`Could not connect to PostgreSQL: ${err.message}`);
+    logger.error('');
+    logger.error('Common causes:');
+    logger.error('  1. DATABASE_URL is incorrect');
+    logger.error('  2. PostgreSQL service is still provisioning on Railway');
+    logger.error('  3. Database firewall is blocking connections');
+    logger.error('');
+    logger.error('On Railway: Ensure you have a PostgreSQL plugin added');
+    logger.error('and that DATABASE_URL is correctly linked to your service.');
+    logger.error('='.repeat(60));
+  } else {
+    logger.error('❌ Application failed to start:', err.message || err);
+  }
   process.exit(1);
 });

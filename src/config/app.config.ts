@@ -2,7 +2,7 @@ import { Logger } from '@nestjs/common';
 
 export const appConfig = () => ({
   nodeEnv: process.env.NODE_ENV || 'development',
-  port: parseInt(process.env.PORT || '3001', 10),
+  port: parseInt(process.env.PORT || '3000', 10),
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
   database: {
     url: process.env.DATABASE_URL,
@@ -31,8 +31,27 @@ export function validateConfig(): void {
   const missing = REQUIRED_PRODUCTION_VARS.filter((key) => !process.env[key]);
 
   if (missing.length > 0) {
-    const message = `Missing required environment variables in production: ${missing.join(', ')}`;
-    logger.error(message);
-    throw new Error(message);
+    logger.error('='.repeat(60));
+    logger.error('MISSING REQUIRED ENVIRONMENT VARIABLES');
+    logger.error('='.repeat(60));
+    missing.forEach((key) => {
+      logger.error(`  ❌ ${key} is not set`);
+    });
+    logger.error('');
+    logger.error('To fix this on Railway:');
+    logger.error('  1. Go to your service in the Railway Dashboard');
+    logger.error('  2. Click the "Variables" tab');
+    logger.error('  3. Add the missing variables listed above');
+    logger.error('');
+    logger.error('For DATABASE_URL: Add a PostgreSQL plugin via "+ New" → "Database"');
+    logger.error('For JWT secrets: Generate with `openssl rand -base64 32`');
+    logger.error('For FRONTEND_URL: Set to your deployed frontend URL');
+    logger.error('='.repeat(60));
+    throw new Error(
+      `Missing required environment variables in production: ${missing.join(', ')}. ` +
+      'Set these in your Railway Dashboard under the "Variables" tab.'
+    );
   }
+
+  logger.log('✅ All required environment variables are set');
 }
