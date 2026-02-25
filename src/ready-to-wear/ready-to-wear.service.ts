@@ -47,6 +47,8 @@ export class ReadyToWearService {
 
     if (!includeInactive) {
       qb.where('rtw.isActive = :isActive', { isActive: true });
+    } else {
+      qb.where('1=1');
     }
 
     if (search && search.trim()) {

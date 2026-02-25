@@ -54,6 +54,8 @@ export class DesignsService {
 
     if (!includeInactive) {
       qb.where('design.isActive = :isActive', { isActive: true });
+    } else {
+      qb.where('1=1');
     }
 
     if (search && search.trim()) {
