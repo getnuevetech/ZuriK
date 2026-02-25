@@ -56,7 +56,9 @@ export function ShopByCountry() {
           setCountries(mapped);
         }
       })
-      .catch(() => {});
+      .catch((err) => {
+        console.error('[ShopByCountry] Failed to fetch country data:', err);
+      });
   }, []);
 
   useEffect(() => {

@@ -381,6 +381,13 @@ export class HomepageService {
       if (h.subtitle) heroSubtitleMap[h.countryName] = h.subtitle;
     }
 
+    // Ensure all active CountryHero countries are included, even without designers/sellers
+    for (const h of heroes) {
+      if (!countryMap[h.countryName]) {
+        countryMap[h.countryName] = { designerCount: 0, sellerCount: 0 };
+      }
+    }
+
     const countries = Object.keys(countryMap);
     const result = countries.map((countryName) => ({
       countryName,
