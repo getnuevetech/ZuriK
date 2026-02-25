@@ -131,6 +131,16 @@ export default function AdminCountriesPage() {
       .catch(() => {});
   }, [fetchCountries]);
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (comboboxRef.current && !comboboxRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const saveSettings = async () => {
     setSavingSettings(true);
     try {
@@ -192,6 +202,10 @@ export default function AdminCountriesPage() {
   const handleSave = async () => {
     if (!form.countryName.trim() || !form.countryCode.trim()) {
       toast('error', 'Country name and code are required');
+      return;
+    }
+    if (!editId && countries.some((c) => c.countryCode === form.countryCode)) {
+      toast('error', `A country hero for ${form.countryName} (${form.countryCode}) already exists`);
       return;
     }
     setSaving(true);
@@ -351,7 +365,6 @@ export default function AdminCountriesPage() {
                     setDropdownOpen(true);
                   }}
                   onFocus={() => setDropdownOpen(true)}
-                  onBlur={() => setTimeout(() => setDropdownOpen(false), 150)}
                   placeholder="Search country…"
                   autoComplete="off"
                 />

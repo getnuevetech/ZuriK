@@ -14,6 +14,7 @@ const DEFAULT_BANNER: PromoBannerType = {
   ctaLink: '/products',
   imageUrl: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=1600&q=80',
   displayOrder: 0,
+  location: 'AFTER_FABRICS',
   isActive: true,
   createdAt: '',
   updatedAt: '',

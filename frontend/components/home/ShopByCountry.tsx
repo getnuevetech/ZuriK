@@ -59,7 +59,7 @@ export function ShopByCountry() {
             name: d.countryName,
             code: d.countryCode,
             flag: d.flag,
-            image: d.heroImage ?? fallbackByCode.get(d.countryCode)?.image ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80',
+            image: d.heroImage ?? d.heroImages?.[0] ?? fallbackByCode.get(d.countryCode)?.image ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80',
             designerCount: d.designerCount,
             productCount: d.productCount,
             fabrics: d.fabrics?.length ? d.fabrics : fallbackByCode.get(d.countryCode)?.fabrics,
