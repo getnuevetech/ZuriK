@@ -24,13 +24,14 @@ interface RTWFormData {
   name: string;
   description: string;
   customerPrice: string;
+  designerPrice: string;
   category: string;
   stock: string;
   imageUrl: string;
 }
 
 const EMPTY_FORM: RTWFormData = {
-  name: '', description: '', customerPrice: '',
+  name: '', description: '', customerPrice: '', designerPrice: '',
   category: '', stock: '', imageUrl: '',
 };
 
@@ -63,6 +64,7 @@ export default function DesignerReadyToWearPage() {
       name: p.name,
       description: p.description || '',
       customerPrice: String(p.customerPrice),
+      designerPrice: String(p.designerPrice || ''),
       category: p.category || '',
       stock: String(p.stock ?? ''),
       imageUrl: (p.images && p.images[0]) || '',
@@ -78,6 +80,7 @@ export default function DesignerReadyToWearPage() {
         name: form.name,
         description: form.description,
         customerPrice: parseFloat(form.customerPrice),
+        designerPrice: parseFloat(form.designerPrice),
         category: form.category,
         images: form.imageUrl ? [form.imageUrl] : [],
         stock: form.stock ? parseInt(form.stock, 10) : undefined,
@@ -187,9 +190,10 @@ export default function DesignerReadyToWearPage() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <Input label="Customer Price ($)" type="number" step="0.01" value={form.customerPrice} onChange={(e) => setForm((f) => ({ ...f, customerPrice: e.target.value }))} required />
-            <Input label="Stock Quantity" type="number" value={form.stock} onChange={(e) => setForm((f) => ({ ...f, stock: e.target.value }))} />
+            <Input label="Designer Price ($)" type="number" step="0.01" value={form.designerPrice} onChange={(e) => setForm((f) => ({ ...f, designerPrice: e.target.value }))} required />
           </div>
-          <div>
+          <div className="grid grid-cols-2 gap-3">
+            <Input label="Stock Quantity" type="number" value={form.stock} onChange={(e) => setForm((f) => ({ ...f, stock: e.target.value }))} />
             <Input label="Category" value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))} placeholder="e.g. Dress" />
           </div>
           <ImageUploader

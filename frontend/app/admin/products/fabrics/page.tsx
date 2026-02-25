@@ -181,6 +181,40 @@ export default function AdminFabricsPage() {
     }
   };
 
+  // Create modal
+  const [showCreate, setShowCreate] = useState(false);
+  const [createForm, setCreateForm] = useState<Partial<Fabric>>({});
+
+  const openCreate = () => {
+    setCreateForm({ name: '', description: '', customerPrice: 0, sellerPrice: 0, stock: 0 });
+    setShowCreate(true);
+  };
+
+  const handleCreate = async () => {
+    setSaving(true);
+    try {
+      await fabricsApi.create({
+        name: createForm.name ?? '',
+        description: createForm.description ?? '',
+        customerPrice: createForm.customerPrice ?? 0,
+        sellerPrice: createForm.sellerPrice ?? 0,
+        type: createForm.type,
+        material: createForm.material,
+        colors: createForm.colors,
+        patterns: createForm.patterns,
+        width: createForm.width,
+        stock: createForm.stock,
+      });
+      toast('success', 'Fabric created');
+      setShowCreate(false);
+      fetchFabrics();
+    } catch {
+      toast('error', 'Failed to create fabric');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <AdminPageHeader
@@ -190,6 +224,11 @@ export default function AdminFabricsPage() {
           { label: 'Products', href: '/admin/products' },
           { label: 'Fabrics' },
         ]}
+        actions={
+          <button onClick={openCreate} className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700">
+            + Create
+          </button>
+        }
       />
 
       {/* Filters */}
@@ -601,6 +640,72 @@ export default function AdminFabricsPage() {
               >
                 {saving ? 'Saving…' : 'Save'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Modal */}
+      {showCreate && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl w-full max-w-lg p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-semibold text-neutral-800">Create Fabric</h2>
+              <button onClick={() => setShowCreate(false)} className="text-neutral-400 hover:text-neutral-700">✕</button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-neutral-600 mb-1">Name *</label>
+                <input className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.name ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, name: e.target.value }))} />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-neutral-600 mb-1">Description *</label>
+                <textarea rows={3} className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.description ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, description: e.target.value }))} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-neutral-600 mb-1">Type</label>
+                  <input className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.type ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, type: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-neutral-600 mb-1">Material</label>
+                  <input className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.material ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, material: e.target.value }))} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-neutral-600 mb-1">Customer Price (₦) *</label>
+                  <input type="number" className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.customerPrice ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, customerPrice: Number(e.target.value) }))} />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-neutral-600 mb-1">Seller Price (₦) *</label>
+                  <input type="number" className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.sellerPrice ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, sellerPrice: Number(e.target.value) }))} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-neutral-600 mb-1">Stock</label>
+                  <input type="number" className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.stock ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, stock: Number(e.target.value) }))} />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-neutral-600 mb-1">Width (m)</label>
+                  <input type="number" className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.width ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, width: Number(e.target.value) }))} />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-neutral-600 mb-1">Colors (comma-separated)</label>
+                <input className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.colors?.join(', ') ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, colors: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) }))} />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-neutral-600 mb-1">Patterns (comma-separated)</label>
+                <input className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.patterns?.join(', ') ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, patterns: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) }))} />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-2">
+              <button onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm text-neutral-600 border border-neutral-200 rounded-lg">Cancel</button>
+              <button onClick={handleCreate} disabled={saving} className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 disabled:opacity-60">{saving ? 'Creating…' : 'Create'}</button>
             </div>
           </div>
         </div>
