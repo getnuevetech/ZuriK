@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { readyToWearApi } from '../../../../lib/api';
 import { ReadyToWearProduct } from '../../../../types/product';
 import AdminPageHeader from '../../../../components/admin/AdminPageHeader';
@@ -66,6 +66,8 @@ export default function AdminReadyToWearPage() {
   const [editForm, setEditForm] = useState<Partial<ReadyToWearProduct>>({});
 
   const { toast } = useToast();
+  const toastRef = useRef(toast);
+  toastRef.current = toast;
   const { formatPrice, currencySymbol } = useCurrency();
 
   const fetchProducts = useCallback(async () => {
@@ -103,11 +105,11 @@ export default function AdminReadyToWearPage() {
       setTotal(res.total);
       setTotalPages(res.totalPages);
     } catch {
-      toast('error', 'Failed to load products');
+      toastRef.current('error', 'Failed to load products');
     } finally {
       setLoading(false);
     }
-  }, [search, category, country, designer, stockFilter, statusFilter, featuredFilter, page, toast]);
+  }, [search, category, country, designer, stockFilter, statusFilter, featuredFilter, page]);
 
   useEffect(() => {
     fetchProducts();
