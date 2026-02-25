@@ -11,6 +11,7 @@ import ConfirmDialog from '../../../components/admin/ConfirmDialog';
 import { Badge } from '../../../components/ui/Badge';
 import { Spinner } from '../../../components/ui/Spinner';
 import { useToast } from '../../../components/ui/Toast';
+import { useCurrency } from '../../../lib/currency-context';
 
 const STATUS_OPTIONS = [
   { value: '', label: 'All Statuses' },
@@ -42,6 +43,7 @@ export default function AdminCouponsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [confirmDeactivate, setConfirmDeactivate] = useState<Coupon | null>(null);
   const { toast } = useToast();
+  const { formatPrice } = useCurrency();
   const limit = 20;
 
   const fetchCoupons = useCallback(() => {
@@ -104,13 +106,13 @@ export default function AdminCouponsPage() {
       render: (row: Coupon) =>
         row.discountType === 'percentage'
           ? `${row.discountValue}%`
-          : `₦${Number(row.discountValue).toLocaleString()}`,
+          : formatPrice(Number(row.discountValue)),
     },
     {
       key: 'minimumOrderAmount',
       header: 'Min Order',
       render: (row: Coupon) =>
-        row.minimumOrderAmount ? `₦${Number(row.minimumOrderAmount).toLocaleString()}` : '—',
+        row.minimumOrderAmount ? formatPrice(Number(row.minimumOrderAmount)) : '—',
     },
     {
       key: 'usage',

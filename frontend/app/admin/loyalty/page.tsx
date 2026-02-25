@@ -2,6 +2,7 @@
 
 import React from 'react';
 import AdminPageHeader from '../../../components/admin/AdminPageHeader';
+import { useCurrency } from '../../../lib/currency-context';
 
 const HOW_IT_WORKS = [
   {
@@ -31,6 +32,7 @@ const HOW_IT_WORKS = [
 ];
 
 export default function AdminLoyaltyPage() {
+  const { currencySymbol } = useCurrency();
   return (
     <div className="space-y-6">
       <AdminPageHeader title="Loyalty Program" />
@@ -68,8 +70,8 @@ export default function AdminLoyaltyPage() {
         <h2 className="text-sm font-semibold text-neutral-800">Planned Admin Features</h2>
         <ul className="space-y-2 text-sm text-neutral-600">
           {[
-            'Configure points earn rate (points per ₦1000 spent)',
-            'Set redemption value (points to ₦ conversion rate)',
+            `Configure points earn rate (points per ${currencySymbol}1000 spent)`,
+            `Set redemption value (points to ${currencySymbol} conversion rate)`,
             'Define loyalty tiers and their thresholds',
             'Manually adjust customer point balances',
             'View leaderboard of top loyalty members',

@@ -10,6 +10,7 @@ import { Spinner } from '../../../components/ui/Spinner';
 import { useToast } from '../../../components/ui/Toast';
 import { Input } from '../../../components/ui/Input';
 import { Card, CardBody } from '../../../components/ui/Card';
+import { useCurrency } from '../../../lib/currency-context';
 
 interface MethodFormState {
   name: string;
@@ -43,6 +44,7 @@ export default function AdminShippingPage() {
   const [form, setForm] = useState<MethodFormState>(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
+  const { formatPrice, currencySymbol } = useCurrency();
 
   const fetchMethods = useCallback(() => {
     setLoading(true);
@@ -122,8 +124,8 @@ export default function AdminShippingPage() {
 
   const columns = [
     { key: 'name', header: 'Name', render: (row: ShippingMethod) => <span className="font-medium">{row.name}</span> },
-    { key: 'basePrice', header: 'Price', render: (row: ShippingMethod) => `₦${Number(row.basePrice).toLocaleString()}` },
-    { key: 'freeShippingThreshold', header: 'Free Threshold', render: (row: ShippingMethod) => row.freeShippingThreshold ? `₦${Number(row.freeShippingThreshold).toLocaleString()}` : '—' },
+    { key: 'basePrice', header: 'Price', render: (row: ShippingMethod) => formatPrice(Number(row.basePrice)) },
+    { key: 'freeShippingThreshold', header: 'Free Threshold', render: (row: ShippingMethod) => row.freeShippingThreshold ? formatPrice(Number(row.freeShippingThreshold)) : '—' },
     { key: 'days', header: 'Est. Days', render: (row: ShippingMethod) => `${row.estimatedMinDays}–${row.estimatedMaxDays} days` },
     { key: 'countries', header: 'Countries', render: (row: ShippingMethod) => row.supportedCountries?.join(', ') || 'All' },
     { key: 'sortOrder', header: 'Sort', render: (row: ShippingMethod) => row.sortOrder },
@@ -162,8 +164,8 @@ export default function AdminShippingPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Input label="Name *" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} required />
-                <Input label="Base Price (₦) *" type="number" min="0" step="0.01" value={form.basePrice} onChange={(e) => setForm((f) => ({ ...f, basePrice: e.target.value }))} required />
-                <Input label="Free Shipping Threshold (₦)" type="number" min="0" step="0.01" value={form.freeShippingThreshold} onChange={(e) => setForm((f) => ({ ...f, freeShippingThreshold: e.target.value }))} placeholder="Leave blank for none" />
+                <Input label={`Base Price (${currencySymbol}) *`} type="number" min="0" step="0.01" value={form.basePrice} onChange={(e) => setForm((f) => ({ ...f, basePrice: e.target.value }))} required />
+                <Input label={`Free Shipping Threshold (${currencySymbol})`} type="number" min="0" step="0.01" value={form.freeShippingThreshold} onChange={(e) => setForm((f) => ({ ...f, freeShippingThreshold: e.target.value }))} placeholder="Leave blank for none" />
                 <Input label="Description" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
                 <Input label="Min Days *" type="number" min="0" value={form.estimatedMinDays} onChange={(e) => setForm((f) => ({ ...f, estimatedMinDays: e.target.value }))} required />
                 <Input label="Max Days *" type="number" min="0" value={form.estimatedMaxDays} onChange={(e) => setForm((f) => ({ ...f, estimatedMaxDays: e.target.value }))} required />

@@ -10,10 +10,12 @@ import { Input } from '../../../../components/ui/Input';
 import { Textarea } from '../../../../components/ui/Textarea';
 import { Card, CardBody, CardHeader } from '../../../../components/ui/Card';
 import { useToast } from '../../../../components/ui/Toast';
+import { useCurrency } from '../../../../lib/currency-context';
 
 export default function CreateCouponPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { currencySymbol } = useCurrency();
 
   const [form, setForm] = useState({
     code: '',
@@ -114,12 +116,12 @@ export default function CreateCouponPage() {
                 onChange={(e) => set('discountType', e.target.value)}
               >
                 <option value="percentage">Percentage (%)</option>
-                <option value="fixed">Fixed Amount (₦)</option>
+                <option value="fixed">Fixed Amount ({currencySymbol})</option>
               </select>
             </div>
 
             <Input
-              label={`Discount Value * ${form.discountType === 'percentage' ? '(%)' : '(₦)'}`}
+              label={`Discount Value * ${form.discountType === 'percentage' ? '(%)' : `(${currencySymbol})`}`}
               type="number"
               min="0"
               max={form.discountType === 'percentage' ? '100' : undefined}
@@ -131,7 +133,7 @@ export default function CreateCouponPage() {
             />
 
             <Input
-              label="Minimum Order Amount (₦, optional)"
+              label={`Minimum Order Amount (${currencySymbol}, optional)`}
               type="number"
               min="0"
               step="0.01"
@@ -142,7 +144,7 @@ export default function CreateCouponPage() {
 
             {form.discountType === 'percentage' && (
               <Input
-                label="Maximum Discount Cap (₦, optional)"
+                label={`Maximum Discount Cap (${currencySymbol}, optional)`}
                 type="number"
                 min="0"
                 step="0.01"

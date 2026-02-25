@@ -6,6 +6,7 @@ import { ReadyToWearProduct } from '../../../../types/product';
 import AdminPageHeader from '../../../../components/admin/AdminPageHeader';
 import { Spinner } from '../../../../components/ui/Spinner';
 import { useToast } from '../../../../components/ui/Toast';
+import { useCurrency } from '../../../../lib/currency-context';
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString('en-US', {
@@ -65,6 +66,7 @@ export default function AdminReadyToWearPage() {
   const [editForm, setEditForm] = useState<Partial<ReadyToWearProduct>>({});
 
   const { toast } = useToast();
+  const { formatPrice, currencySymbol } = useCurrency();
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -334,7 +336,7 @@ export default function AdminReadyToWearPage() {
                       <td className="px-3 py-2 text-neutral-500">{product.designer?.country || '—'}</td>
                       <td className="px-3 py-2 text-neutral-500">{product.category || '—'}</td>
                       <td className="px-3 py-2 text-neutral-700 whitespace-nowrap">
-                        ₦{Number(product.customerPrice).toLocaleString()}
+                        {formatPrice(Number(product.customerPrice))}
                       </td>
                       <td className="px-3 py-2">
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${stockCls}`}>
@@ -411,8 +413,8 @@ export default function AdminReadyToWearPage() {
 
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div><span className="text-neutral-500">Category:</span> <span className="font-medium">{selectedProduct.category || '—'}</span></div>
-              <div><span className="text-neutral-500">Customer Price:</span> <span className="font-medium">₦{Number(selectedProduct.customerPrice).toLocaleString()}</span></div>
-              <div><span className="text-neutral-500">Designer Price:</span> <span className="font-medium">{selectedProduct.designerPrice ? `₦${Number(selectedProduct.designerPrice).toLocaleString()}` : '—'}</span></div>
+              <div><span className="text-neutral-500">Customer Price:</span> <span className="font-medium">{formatPrice(Number(selectedProduct.customerPrice))}</span></div>
+              <div><span className="text-neutral-500">Designer Price:</span> <span className="font-medium">{selectedProduct.designerPrice ? formatPrice(Number(selectedProduct.designerPrice)) : '—'}</span></div>
               <div><span className="text-neutral-500">Stock:</span> <span className="font-medium">{selectedProduct.stock ?? 0}</span></div>
               <div><span className="text-neutral-500">Low Stock At:</span> <span className="font-medium">{selectedProduct.lowStockThreshold ?? '—'}</span></div>
               <div><span className="text-neutral-500">Track Inventory:</span> <span className="font-medium">{selectedProduct.trackInventory ? 'Yes' : 'No'}</span></div>
@@ -481,11 +483,11 @@ export default function AdminReadyToWearPage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-neutral-600 mb-1">Customer Price (₦)</label>
+                  <label className="block text-xs font-medium text-neutral-600 mb-1">Customer Price ({currencySymbol})</label>
                   <input type="number" className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={editForm.customerPrice ?? ''} onChange={(e) => setEditForm((p) => ({ ...p, customerPrice: Number(e.target.value) }))} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-neutral-600 mb-1">Designer Price (₦)</label>
+                  <label className="block text-xs font-medium text-neutral-600 mb-1">Designer Price ({currencySymbol})</label>
                   <input type="number" className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={editForm.designerPrice ?? ''} onChange={(e) => setEditForm((p) => ({ ...p, designerPrice: Number(e.target.value) }))} />
                 </div>
               </div>
@@ -556,11 +558,11 @@ export default function AdminReadyToWearPage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-neutral-600 mb-1">Customer Price (₦) *</label>
+                  <label className="block text-xs font-medium text-neutral-600 mb-1">Customer Price ({currencySymbol}) *</label>
                   <input type="number" className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.customerPrice ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, customerPrice: Number(e.target.value) }))} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-neutral-600 mb-1">Designer Price (₦) *</label>
+                  <label className="block text-xs font-medium text-neutral-600 mb-1">Designer Price ({currencySymbol}) *</label>
                   <input type="number" className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.designerPrice ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, designerPrice: Number(e.target.value) }))} />
                 </div>
               </div>

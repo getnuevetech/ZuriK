@@ -6,6 +6,7 @@ import { CartProvider } from '../lib/cart-context';
 import { WishlistProvider } from '../lib/wishlist-context';
 import { ComparisonProvider } from '../lib/comparison-context';
 import { ToastProvider } from '../components/ui/Toast';
+import { CurrencyProvider } from '../lib/currency-context';
 import { NavbarWrapper } from '../components/layout/NavbarWrapper';
 import { Footer } from '../components/layout/Footer';
 import { MobileBottomTabs } from '../components/layout/MobileBottomTabs';
@@ -32,22 +33,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="font-body text-neutral-900 bg-neutral-50 min-h-screen flex flex-col">
         <AuthProvider>
-          <CartProvider>
-            <WishlistProvider>
-              <ToastProvider>
-                <ComparisonProvider>
-                  <NavbarWrapper />
-                  <EmailVerificationBanner />
-                  <main className="flex-1 pb-16 md:pb-0 page-transition">
-                    {children}
-                  </main>
-                  <Footer />
-                  <MobileBottomTabs />
-                  <ComparisonBar />
-                </ComparisonProvider>
-              </ToastProvider>
-            </WishlistProvider>
-          </CartProvider>
+          <CurrencyProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <ToastProvider>
+                  <ComparisonProvider>
+                    <NavbarWrapper />
+                    <EmailVerificationBanner />
+                    <main className="flex-1 pb-16 md:pb-0 page-transition">
+                      {children}
+                    </main>
+                    <Footer />
+                    <MobileBottomTabs />
+                    <ComparisonBar />
+                  </ComparisonProvider>
+                </ToastProvider>
+              </WishlistProvider>
+            </CartProvider>
+          </CurrencyProvider>
         </AuthProvider>
       </body>
     </html>

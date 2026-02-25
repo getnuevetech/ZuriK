@@ -233,7 +233,7 @@ function ComparePageContent() {
                         )}
                         {row.key === 'price' && (
                           <span className={isLowestPrice ? 'font-bold text-green-700' : 'font-semibold text-neutral-800'}>
-                            <PriceDisplay amount={product.customerPrice} currency="NGN" />
+                            <PriceDisplay amount={product.customerPrice} />
                             {isLowestPrice && products.length > 1 && (
                               <span className="ml-1 text-xs text-green-600 font-normal">Best value</span>
                             )}

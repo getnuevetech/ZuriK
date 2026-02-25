@@ -5,6 +5,7 @@ import AdminPageHeader from '../../../components/admin/AdminPageHeader';
 import { Spinner } from '../../../components/ui/Spinner';
 import { useToast } from '../../../components/ui/Toast';
 import api from '../../../lib/api';
+import { useCurrency } from '../../../lib/currency-context';
 
 interface TaxConfiguration {
   id: string;
@@ -48,6 +49,7 @@ export default function AdminTaxesPage() {
   const [previewResult, setPreviewResult] = useState<TaxPreviewResult | null>(null);
   const [previewing, setPreviewing] = useState(false);
   const { toast } = useToast();
+  const { formatPrice, currencySymbol } = useCurrency();
 
   const fetchTaxes = useCallback(async () => {
     setLoading(true);
@@ -205,7 +207,7 @@ export default function AdminTaxesPage() {
         <h2 className="text-sm font-semibold text-neutral-800">Tax Preview Calculator</h2>
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex-1">
-            <label className="block text-xs font-medium text-neutral-600 mb-1">Subtotal (₦)</label>
+            <label className="block text-xs font-medium text-neutral-600 mb-1">Subtotal ({currencySymbol})</label>
             <input
               type="number"
               min="0"
@@ -244,10 +246,10 @@ export default function AdminTaxesPage() {
               <p>Tax Rate: <strong>{previewResult.taxRate}%</strong></p>
             )}
             {previewResult.taxAmount !== undefined && (
-              <p>Tax Amount: <strong>₦{Number(previewResult.taxAmount).toLocaleString()}</strong></p>
+              <p>Tax Amount: <strong>{formatPrice(Number(previewResult.taxAmount))}</strong></p>
             )}
             {previewResult.totalAmount !== undefined && (
-              <p>Total (inc. tax): <strong>₦{Number(previewResult.totalAmount).toLocaleString()}</strong></p>
+              <p>Total (inc. tax): <strong>{formatPrice(Number(previewResult.totalAmount))}</strong></p>
             )}
           </div>
         )}

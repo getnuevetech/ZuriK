@@ -7,6 +7,7 @@ import type { Design, ReadyToWearProduct } from '../../types';
 import type { Fabric } from '../../types';
 import { getUserDisplayName } from '../../lib/utils';
 import { useDebounce } from '../../hooks/useDebounce';
+import { useCurrency } from '../../lib/currency-context';
 
 interface DesignerResult {
   id: string;
@@ -37,6 +38,7 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const { formatPrice } = useCurrency();
 
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
 
@@ -213,7 +215,7 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
                     ].join(' ')}
                   >
                     <span className="text-neutral-800">{p.name}</span>
-                    <span className="text-primary-600 font-medium text-xs">₦{p.customerPrice?.toLocaleString()}</span>
+                    <span className="text-primary-600 font-medium text-xs">{formatPrice(p.customerPrice ?? 0)}</span>
                   </button>
                 );
               })}
@@ -237,7 +239,7 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
                     ].join(' ')}
                   >
                     <span className="text-neutral-800">{p.name}</span>
-                    <span className="text-primary-600 font-medium text-xs">₦{p.customerPrice?.toLocaleString()}</span>
+                    <span className="text-primary-600 font-medium text-xs">{formatPrice(p.customerPrice ?? 0)}</span>
                   </button>
                 );
               })}
@@ -261,7 +263,7 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
                     ].join(' ')}
                   >
                     <span className="text-neutral-800">{f.name}</span>
-                    <span className="text-secondary-600 font-medium text-xs">₦{f.customerPrice?.toLocaleString()}</span>
+                    <span className="text-secondary-600 font-medium text-xs">{formatPrice(f.customerPrice ?? 0)}</span>
                   </button>
                 );
               })}

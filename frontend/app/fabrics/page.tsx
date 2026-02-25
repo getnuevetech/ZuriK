@@ -15,6 +15,7 @@ import { Pagination } from '../../components/common/Pagination';
 import { ActiveFilters, FilterTag } from '../../components/common/ActiveFilters';
 import type { Fabric } from '../../types';
 import { useDebounce } from '../../hooks/useDebounce';
+import { useCurrency } from '../../lib/currency-context';
 
 const MATERIALS = ['Cotton', 'Silk', 'Ankara', 'Kente', 'Adire', 'Aso-oke', 'Linen', 'Velvet', 'Other'];
 const PATTERNS = ['Plain', 'Printed', 'Woven', 'Embroidered', 'Batik', 'Tie-dye', 'Geometric', 'Floral'];
@@ -40,6 +41,7 @@ function FabricsContent() {
   const searchParams = useSearchParams();
   const { addToCart } = useCart();
   const { toast } = useToast();
+  const { currencySymbol } = useCurrency();
 
   const [items, setItems] = useState<Fabric[]>([]);
   const [total, setTotal] = useState(0);
@@ -133,8 +135,8 @@ function FabricsContent() {
   const activeTags: FilterTag[] = [];
   if (filterValues.material) activeTags.push({ key: 'material', label: 'Material', value: String(filterValues.material) });
   if (filterValues.pattern) activeTags.push({ key: 'pattern', label: 'Pattern', value: String(filterValues.pattern) });
-  if (filterValues.priceMin !== '') activeTags.push({ key: 'priceMin', label: 'Min Price', value: `₦${filterValues.priceMin}` });
-  if (filterValues.priceMax !== '') activeTags.push({ key: 'priceMax', label: 'Max Price', value: `₦${filterValues.priceMax}` });
+  if (filterValues.priceMin !== '') activeTags.push({ key: 'priceMin', label: 'Min Price', value: `${currencySymbol}${filterValues.priceMin}` });
+  if (filterValues.priceMax !== '') activeTags.push({ key: 'priceMax', label: 'Max Price', value: `${currencySymbol}${filterValues.priceMax}` });
 
   const handleRemoveFilter = (key: string) => {
     setFilterValues((prev) => ({ ...prev, [key]: key === 'inStock' ? false : '' }));

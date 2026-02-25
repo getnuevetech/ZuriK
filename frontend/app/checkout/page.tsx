@@ -20,6 +20,7 @@ import { CouponInput } from '../../components/checkout/CouponInput';
 import { ShippingMethodSelector } from '../../components/checkout/ShippingMethodSelector';
 import type { PaymentProvider } from '../../types/payment';
 import type { Coupon } from '../../lib/api';
+import { useCurrency } from '../../lib/currency-context';
 
 type Step = 'review' | 'shipping' | 'payment' | 'confirm';
 
@@ -46,6 +47,7 @@ export default function CheckoutPage() {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const { cartItems, cartTotal, clearCart } = useCart();
   const { toast } = useToast();
+  const { formatPrice } = useCurrency();
 
   const [step, setStep] = useState<Step>('review');
   const [customerNotes, setCustomerNotes] = useState('');
@@ -268,7 +270,7 @@ export default function CheckoutPage() {
               {appliedCoupon && couponDiscount > 0 && (
                 <div className="flex justify-between text-sm text-green-600">
                   <span>Discount ({appliedCoupon.code})</span>
-                  <span>−₦{couponDiscount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  <span>−{formatPrice(couponDiscount)}</span>
                 </div>
               )}
               {loyaltyBalance && loyaltyBalance.points >= 100 && (
@@ -436,7 +438,7 @@ export default function CheckoutPage() {
               {appliedCoupon && couponDiscount > 0 && (
                 <div className="py-2 flex justify-between text-green-600">
                   <span>Discount ({appliedCoupon.code})</span>
-                  <span>−₦{couponDiscount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  <span>−{formatPrice(couponDiscount)}</span>
                 </div>
               )}
               {selectedShippingMethod && (

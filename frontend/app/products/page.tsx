@@ -18,6 +18,7 @@ import { useAuth } from '../../lib/auth-context';
 import { getLocalRecentlyViewed, clearLocalRecentlyViewed } from '../../lib/recently-viewed-local';
 import type { Product } from '../../types';
 import { useDebounce } from '../../hooks/useDebounce';
+import { useCurrency } from '../../lib/currency-context';
 
 const CATEGORIES = ['Ankara', 'Kente', 'Dashiki', 'Kaftan', 'Agbada', 'Boubou', 'Aso-oke', 'Other'];
 const COUNTRIES = ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Senegal', 'Ethiopia', 'Tanzania', 'Egypt', 'Morocco', 'Cameroon', 'Ivory Coast', 'Mali', 'DR Congo'];
@@ -51,6 +52,7 @@ function ProductsContent() {
   const { addToCart } = useCart();
   const { toast } = useToast();
   const { isAuthenticated } = useAuth();
+  const { currencySymbol } = useCurrency();
 
   const [items, setItems] = useState<Product[]>([]);
   const [total, setTotal] = useState(0);
@@ -160,8 +162,8 @@ function ProductsContent() {
   const activeTags: FilterTag[] = [];
   if (filterValues.category) activeTags.push({ key: 'category', label: 'Category', value: String(filterValues.category) });
   if (filterValues.country) activeTags.push({ key: 'country', label: 'Country', value: String(filterValues.country) });
-  if (filterValues.priceMin !== '') activeTags.push({ key: 'priceMin', label: 'Min Price', value: `₦${filterValues.priceMin}` });
-  if (filterValues.priceMax !== '') activeTags.push({ key: 'priceMax', label: 'Max Price', value: `₦${filterValues.priceMax}` });
+  if (filterValues.priceMin !== '') activeTags.push({ key: 'priceMin', label: 'Min Price', value: `${currencySymbol}${filterValues.priceMin}` });
+  if (filterValues.priceMax !== '') activeTags.push({ key: 'priceMax', label: 'Max Price', value: `${currencySymbol}${filterValues.priceMax}` });
   if (minRating) activeTags.push({ key: 'minRating', label: 'Min Rating', value: `${minRating}★` });
 
   const handleRemoveFilter = (key: string) => {
