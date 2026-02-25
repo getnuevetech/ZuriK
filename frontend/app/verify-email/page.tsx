@@ -33,9 +33,13 @@ function VerifyEmailContent() {
   const handleResend = async () => {
     setResendLoading(true);
     try {
-      await authApi.resendVerification();
-      setResendSent(true);
-      toast('success', 'Verification email sent!');
+      const response = await authApi.resendVerification();
+      if (response.emailSent === false) {
+        toast('error', 'Email service is temporarily unavailable. Please try again later or contact support.');
+      } else {
+        setResendSent(true);
+        toast('success', 'Verification email sent!');
+      }
     } catch {
       toast('error', 'Failed to resend verification email. Please try again.');
     } finally {

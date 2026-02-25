@@ -18,8 +18,12 @@ export function EmailVerificationBanner() {
   const handleResend = async () => {
     setLoading(true);
     try {
-      await authApi.resendVerification();
-      toast('success', 'Verification email sent! Please check your inbox.');
+      const response = await authApi.resendVerification();
+      if (response.emailSent === false) {
+        toast('error', 'Email service is temporarily unavailable. Please try again later or contact support.');
+      } else {
+        toast('success', 'Verification email sent! Please check your inbox.');
+      }
     } catch {
       toast('error', 'Failed to resend verification email. Please try again.');
     } finally {

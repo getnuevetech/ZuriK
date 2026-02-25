@@ -198,7 +198,7 @@ export const authApi = {
   verifyEmail: (token: string) =>
     api.post<{ message: string }>('/auth/verify-email', { token }).then((r) => r.data),
   resendVerification: () =>
-    api.post<{ message: string }>('/auth/resend-verification').then((r) => r.data),
+    api.post<{ message: string; emailSent: boolean }>('/auth/resend-verification').then((r) => r.data),
 };
 
 // --- Designs API ---
