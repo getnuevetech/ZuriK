@@ -390,6 +390,8 @@ export const heroBannersApi = {
 
 // --- Settings API ---
 export const settingsApi = {
+  getPublicFeeRate: (): Promise<{ percentageFee: number }> =>
+    api.get<{ percentageFee: number }>('/settings/platform-fee-rate').then((r) => r.data),
   get: (): Promise<PlatformSettings> =>
     api.get<PlatformSettings>('/settings').then((r) => r.data),
   update: (data: Partial<PlatformSettings>): Promise<PlatformSettings> =>

@@ -7,6 +7,18 @@ import { UserRole } from '../users/entities/user.entity';
 import { SettingsService } from './settings.service';
 import { CreateSettingsDto } from './dto/create-settings.dto';
 
+@ApiTags('Settings')
+@Controller('settings')
+export class PublicSettingsController {
+  constructor(private readonly settingsService: SettingsService) {}
+
+  @Get('platform-fee-rate')
+  async getPlatformFeeRate() {
+    const settings = await this.settingsService.findActive();
+    return { percentageFee: settings ? Number(settings.percentageFee) : 10 };
+  }
+}
+
 @ApiTags('Admin Settings')
 @ApiBearerAuth()
 @Controller('admin/settings')
