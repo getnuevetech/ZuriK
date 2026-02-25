@@ -8,10 +8,10 @@ interface ModalProps {
   title?: string;
   children: React.ReactNode;
   footer?: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
-const sizeClasses = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-2xl' };
+const sizeClasses = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-2xl', xl: 'max-w-4xl' };
 
 export function Modal({ isOpen, onClose, title, children, footer, size = 'md' }: ModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -47,7 +47,7 @@ export function Modal({ isOpen, onClose, title, children, footer, size = 'md' }:
             </button>
           </div>
         )}
-        <div className="px-6 py-4">{children}</div>
+        <div className="px-6 py-4 max-h-[80vh] overflow-y-auto">{children}</div>
         {footer && <div className="px-6 py-4 border-t border-neutral-100 bg-neutral-50 rounded-b-2xl">{footer}</div>}
       </div>
     </div>

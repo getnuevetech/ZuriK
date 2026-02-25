@@ -176,32 +176,41 @@ export default function DesignerReadyToWearPage() {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         title={editingProduct ? 'Edit Product' : 'Add New Product'}
+        size="xl"
       >
-        <form onSubmit={handleSave} className="space-y-4">
-          <Input label="Product Name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} required />
-          <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1">Description</label>
-            <textarea
-              className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
-              rows={3}
-              value={form.description}
-              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-            />
+        <form onSubmit={handleSave}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Left column: form fields */}
+            <div className="space-y-4">
+              <Input label="Product Name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} required />
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-1">Description</label>
+                <textarea
+                  className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  rows={3}
+                  value={form.description}
+                  onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <Input label="Customer Price ($)" type="number" step="0.01" value={form.customerPrice} onChange={(e) => setForm((f) => ({ ...f, customerPrice: e.target.value }))} required />
+                <Input label="Designer Price ($)" type="number" step="0.01" value={form.designerPrice} onChange={(e) => setForm((f) => ({ ...f, designerPrice: e.target.value }))} required />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <Input label="Stock Quantity" type="number" value={form.stock} onChange={(e) => setForm((f) => ({ ...f, stock: e.target.value }))} />
+                <Input label="Category" value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))} placeholder="e.g. Dress" />
+              </div>
+            </div>
+            {/* Right column: image uploader */}
+            <div className="flex flex-col">
+              <ImageUploader
+                label="Product Image"
+                currentImageUrl={form.imageUrl}
+                onUpload={(url) => setForm((f) => ({ ...f, imageUrl: url }))}
+              />
+            </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <Input label="Customer Price ($)" type="number" step="0.01" value={form.customerPrice} onChange={(e) => setForm((f) => ({ ...f, customerPrice: e.target.value }))} required />
-            <Input label="Designer Price ($)" type="number" step="0.01" value={form.designerPrice} onChange={(e) => setForm((f) => ({ ...f, designerPrice: e.target.value }))} required />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <Input label="Stock Quantity" type="number" value={form.stock} onChange={(e) => setForm((f) => ({ ...f, stock: e.target.value }))} />
-            <Input label="Category" value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))} placeholder="e.g. Dress" />
-          </div>
-          <ImageUploader
-            label="Product Image"
-            currentImageUrl={form.imageUrl}
-            onUpload={(url) => setForm((f) => ({ ...f, imageUrl: url }))}
-          />
-          <div className="flex gap-3 pt-2">
+          <div className="flex gap-3 pt-4 mt-4 border-t border-neutral-100">
             <Button type="submit" loading={saving} className="flex-1">Save Product</Button>
             <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>Cancel</Button>
           </div>

@@ -219,50 +219,57 @@ export default function FabricSellerFabricsPage() {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         title={editingFabric ? 'Edit Fabric' : 'Add New Fabric'}
+        size="xl"
       >
-        <form onSubmit={handleSave} className="space-y-4">
-          <Input label="Fabric Name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} required />
-          <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1">Description</label>
-            <textarea
-              className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
-              rows={3}
-              value={form.description}
-              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">Seller Price</label>
-              <input
-                type="number"
-                step="0.01"
-                min="0"
-                required
-                className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                value={form.sellerPrice}
-                onChange={(e) => setForm((p) => ({ ...p, sellerPrice: e.target.value }))}
-                placeholder="0.00"
+        <form onSubmit={handleSave}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Left column: form fields */}
+            <div className="space-y-4">
+              <Input label="Fabric Name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} required />
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-1">Description</label>
+                <textarea
+                  className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  rows={3}
+                  value={form.description}
+                  onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 mb-1">Seller Price</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    required
+                    className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    value={form.sellerPrice}
+                    onChange={(e) => setForm((p) => ({ ...p, sellerPrice: e.target.value }))}
+                    placeholder="0.00"
+                  />
+                </div>
+                <Input label="Customer Price ($)" type="number" step="0.01" value={form.customerPrice} onChange={(e) => setForm((f) => ({ ...f, customerPrice: e.target.value }))} required />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <Input label="Stock Quantity" type="number" min="0" value={form.stock} onChange={(e) => setForm((f) => ({ ...f, stock: e.target.value }))} required />
+                <Input label="Material" value={form.material} onChange={(e) => setForm((f) => ({ ...f, material: e.target.value }))} placeholder="e.g. Cotton" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <Input label="Colors (comma-separated)" value={form.colors} onChange={(e) => setForm((f) => ({ ...f, colors: e.target.value }))} placeholder="e.g. Blue, Red, White" />
+                <Input label="Patterns (comma-separated)" value={form.patterns} onChange={(e) => setForm((f) => ({ ...f, patterns: e.target.value }))} placeholder="e.g. Kente, Geometric" />
+              </div>
+            </div>
+            {/* Right column: image uploader */}
+            <div className="flex flex-col">
+              <ImageUploader
+                label="Fabric Image"
+                currentImageUrl={form.imageUrl}
+                onUpload={(url) => setForm((f) => ({ ...f, imageUrl: url }))}
               />
             </div>
-            <Input label="Customer Price ($)" type="number" step="0.01" value={form.customerPrice} onChange={(e) => setForm((f) => ({ ...f, customerPrice: e.target.value }))} required />
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <Input label="Stock Quantity" type="number" min="0" value={form.stock} onChange={(e) => setForm((f) => ({ ...f, stock: e.target.value }))} required />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <Input label="Material" value={form.material} onChange={(e) => setForm((f) => ({ ...f, material: e.target.value }))} placeholder="e.g. Cotton" />
-            <Input label="Colors (comma-separated)" value={form.colors} onChange={(e) => setForm((f) => ({ ...f, colors: e.target.value }))} placeholder="e.g. Blue, Red, White" />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <Input label="Patterns (comma-separated)" value={form.patterns} onChange={(e) => setForm((f) => ({ ...f, patterns: e.target.value }))} placeholder="e.g. Kente, Geometric" />
-          </div>
-          <ImageUploader
-            label="Fabric Image"
-            currentImageUrl={form.imageUrl}
-            onUpload={(url) => setForm((f) => ({ ...f, imageUrl: url }))}
-          />
-          <div className="flex gap-3 pt-2">
+          <div className="flex gap-3 pt-4 mt-4 border-t border-neutral-100">
             <Button type="submit" loading={saving} className="flex-1">Save Fabric</Button>
             <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>Cancel</Button>
           </div>
