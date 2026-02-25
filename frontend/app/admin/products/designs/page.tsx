@@ -167,6 +167,36 @@ export default function AdminDesignsPage() {
     }
   };
 
+  // Create modal
+  const [showCreate, setShowCreate] = useState(false);
+  const [createForm, setCreateForm] = useState<Partial<Design>>({});
+
+  const openCreate = () => {
+    setCreateForm({ name: '', description: '', customerPrice: 0, designerPrice: 0, category: '', tags: [] });
+    setShowCreate(true);
+  };
+
+  const handleCreate = async () => {
+    setSaving(true);
+    try {
+      await designsApi.create({
+        name: createForm.name ?? '',
+        description: createForm.description ?? '',
+        customerPrice: createForm.customerPrice ?? 0,
+        designerPrice: createForm.designerPrice ?? 0,
+        category: createForm.category,
+        tags: createForm.tags,
+      });
+      toast('success', 'Design created');
+      setShowCreate(false);
+      fetchDesigns();
+    } catch {
+      toast('error', 'Failed to create design');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <AdminPageHeader
@@ -176,6 +206,11 @@ export default function AdminDesignsPage() {
           { label: 'Products', href: '/admin/products' },
           { label: 'Designs' },
         ]}
+        actions={
+          <button onClick={openCreate} className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700">
+            + Create
+          </button>
+        }
       />
 
       {/* Filters */}
@@ -442,6 +477,54 @@ export default function AdminDesignsPage() {
             <div className="flex justify-end gap-3 pt-2">
               <button onClick={() => setShowEdit(false)} className="px-4 py-2 text-sm text-neutral-600 border border-neutral-200 rounded-lg">Cancel</button>
               <button onClick={handleSaveEdit} disabled={saving} className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 disabled:opacity-60">{saving ? 'Saving…' : 'Save'}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Modal */}
+      {showCreate && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl w-full max-w-lg p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-semibold text-neutral-800">Create Design</h2>
+              <button onClick={() => setShowCreate(false)} className="text-neutral-400 hover:text-neutral-700">✕</button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-neutral-600 mb-1">Name *</label>
+                <input className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.name ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, name: e.target.value }))} />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-neutral-600 mb-1">Description *</label>
+                <textarea rows={3} className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.description ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, description: e.target.value }))} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-neutral-600 mb-1">Category</label>
+                  <input className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.category ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, category: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-neutral-600 mb-1">Tags (comma-separated)</label>
+                  <input className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.tags?.join(', ') ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, tags: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) }))} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-neutral-600 mb-1">Customer Price (₦) *</label>
+                  <input type="number" className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.customerPrice ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, customerPrice: Number(e.target.value) }))} />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-neutral-600 mb-1">Designer Price (₦) *</label>
+                  <input type="number" className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.designerPrice ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, designerPrice: Number(e.target.value) }))} />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-2">
+              <button onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm text-neutral-600 border border-neutral-200 rounded-lg">Cancel</button>
+              <button onClick={handleCreate} disabled={saving} className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 disabled:opacity-60">{saving ? 'Creating…' : 'Create'}</button>
             </div>
           </div>
         </div>
