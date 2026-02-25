@@ -26,6 +26,7 @@ import { UpdateHowItWorksStepDto } from './dto/update-how-it-works-step.dto';
 import { UpdateTryOnConfigDto } from './dto/update-tryon-config.dto';
 import { CreateHeroStatDto } from './dto/create-hero-stat.dto';
 import { UpdateHeroStatDto } from './dto/update-hero-stat.dto';
+import { UpdateShopByCountrySettingsDto } from './dto/update-shop-by-country-settings.dto';
 
 @ApiTags('homepage')
 @Controller('homepage')
@@ -519,5 +520,33 @@ export class HomepageController {
   @ApiOperation({ summary: 'Delete hero stat (admin)' })
   adminDeleteHeroStat(@Param('id') id: string) {
     return this.homepageService.deleteHeroStat(id);
+  }
+
+  // ─── Public Endpoints — Shop By Country Settings ──────────────────────────────
+
+  @Get('shop-by-country-settings')
+  @ApiOperation({ summary: 'Get Shop By Country section settings (public)' })
+  getShopByCountrySettings() {
+    return this.homepageService.getShopByCountrySettings();
+  }
+
+  // ─── Admin Endpoints — Shop By Country Settings ───────────────────────────────
+
+  @Get('admin/shop-by-country-settings')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get Shop By Country settings (admin)' })
+  adminGetShopByCountrySettings() {
+    return this.homepageService.getShopByCountrySettings();
+  }
+
+  @Patch('admin/shop-by-country-settings')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update Shop By Country settings (admin)' })
+  adminUpdateShopByCountrySettings(@Body() dto: UpdateShopByCountrySettingsDto) {
+    return this.homepageService.updateShopByCountrySettings(dto);
   }
 }

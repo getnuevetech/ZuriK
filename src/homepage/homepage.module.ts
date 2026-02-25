@@ -11,6 +11,7 @@ import { HeritageStory } from './entities/heritage-story.entity';
 import { HowItWorksStep } from './entities/how-it-works-step.entity';
 import { TryOnConfig } from './entities/tryon-config.entity';
 import { HeroStat } from './entities/hero-stat.entity';
+import { ShopByCountrySettings } from './entities/shop-by-country-settings.entity';
 import { Design } from '../designs/entities/design.entity';
 import { ReadyToWearProduct } from '../ready-to-wear/entities/ready-to-wear-product.entity';
 import { Order } from '../orders/entities/order.entity';
@@ -32,6 +33,7 @@ import { HomepageController } from './homepage.controller';
       HowItWorksStep,
       TryOnConfig,
       HeroStat,
+      ShopByCountrySettings,
       Design,
       ReadyToWearProduct,
       Order,

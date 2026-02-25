@@ -80,6 +80,7 @@ import { HeroStat } from './homepage/entities/hero-stat.entity';
 import { PromoBanner } from './homepage/entities/promo-banner.entity';
 import { CollectionPost } from './homepage/entities/collection-post.entity';
 import { HeritageStory } from './homepage/entities/heritage-story.entity';
+import { ShopByCountrySettings } from './homepage/entities/shop-by-country-settings.entity';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -119,6 +120,7 @@ const isProduction = process.env.NODE_ENV === 'production';
         PromoBanner,
         CollectionPost,
         HeritageStory,
+        ShopByCountrySettings,
       ],
       // TODO: switch back to `synchronize: false` and use proper TypeORM migrations once tables are created
       synchronize: true,

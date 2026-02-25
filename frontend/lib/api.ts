@@ -679,6 +679,14 @@ export const homepageApi = {
     api.patch(`/homepage/admin/hero-stats/${id}`, data).then((r) => r.data),
   adminDeleteHeroStat: (id: string) =>
     api.delete(`/homepage/admin/hero-stats/${id}`).then((r) => r.data),
+
+  // Public — Shop By Country Settings
+  getShopByCountrySettings: () => api.get('/homepage/shop-by-country-settings').then((r) => r.data),
+
+  // Admin — Shop By Country Settings
+  adminGetShopByCountrySettings: () => api.get('/homepage/admin/shop-by-country-settings').then((r) => r.data),
+  adminUpdateShopByCountrySettings: (data: Record<string, unknown>) =>
+    api.patch('/homepage/admin/shop-by-country-settings', data).then((r) => r.data),
 };
 
 // --- Newsletter API ---

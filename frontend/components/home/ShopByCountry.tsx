@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { homepageApi } from '../../lib/api';
@@ -33,9 +33,21 @@ export function ShopByCountry() {
   const [index, setIndex] = useState(0);
   const [visibleCount, setVisibleCount] = useState(4);
   const [mounted, setMounted] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const [settings, setSettings] = useState({ scrollSpeed: 4000, aspectRatio: '6/5', autoScrollEnabled: true });
+  const pausedRef = useRef(paused);
+  pausedRef.current = paused;
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    homepageApi.getShopByCountrySettings()
+      .then((data) => {
+        if (data) setSettings(data);
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -74,6 +86,17 @@ export function ShopByCountry() {
   }, [mounted]);
 
   const maxIndex = Math.max(0, countries.length - visibleCount);
+
+  useEffect(() => {
+    if (!settings.autoScrollEnabled || countries.length <= visibleCount) return;
+    const timer = setInterval(() => {
+      if (!pausedRef.current) {
+        setIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+      }
+    }, settings.scrollSpeed);
+    return () => clearInterval(timer);
+  }, [settings.autoScrollEnabled, settings.scrollSpeed, countries.length, visibleCount, maxIndex]);
+
   const cardWidthPct = 100 / visibleCount;
 
   return (
@@ -91,7 +114,11 @@ export function ShopByCountry() {
           </p>
         </div>
 
-        <div className="relative">
+        <div
+          className="relative"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+        >
           {index > 0 && (
             <button
               onClick={() => setIndex((i) => Math.max(0, i - 1))}
@@ -118,7 +145,7 @@ export function ShopByCountry() {
                 >
                   <Link href={`/products?country=${encodeURIComponent(country.name)}`} className="group block">
                     {/* Image container - sharp corners */}
-                    <div className="relative overflow-hidden aspect-[3/2] bg-neutral-200">
+                    <div className="relative overflow-hidden bg-neutral-200" style={{ aspectRatio: settings.aspectRatio }}>
                       <span className="absolute top-3 left-3 z-10 text-3xl leading-none">{country.flag}</span>
                       <Image
                         src={country.image}
