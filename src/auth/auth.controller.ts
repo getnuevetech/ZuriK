@@ -64,8 +64,8 @@ export class AuthController {
   @ApiOperation({ summary: 'Get current user profile' })
   @ApiResponse({ status: 200, description: 'Current user profile' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  profile(@Request() req: RequestWithUser) {
-    return req.user;
+  async profile(@Request() req: RequestWithUser) {
+    return this.authService.getProfile(req.user.id);
   }
 
   @SkipThrottle()

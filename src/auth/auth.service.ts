@@ -273,6 +273,13 @@ export class AuthService {
     return { message: 'Email verified successfully' };
   }
 
+  async getProfile(userId: string): Promise<Omit<User, 'password' | 'refreshToken'>> {
+    const user = await this.userRepo.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+    const { password: _pw, refreshToken: _rt, ...userWithoutSecrets } = user;
+    return userWithoutSecrets;
+  }
+
   private async generateTokens(user: User) {
     const payload = { sub: user.id, email: user.email, role: user.role };
     const secret = this.configService.get<string>('JWT_ACCESS_SECRET') || this.configService.get<string>('JWT_SECRET');
