@@ -12,6 +12,7 @@ import { HeritageStory } from './entities/heritage-story.entity';
 import { HowItWorksStep } from './entities/how-it-works-step.entity';
 import { TryOnConfig } from './entities/tryon-config.entity';
 import { HeroStat } from './entities/hero-stat.entity';
+import { ShopByCountrySettings } from './entities/shop-by-country-settings.entity';
 import { Design } from '../designs/entities/design.entity';
 import { ReadyToWearProduct } from '../ready-to-wear/entities/ready-to-wear-product.entity';
 import { Order } from '../orders/entities/order.entity';
@@ -35,6 +36,7 @@ import { UpdateHowItWorksStepDto } from './dto/update-how-it-works-step.dto';
 import { UpdateTryOnConfigDto } from './dto/update-tryon-config.dto';
 import { CreateHeroStatDto } from './dto/create-hero-stat.dto';
 import { UpdateHeroStatDto } from './dto/update-hero-stat.dto';
+import { UpdateShopByCountrySettingsDto } from './dto/update-shop-by-country-settings.dto';
 import { THEME_PRESETS } from './theme-presets.config';
 
 @Injectable()
@@ -62,6 +64,8 @@ export class HomepageService {
     private tryOnConfigRepo: Repository<TryOnConfig>,
     @InjectRepository(HeroStat)
     private heroStatRepo: Repository<HeroStat>,
+    @InjectRepository(ShopByCountrySettings)
+    private shopByCountrySettingsRepo: Repository<ShopByCountrySettings>,
     @InjectRepository(Design)
     private designRepo: Repository<Design>,
     @InjectRepository(ReadyToWearProduct)
@@ -563,5 +567,24 @@ export class HomepageService {
       where: { isActive: true },
       order: { displayOrder: 'ASC' },
     });
+  }
+
+  // ─── Shop By Country Settings ─────────────────────────────────────────────────
+
+  async getShopByCountrySettings(): Promise<ShopByCountrySettings> {
+    const existing = await this.shopByCountrySettingsRepo.find({ take: 1 });
+    if (existing.length > 0) return existing[0];
+    const settings = this.shopByCountrySettingsRepo.create({});
+    return this.shopByCountrySettingsRepo.save(settings);
+  }
+
+  async updateShopByCountrySettings(dto: UpdateShopByCountrySettingsDto): Promise<ShopByCountrySettings> {
+    const existing = await this.shopByCountrySettingsRepo.find({ take: 1 });
+    if (existing.length > 0) {
+      Object.assign(existing[0], dto);
+      return this.shopByCountrySettingsRepo.save(existing[0]);
+    }
+    const settings = this.shopByCountrySettingsRepo.create(dto);
+    return this.shopByCountrySettingsRepo.save(settings);
   }
 }

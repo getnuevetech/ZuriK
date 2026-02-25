@@ -109,6 +109,9 @@ export default function AdminCountriesPage() {
   const comboboxRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
+  const [sectionSettings, setSectionSettings] = useState({ scrollSpeed: 4000, aspectRatio: '6/5', autoScrollEnabled: true });
+  const [savingSettings, setSavingSettings] = useState(false);
+
   const fetchCountries = useCallback(async () => {
     setLoading(true);
     try {
@@ -123,7 +126,22 @@ export default function AdminCountriesPage() {
 
   useEffect(() => {
     fetchCountries();
+    homepageApi.adminGetShopByCountrySettings()
+      .then((data) => { if (data) setSectionSettings(data); })
+      .catch(() => {});
   }, [fetchCountries]);
+
+  const saveSettings = async () => {
+    setSavingSettings(true);
+    try {
+      await homepageApi.adminUpdateShopByCountrySettings(sectionSettings as unknown as Record<string, unknown>);
+      toast('success', 'Settings saved');
+    } catch {
+      toast('error', 'Failed to save settings');
+    } finally {
+      setSavingSettings(false);
+    }
+  };
 
   const openCreate = () => {
     setEditId(null);
@@ -208,6 +226,58 @@ export default function AdminCountriesPage() {
   return (
     <div className="space-y-6">
       <AdminPageHeader title="Country Category Heroes" />
+
+      {/* Section Settings Panel */}
+      <div className="bg-white rounded-xl border border-neutral-200 p-6 space-y-4">
+        <h3 className="text-sm font-semibold text-neutral-800">Section Display Settings</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-xs font-medium text-neutral-600 mb-1">Auto-Scroll Speed (ms)</label>
+            <input
+              type="number"
+              min={1000}
+              step={500}
+              className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+              value={sectionSettings.scrollSpeed}
+              onChange={(e) => setSectionSettings((prev) => ({ ...prev, scrollSpeed: Number(e.target.value) }))}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-neutral-600 mb-1">Image Aspect Ratio</label>
+            <select
+              className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+              value={sectionSettings.aspectRatio}
+              onChange={(e) => setSectionSettings((prev) => ({ ...prev, aspectRatio: e.target.value }))}
+            >
+              <option value="3/2">3:2 (Original)</option>
+              <option value="6/5">6:5 (20% shorter)</option>
+              <option value="16/10">16:10</option>
+              <option value="16/9">16:9 (Widescreen)</option>
+            </select>
+          </div>
+          <div className="flex flex-col justify-end">
+            <label className="block text-xs font-medium text-neutral-600 mb-1">Auto-Scroll</label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={sectionSettings.autoScrollEnabled}
+                onChange={(e) => setSectionSettings((prev) => ({ ...prev, autoScrollEnabled: e.target.checked }))}
+                className="rounded"
+              />
+              <span className="text-sm text-neutral-700">Enabled</span>
+            </label>
+          </div>
+        </div>
+        <div className="flex justify-end">
+          <button
+            onClick={saveSettings}
+            disabled={savingSettings}
+            className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 disabled:opacity-60 transition-colors"
+          >
+            {savingSettings ? 'Saving…' : 'Save Settings'}
+          </button>
+        </div>
+      </div>
 
       <div className="flex justify-end">
         <button
