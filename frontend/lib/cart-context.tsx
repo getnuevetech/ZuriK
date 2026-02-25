@@ -13,6 +13,7 @@ export interface CartItem {
   image?: string;
   designId?: string;
   fabricId?: string;
+  isActive?: boolean;
 }
 
 interface CartContextValue {
@@ -55,15 +56,16 @@ function serverItemToCartItem(item: ServerCartItem): CartItem {
     quantity: item.quantity,
     type: item.type,
     image: item.image ?? undefined,
-    designId: item.productId,
-    fabricId: item.fabricId,
+    designId: item.productId ?? undefined,
+    fabricId: item.fabricId ?? undefined,
+    isActive: item.isActive,
   };
 }
 
 function cartItemToAddPayload(item: CartItem): AddToCartPayload {
   return {
-    productId: item.designId || (item.type === 'ready-to-wear' ? item.id : undefined),
-    fabricId: item.fabricId || (item.type === 'fabric-only' ? item.id : undefined),
+    productId: item.designId,
+    fabricId: item.fabricId,
     type: item.type,
     quantity: item.quantity,
   };

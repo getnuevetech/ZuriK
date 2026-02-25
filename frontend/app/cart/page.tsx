@@ -51,9 +51,14 @@ export default function CartPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-neutral-900">{item.name}</h3>
-                  <Badge variant={item.type === 'ready-to-wear' ? 'primary' : 'secondary'} className="mt-1">
-                    {TYPE_LABELS[item.type] ?? item.type}
-                  </Badge>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge variant={item.type === 'ready-to-wear' ? 'primary' : 'secondary'}>
+                      {TYPE_LABELS[item.type] ?? item.type}
+                    </Badge>
+                    {item.isActive === false && (
+                      <Badge variant="danger" className="text-xs">No longer available</Badge>
+                    )}
+                  </div>
                   <p className="text-secondary-600 font-bold mt-1">
                     <PriceDisplay amount={item.price} />
                   </p>

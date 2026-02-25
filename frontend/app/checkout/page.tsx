@@ -112,8 +112,14 @@ export default function CheckoutPage() {
   };
 
   const handleNext = () => {
-    if (step === 'review') setStep('shipping');
-    else if (step === 'shipping') {
+    if (step === 'review') {
+      const inactiveItems = cartItems.filter((item) => item.isActive === false);
+      if (inactiveItems.length > 0) {
+        toast('error', `"${inactiveItems[0].name}" is no longer available. Please remove it from your cart before proceeding.`);
+        return;
+      }
+      setStep('shipping');
+    } else if (step === 'shipping') {
       if (validateShipping()) setStep('payment');
     } else if (step === 'payment') setStep('confirm');
   };
@@ -127,6 +133,18 @@ export default function CheckoutPage() {
   const handlePlaceOrder = async () => {
     setLoading(true);
     try {
+      // Validate cart items have required product references
+      const invalidItems = cartItems.filter(
+        (item) =>
+          (item.type === 'ready-to-wear' && !item.designId) ||
+          (item.type === 'fabric-only' && !item.fabricId)
+      );
+      if (invalidItems.length > 0) {
+        toast('error', `Some items in your cart are invalid. Please remove "${invalidItems[0].name}" and re-add it.`);
+        setLoading(false);
+        return;
+      }
+
       // Save address if requested
       if (saveNewAddress && shippingAddress.addressLine1) {
         const nameParts = shippingAddress.fullName.split(' ');
@@ -228,6 +246,9 @@ export default function CheckoutPage() {
                         {item.type === 'ready-to-wear' ? 'Ready-to-Wear' : 'Fabric Only'}
                       </Badge>
                       <span className="text-xs text-neutral-500">× {item.quantity}</span>
+                      {item.isActive === false && (
+                        <Badge variant="danger" className="text-xs">Unavailable</Badge>
+                      )}
                     </div>
                   </div>
                   <PriceDisplay amount={item.price * item.quantity} className="font-semibold text-neutral-900 flex-shrink-0" />
