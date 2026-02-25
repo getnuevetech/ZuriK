@@ -138,7 +138,7 @@ export default function CheckoutPage() {
       // Validate cart items have required product references
       const invalidItems = cartItems.filter(
         (item) =>
-          (item.type === 'ready-to-wear' && !item.designId) ||
+          (item.type === 'ready-to-wear' && !item.productId) ||
           (item.type === 'fabric-only' && !item.fabricId)
       );
       if (invalidItems.length > 0) {
@@ -165,9 +165,9 @@ export default function CheckoutPage() {
 
       const orderIds: string[] = [];
       for (const item of cartItems) {
-        if (item.type === 'ready-to-wear' && item.designId) {
+        if (item.type === 'ready-to-wear' && item.productId) {
           const order = await ordersApi.createReadyToWear({
-            readyToWearProductId: item.designId,
+            readyToWearProductId: item.productId,
             quantity: item.quantity,
             customerNotes: customerNotes || undefined,
           });
