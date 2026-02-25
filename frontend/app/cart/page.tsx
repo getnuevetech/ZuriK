@@ -7,6 +7,7 @@ import { useCart } from '../../lib/cart-context';
 import { Button } from '../../components/ui/Button';
 import { Card, CardBody, CardFooter } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
+import { Spinner } from '../../components/ui/Spinner';
 import { PriceDisplay } from '../../components/common/PriceDisplay';
 import { EmptyState } from '../../components/common/EmptyState';
 
@@ -16,7 +17,11 @@ const TYPE_LABELS: Record<string, string> = {
 };
 
 export default function CartPage() {
-  const { cartItems, cartTotal, updateQuantity, removeFromCart } = useCart();
+  const { cartItems, cartTotal, cartLoading, updateQuantity, removeFromCart } = useCart();
+
+  if (cartLoading) {
+    return <div className="flex justify-center py-20"><Spinner size="lg" /></div>;
+  }
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

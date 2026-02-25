@@ -44,7 +44,7 @@ const EMPTY_ADDRESS: ShippingAddress = {
 export default function CheckoutPage() {
   const router = useRouter();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
-  const { cartItems, cartTotal, clearCart } = useCart();
+  const { cartItems, cartTotal, cartLoading, clearCart } = useCart();
   const { toast } = useToast();
 
   const [step, setStep] = useState<Step>('review');
@@ -76,7 +76,7 @@ export default function CheckoutPage() {
     settingsApi.getPublicFeeRate().then((r) => setPlatformFeeRate(r.percentageFee)).catch(() => {});
   }, [isAuthenticated, authLoading, router]);
 
-  if (authLoading) return <div className="flex justify-center py-20"><Spinner size="lg" /></div>;
+  if (authLoading || cartLoading) return <div className="flex justify-center py-20"><Spinner size="lg" /></div>;
 
   if (cartItems.length === 0) {
     return (
