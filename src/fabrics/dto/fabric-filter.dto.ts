@@ -2,6 +2,7 @@ import { IsOptional, IsString, IsNumber, Min, Max, IsEnum, IsBoolean } from 'cla
 import { Type, Transform } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
+
 export enum FabricSortOption {
   PRICE_ASC = 'price_asc',
   PRICE_DESC = 'price_desc',
@@ -21,4 +22,5 @@ export class FabricFilterDto {
   @ApiPropertyOptional({ enum: FabricSortOption }) @IsOptional() @IsEnum(FabricSortOption) sort?: FabricSortOption;
   @ApiPropertyOptional() @IsOptional() @Type(() => Number) @IsNumber() @Min(1) page?: number;
   @ApiPropertyOptional() @IsOptional() @Type(() => Number) @IsNumber() @Min(1) @Max(100) limit?: number;
+  @ApiPropertyOptional() @IsOptional() @Transform(({ value }) => value === 'true' || value === true) @IsBoolean() includeInactive?: boolean;
 }

@@ -32,6 +32,7 @@ export class ReadyToWearService {
       minRating,
       tags,
       designerId,
+      includeInactive,
       sort = ReadyToWearSortOption.NEWEST,
       page = 1,
       limit = 20,
@@ -42,8 +43,11 @@ export class ReadyToWearService {
 
     const qb = this.rtwRepo
       .createQueryBuilder('rtw')
-      .leftJoinAndSelect('rtw.designer', 'designer')
-      .where('rtw.isActive = :isActive', { isActive: true });
+      .leftJoinAndSelect('rtw.designer', 'designer');
+
+    if (!includeInactive) {
+      qb.where('rtw.isActive = :isActive', { isActive: true });
+    }
 
     if (search && search.trim()) {
       qb.andWhere(

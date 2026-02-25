@@ -39,6 +39,7 @@ export class DesignsService {
       minRating,
       tags,
       designerId,
+      includeInactive,
       sort = DesignSortOption.NEWEST,
       page = 1,
       limit = 20,
@@ -49,8 +50,11 @@ export class DesignsService {
 
     const qb = this.designRepo
       .createQueryBuilder('design')
-      .leftJoinAndSelect('design.designer', 'designer')
-      .where('design.isActive = :isActive', { isActive: true });
+      .leftJoinAndSelect('design.designer', 'designer');
+
+    if (!includeInactive) {
+      qb.where('design.isActive = :isActive', { isActive: true });
+    }
 
     if (search && search.trim()) {
       qb.andWhere(

@@ -37,6 +37,7 @@ export class FabricsService {
       minPrice,
       maxPrice,
       inStock,
+      includeInactive,
       sort = FabricSortOption.NEWEST,
       page = 1,
       limit = 20,
@@ -47,8 +48,11 @@ export class FabricsService {
 
     const qb = this.fabricRepo
       .createQueryBuilder('fabric')
-      .leftJoinAndSelect('fabric.seller', 'seller')
-      .where('fabric.isActive = :isActive', { isActive: true });
+      .leftJoinAndSelect('fabric.seller', 'seller');
+
+    if (!includeInactive) {
+      qb.where('fabric.isActive = :isActive', { isActive: true });
+    }
 
     if (search) {
       qb.andWhere(
