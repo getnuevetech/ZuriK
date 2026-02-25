@@ -47,15 +47,26 @@ export function HeroBannerCarousel() {
   }, []);
 
   useEffect(() => {
-    Promise.all([
+    Promise.allSettled([
       heroBannersApi.listActive(),
       homepageApi.getHeroStats(),
     ])
-      .then(([bannersData, statsData]) => {
-        setBanners(bannersData.length > 0 ? bannersData : DEFAULT_BANNERS);
-        if (statsData.length > 0) setStats(statsData);
+      .then(([bannersResult, statsResult]) => {
+        if (bannersResult.status === 'fulfilled' && bannersResult.value.length > 0) {
+          setBanners(bannersResult.value);
+        } else {
+          if (bannersResult.status === 'rejected') {
+            console.error('[HeroBanner] Failed to fetch banners:', bannersResult.reason);
+          }
+          setBanners(DEFAULT_BANNERS);
+        }
+
+        if (statsResult.status === 'fulfilled' && statsResult.value.length > 0) {
+          setStats(statsResult.value);
+        } else if (statsResult.status === 'rejected') {
+          console.error('[HeroBanner] Failed to fetch hero stats:', statsResult.reason);
+        }
       })
-      .catch(() => setBanners(DEFAULT_BANNERS))
       .finally(() => setLoading(false));
   }, []);
 
