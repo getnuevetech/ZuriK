@@ -33,6 +33,8 @@ interface ReviewStats {
   [key: string]: unknown;
 }
 
+const MAX_COMMENT_DISPLAY_LENGTH = 80;
+
 const STATUS_OPTIONS = [
   { value: '', label: 'All Statuses' },
   { value: 'pending', label: 'Pending' },
@@ -189,7 +191,7 @@ export default function AdminReviewsPage() {
                           <span className="ml-1 text-xs text-neutral-500">({review.rating})</span>
                         </td>
                         <td className="px-4 py-3 max-w-xs text-neutral-600">
-                          {review.comment.length > 80 ? `${review.comment.slice(0, 80)}…` : review.comment}
+                          {review.comment.length > MAX_COMMENT_DISPLAY_LENGTH ? `${review.comment.slice(0, MAX_COMMENT_DISPLAY_LENGTH)}…` : review.comment}
                         </td>
                         <td className="px-4 py-3 text-neutral-500 capitalize">{review.itemType ?? '—'}</td>
                         <td className="px-4 py-3">
