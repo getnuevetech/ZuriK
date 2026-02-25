@@ -125,6 +125,8 @@ export default function AdminHomepagePage() {
       {/* Quick links */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
+          { href: '/admin/homepage/hero-banners', label: 'Hero Banners', icon: '🖼️' },
+          { href: '/admin/homepage/hero-stats', label: 'Hero Stats', icon: '📈' },
           { href: '/admin/homepage/featured', label: 'Featured Products', icon: '⭐' },
           { href: '/admin/homepage/countries', label: 'Country Categories', icon: '🌍' },
           { href: '/admin/homepage/collections', label: 'Collections', icon: '👗' },
