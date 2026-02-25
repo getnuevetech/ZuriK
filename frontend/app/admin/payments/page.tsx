@@ -17,18 +17,17 @@ interface Gateway {
   name: string;
   provider: string;
   isActive: boolean;
-  config?: Record<string, unknown>;
+  credentials?: Record<string, unknown>;
 }
 
 const PROVIDER_OPTIONS = [
-  { value: 'stripe', label: 'Stripe' },
-  { value: 'paypal', label: 'PayPal' },
-  { value: 'flutterwave', label: 'Flutterwave' },
-  { value: 'paystack', label: 'Paystack' },
-  { value: 'other', label: 'Other' },
+  { value: 'STRIPE', label: 'Stripe' },
+  { value: 'PAYPAL', label: 'PayPal' },
+  { value: 'FLUTTERWAVE', label: 'Flutterwave' },
+  { value: 'PAYSTACK', label: 'Paystack' },
 ];
 
-const DEFAULT_FORM = { name: '', provider: 'stripe', publicKey: '', secretKey: '' };
+const DEFAULT_FORM = { name: '', provider: 'STRIPE', publicKey: '', secretKey: '' };
 
 export default function AdminPaymentsPage() {
   const [gateways, setGateways] = useState<Gateway[]>([]);
@@ -65,8 +64,8 @@ export default function AdminPaymentsPage() {
     setForm({
       name: gw.name,
       provider: gw.provider,
-      publicKey: (gw.config?.publicKey as string) ?? '',
-      secretKey: (gw.config?.secretKey as string) ?? '',
+      publicKey: (gw.credentials?.publicKey as string) ?? '',
+      secretKey: (gw.credentials?.secretKey as string) ?? '',
     });
     setModalOpen(true);
   };
@@ -76,7 +75,7 @@ export default function AdminPaymentsPage() {
     const payload = {
       name: form.name,
       provider: form.provider,
-      config: { publicKey: form.publicKey, secretKey: form.secretKey },
+      credentials: { publicKey: form.publicKey, secretKey: form.secretKey },
     };
     try {
       if (editGateway) {
