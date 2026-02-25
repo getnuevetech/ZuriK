@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { fabricsApi, designsApi, readyToWearApi } from '../../../lib/api';
 import AdminPageHeader from '../../../components/admin/AdminPageHeader';
@@ -17,6 +17,8 @@ export default function AdminProductsPage() {
   const [counts, setCounts] = useState<CountSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const toastRef = useRef(toast);
+  toastRef.current = toast;
 
   const fetchCounts = useCallback(async () => {
     setLoading(true);
@@ -32,11 +34,11 @@ export default function AdminProductsPage() {
         designs: designsRes.total,
       });
     } catch {
-      toast('error', 'Failed to load product counts');
+      toastRef.current('error', 'Failed to load product counts');
     } finally {
       setLoading(false);
     }
-  }, [toast]);
+  }, []);
 
   useEffect(() => {
     fetchCounts();

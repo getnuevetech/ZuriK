@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { designsApi } from '../../../../lib/api';
 import { Design } from '../../../../types/product';
 import AdminPageHeader from '../../../../components/admin/AdminPageHeader';
@@ -57,6 +57,8 @@ export default function AdminDesignsPage() {
   const [editForm, setEditForm] = useState<Partial<Design>>({});
 
   const { toast } = useToast();
+  const toastRef = useRef(toast);
+  toastRef.current = toast;
   const { formatPrice, currencySymbol } = useCurrency();
 
   const fetchDesigns = useCallback(async () => {
@@ -91,11 +93,11 @@ export default function AdminDesignsPage() {
       setTotal(res.total);
       setTotalPages(res.totalPages);
     } catch {
-      toast('error', 'Failed to load designs');
+      toastRef.current('error', 'Failed to load designs');
     } finally {
       setLoading(false);
     }
-  }, [search, category, country, designer, minRating, statusFilter, featuredFilter, page, toast]);
+  }, [search, category, country, designer, minRating, statusFilter, featuredFilter, page]);
 
   useEffect(() => {
     fetchDesigns();

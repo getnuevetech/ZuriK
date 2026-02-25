@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { fabricsApi } from '../../../../lib/api';
 import { Fabric } from '../../../../types/fabric';
 import AdminPageHeader from '../../../../components/admin/AdminPageHeader';
@@ -64,6 +64,8 @@ export default function AdminFabricsPage() {
   const [editForm, setEditForm] = useState<Partial<Fabric>>({});
 
   const { toast } = useToast();
+  const toastRef = useRef(toast);
+  toastRef.current = toast;
   const { formatPrice, currencySymbol } = useCurrency();
 
   const fetchFabrics = useCallback(async () => {
@@ -101,11 +103,11 @@ export default function AdminFabricsPage() {
       setTotal(res.total);
       setTotalPages(res.totalPages);
     } catch {
-      toast('error', 'Failed to load fabrics');
+      toastRef.current('error', 'Failed to load fabrics');
     } finally {
       setLoading(false);
     }
-  }, [search, material, country, seller, stockFilter, statusFilter, featuredFilter, page, toast]);
+  }, [search, material, country, seller, stockFilter, statusFilter, featuredFilter, page]);
 
   useEffect(() => {
     fetchFabrics();
