@@ -22,6 +22,7 @@ const SIDEBAR_ITEMS = [
 interface FabricFormData {
   name: string;
   description: string;
+  sellerPrice: string;
   customerPrice: string;
   material: string;
   colors: string;
@@ -31,7 +32,7 @@ interface FabricFormData {
 }
 
 const EMPTY_FORM: FabricFormData = {
-  name: '', description: '', customerPrice: '', material: '',
+  name: '', description: '', sellerPrice: '', customerPrice: '', material: '',
   colors: '', patterns: '', stock: '0', imageUrl: '',
 };
 
@@ -65,6 +66,7 @@ export default function FabricSellerFabricsPage() {
     setForm({
       name: f.name,
       description: f.description || '',
+      sellerPrice: String(f.sellerPrice),
       customerPrice: String(f.customerPrice),
       material: f.material || '',
       colors: f.colors?.join(', ') || '',
@@ -82,6 +84,7 @@ export default function FabricSellerFabricsPage() {
       const payload = {
         name: form.name,
         description: form.description,
+        sellerPrice: parseFloat(form.sellerPrice),
         customerPrice: parseFloat(form.customerPrice),
         material: form.material,
         colors: form.colors ? form.colors.split(',').map(c => c.trim()).filter(Boolean) : [],
@@ -229,7 +232,22 @@ export default function FabricSellerFabricsPage() {
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-1">Seller Price</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                required
+                className="w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={form.sellerPrice}
+                onChange={(e) => setForm((p) => ({ ...p, sellerPrice: e.target.value }))}
+                placeholder="0.00"
+              />
+            </div>
             <Input label="Customer Price ($)" type="number" step="0.01" value={form.customerPrice} onChange={(e) => setForm((f) => ({ ...f, customerPrice: e.target.value }))} required />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
             <Input label="Stock Quantity" type="number" min="0" value={form.stock} onChange={(e) => setForm((f) => ({ ...f, stock: e.target.value }))} required />
           </div>
           <div className="grid grid-cols-2 gap-3">
