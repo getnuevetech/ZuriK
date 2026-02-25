@@ -1,4 +1,7 @@
+'use client';
+
 import React from 'react';
+import { useCurrency } from '../../lib/currency-context';
 
 interface PriceDisplayProps {
   amount: number;
@@ -6,10 +9,12 @@ interface PriceDisplayProps {
   className?: string;
 }
 
-export function PriceDisplay({ amount, currency = 'USD', className = '' }: PriceDisplayProps) {
+export function PriceDisplay({ amount, currency, className = '' }: PriceDisplayProps) {
+  const { currency: platformCurrency } = useCurrency();
+  const activeCurrency = currency ?? platformCurrency;
   const formatted = new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency,
+    currency: activeCurrency,
     minimumFractionDigits: 2,
   }).format(amount);
 

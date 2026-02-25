@@ -17,6 +17,12 @@ export class PublicSettingsController {
     const settings = await this.settingsService.findActive();
     return { percentageFee: settings ? Number(settings.percentageFee) : 10 };
   }
+
+  @Get('currency')
+  async getCurrency() {
+    const settings = await this.settingsService.findActive();
+    return { currency: settings?.currency ?? 'USD' };
+  }
 }
 
 @ApiTags('Admin Settings')

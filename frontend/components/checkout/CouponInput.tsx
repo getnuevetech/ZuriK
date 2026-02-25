@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { couponsApi, type Coupon } from '../../lib/api';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
+import { useCurrency } from '../../lib/currency-context';
 
 interface CouponInputProps {
   orderTotal: number;
@@ -19,6 +20,7 @@ export function CouponInput({ orderTotal, onCouponApplied, onCouponRemoved }: Co
   const [errorMessage, setErrorMessage] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
   const [discountAmount, setDiscountAmount] = useState(0);
+  const { formatPrice } = useCurrency();
 
   const handleApply = async () => {
     if (!code.trim()) return;
@@ -54,7 +56,7 @@ export function CouponInput({ orderTotal, onCouponApplied, onCouponRemoved }: Co
     if (coupon.discountType === 'percentage') {
       return `${coupon.discountValue}% off`;
     }
-    return `₦${Number(coupon.discountValue).toLocaleString()} off`;
+    return `${formatPrice(Number(coupon.discountValue))} off`;
   };
 
   if (state === 'applied' && appliedCoupon) {
@@ -77,7 +79,7 @@ export function CouponInput({ orderTotal, onCouponApplied, onCouponRemoved }: Co
           </button>
         </div>
         <p className="text-xs text-green-600 font-medium">
-          You save ₦{discountAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}!
+          You save {formatPrice(discountAmount)}!
         </p>
       </div>
     );

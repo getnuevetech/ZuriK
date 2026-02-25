@@ -11,6 +11,7 @@ import { Textarea } from '../../../../../components/ui/Textarea';
 import { Card, CardBody, CardHeader } from '../../../../../components/ui/Card';
 import { Spinner } from '../../../../../components/ui/Spinner';
 import { useToast } from '../../../../../components/ui/Toast';
+import { useCurrency } from '../../../../../lib/currency-context';
 
 function toDatetimeLocal(dateStr: string | null | undefined): string {
   if (!dateStr) return '';
@@ -24,6 +25,7 @@ export default function EditCouponPage() {
   const params = useParams();
   const id = params?.id as string;
   const { toast } = useToast();
+  const { currencySymbol } = useCurrency();
 
   const [coupon, setCoupon] = useState<Coupon | null>(null);
   const [pageLoading, setPageLoading] = useState(true);
@@ -160,12 +162,12 @@ export default function EditCouponPage() {
                 onChange={(e) => set('discountType', e.target.value)}
               >
                 <option value="percentage">Percentage (%)</option>
-                <option value="fixed">Fixed Amount (₦)</option>
+                <option value="fixed">Fixed Amount ({currencySymbol})</option>
               </select>
             </div>
 
             <Input
-              label={`Discount Value * ${form.discountType === 'percentage' ? '(%)' : '(₦)'}`}
+              label={`Discount Value * ${form.discountType === 'percentage' ? '(%)' : `(${currencySymbol})`}`}
               type="number"
               min="0"
               max={form.discountType === 'percentage' ? '100' : undefined}
@@ -176,7 +178,7 @@ export default function EditCouponPage() {
             />
 
             <Input
-              label="Minimum Order Amount (₦, optional)"
+              label={`Minimum Order Amount (${currencySymbol}, optional)`}
               type="number"
               min="0"
               step="0.01"
@@ -186,7 +188,7 @@ export default function EditCouponPage() {
 
             {form.discountType === 'percentage' && (
               <Input
-                label="Maximum Discount Cap (₦, optional)"
+                label={`Maximum Discount Cap (${currencySymbol}, optional)`}
                 type="number"
                 min="0"
                 step="0.01"

@@ -6,6 +6,7 @@ import { Fabric } from '../../../../types/fabric';
 import AdminPageHeader from '../../../../components/admin/AdminPageHeader';
 import { Spinner } from '../../../../components/ui/Spinner';
 import { useToast } from '../../../../components/ui/Toast';
+import { useCurrency } from '../../../../lib/currency-context';
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString('en-US', {
@@ -63,6 +64,7 @@ export default function AdminFabricsPage() {
   const [editForm, setEditForm] = useState<Partial<Fabric>>({});
 
   const { toast } = useToast();
+  const { formatPrice, currencySymbol } = useCurrency();
 
   const fetchFabrics = useCallback(async () => {
     setLoading(true);
@@ -334,7 +336,7 @@ export default function AdminFabricsPage() {
                       <td className="px-3 py-2 text-neutral-500">{fabric.material || '—'}</td>
                       <td className="px-3 py-2 text-neutral-500">{fabric.type || '—'}</td>
                       <td className="px-3 py-2 text-neutral-700 whitespace-nowrap">
-                        ₦{Number(fabric.customerPrice).toLocaleString()}
+                        {formatPrice(Number(fabric.customerPrice))}
                       </td>
                       <td className="px-3 py-2">
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${stockCls}`}>
@@ -450,8 +452,8 @@ export default function AdminFabricsPage() {
               <div><span className="text-neutral-500">Width:</span> <span className="font-medium">{selectedFabric.width ? `${selectedFabric.width}m` : '—'}</span></div>
               <div><span className="text-neutral-500">Colors:</span> <span className="font-medium">{selectedFabric.colors?.join(', ') || '—'}</span></div>
               <div><span className="text-neutral-500">Patterns:</span> <span className="font-medium">{selectedFabric.patterns?.join(', ') || '—'}</span></div>
-              <div><span className="text-neutral-500">Customer Price:</span> <span className="font-medium">₦{Number(selectedFabric.customerPrice).toLocaleString()}</span></div>
-              <div><span className="text-neutral-500">Seller Price:</span> <span className="font-medium">{selectedFabric.sellerPrice ? `₦${Number(selectedFabric.sellerPrice).toLocaleString()}` : '—'}</span></div>
+              <div><span className="text-neutral-500">Customer Price:</span> <span className="font-medium">{formatPrice(Number(selectedFabric.customerPrice))}</span></div>
+              <div><span className="text-neutral-500">Seller Price:</span> <span className="font-medium">{selectedFabric.sellerPrice ? formatPrice(Number(selectedFabric.sellerPrice)) : '—'}</span></div>
               <div><span className="text-neutral-500">Stock:</span> <span className="font-medium">{selectedFabric.stock}</span></div>
               <div><span className="text-neutral-500">Status:</span> <span className={`font-medium ${selectedFabric.isActive ? 'text-green-600' : 'text-neutral-400'}`}>{selectedFabric.isActive ? 'Active' : 'Inactive'}</span></div>
               <div><span className="text-neutral-500">Featured:</span> <span className="font-medium">{selectedFabric.isFeatured ? 'Yes' : 'No'}</span></div>
@@ -540,7 +542,7 @@ export default function AdminFabricsPage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-neutral-600 mb-1">Customer Price (₦)</label>
+                  <label className="block text-xs font-medium text-neutral-600 mb-1">Customer Price ({currencySymbol})</label>
                   <input
                     type="number"
                     className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
@@ -549,7 +551,7 @@ export default function AdminFabricsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-neutral-600 mb-1">Seller Price (₦)</label>
+                  <label className="block text-xs font-medium text-neutral-600 mb-1">Seller Price ({currencySymbol})</label>
                   <input
                     type="number"
                     className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
@@ -675,11 +677,11 @@ export default function AdminFabricsPage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-neutral-600 mb-1">Customer Price (₦) *</label>
+                  <label className="block text-xs font-medium text-neutral-600 mb-1">Customer Price ({currencySymbol}) *</label>
                   <input type="number" className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.customerPrice ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, customerPrice: Number(e.target.value) }))} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-neutral-600 mb-1">Seller Price (₦) *</label>
+                  <label className="block text-xs font-medium text-neutral-600 mb-1">Seller Price ({currencySymbol}) *</label>
                   <input type="number" className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.sellerPrice ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, sellerPrice: Number(e.target.value) }))} />
                 </div>
               </div>

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { shippingApi, type ShippingMethod } from '../../lib/api';
 import { Spinner } from '../ui/Spinner';
 import { Badge } from '../ui/Badge';
+import { useCurrency } from '../../lib/currency-context';
 
 interface ShippingMethodSelectorProps {
   country?: string;
@@ -15,6 +16,7 @@ interface ShippingMethodSelectorProps {
 export function ShippingMethodSelector({ country, orderTotal, selectedMethodId, onSelect }: ShippingMethodSelectorProps) {
   const [methods, setMethods] = useState<ShippingMethod[]>([]);
   const [loading, setLoading] = useState(true);
+  const { formatPrice } = useCurrency();
 
   useEffect(() => {
     setLoading(true);
@@ -81,7 +83,7 @@ export function ShippingMethodSelector({ country, orderTotal, selectedMethodId, 
                 <span className="font-bold text-green-600">FREE</span>
               ) : (
                 <span className="font-bold text-neutral-900">
-                  ₦{Number(method.basePrice).toLocaleString()}
+                  {formatPrice(Number(method.basePrice))}
                 </span>
               )}
             </div>
