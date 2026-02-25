@@ -76,6 +76,10 @@ import { NewsletterModule } from './newsletter/newsletter.module';
 import { NewsletterSubscriber } from './newsletter/entities/newsletter-subscriber.entity';
 import { HowItWorksStep } from './homepage/entities/how-it-works-step.entity';
 import { TryOnConfig } from './homepage/entities/tryon-config.entity';
+import { HeroStat } from './homepage/entities/hero-stat.entity';
+import { PromoBanner } from './homepage/entities/promo-banner.entity';
+import { CollectionPost } from './homepage/entities/collection-post.entity';
+import { HeritageStory } from './homepage/entities/heritage-story.entity';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -111,6 +115,10 @@ const isProduction = process.env.NODE_ENV === 'production';
         NewsletterSubscriber,
         HowItWorksStep,
         TryOnConfig,
+        HeroStat,
+        PromoBanner,
+        CollectionPost,
+        HeritageStory,
       ],
       // TODO: switch back to `synchronize: false` and use proper TypeORM migrations once tables are created
       synchronize: true,
