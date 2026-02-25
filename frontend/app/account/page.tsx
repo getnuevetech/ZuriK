@@ -69,7 +69,14 @@ export default function AccountPage() {
         firstName: profile.firstName,
         lastName: profile.lastName,
       });
-      updateUser(updatedUser);
+      // Map User to UserProfile (User has optional firstName/lastName, UserProfile requires them)
+      updateUser({
+        id: updatedUser.id,
+        email: updatedUser.email,
+        firstName: updatedUser.firstName ?? '',
+        lastName: updatedUser.lastName ?? '',
+        role: updatedUser.role,
+      });
       toast('success', 'Profile updated successfully');
     } catch {
       toast('error', 'Failed to update profile');
