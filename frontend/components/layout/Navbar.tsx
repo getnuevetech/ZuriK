@@ -8,6 +8,7 @@ import { GlobalSearch } from '../common/GlobalSearch';
 import { NotificationBell } from '../notifications/NotificationBell';
 import { LoyaltyBadge } from '../loyalty/LoyaltyBadge';
 import { useAuth } from '../../lib/auth-context';
+import { CurrencySwitcher } from './CurrencySwitcher';
 
 interface NavbarProps {
   cartCount?: number;
@@ -185,6 +186,7 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
 
           {/* Right side */}
           <div className="flex items-center gap-1">
+            <CurrencySwitcher />
             <button
               onClick={() => setSearchOpen((v) => !v)}
               className="hidden md:flex p-2 text-white/60 hover:text-white transition-colors"
@@ -301,6 +303,9 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
         {/* Mobile menu */}
         {mobileOpen && (
           <div className="md:hidden py-2 border-t border-white/10 space-y-0.5">
+            <div className="px-3 py-1">
+              <CurrencySwitcher />
+            </div>
             {navLinks.map((link) => (
               <Link
                 key={link.href}

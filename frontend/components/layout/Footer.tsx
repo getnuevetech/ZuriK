@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { CurrencySwitcher } from './CurrencySwitcher';
 
 export function Footer() {
   return (
@@ -84,7 +85,10 @@ export function Footer() {
 
         <div className="mt-14 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-neutral-600">
           <span>&copy; 2026 African Fashion. All rights reserved.</span>
-          <span className="font-light">✦ Proudly African. Globally Delivered.</span>
+          <div className="flex items-center gap-4">
+            <CurrencySwitcher />
+            <span className="font-light">✦ Proudly African. Globally Delivered.</span>
+          </div>
         </div>
       </div>
     </footer>
