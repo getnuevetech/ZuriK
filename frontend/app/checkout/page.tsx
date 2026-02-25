@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ordersApi, paymentsApi, shippingApi, addressesApi, loyaltyApi, type ShippingMethod, type Address, type LoyaltyBalance } from '../../lib/api';
+import { ordersApi, paymentsApi, shippingApi, addressesApi, loyaltyApi, settingsApi, type ShippingMethod, type Address, type LoyaltyBalance } from '../../lib/api';
 import { useAuth } from '../../lib/auth-context';
 import { useCart } from '../../lib/cart-context';
 import { useToast } from '../../components/ui/Toast';
@@ -60,6 +60,7 @@ export default function CheckoutPage() {
   const [loyaltyBalance, setLoyaltyBalance] = useState<LoyaltyBalance | null>(null);
   const [loyaltyPointsToRedeem, setLoyaltyPointsToRedeem] = useState(0);
   const [useLoyalty, setUseLoyalty] = useState(false);
+  const [platformFeeRate, setPlatformFeeRate] = useState(10);
 
   useEffect(() => {
     if (authLoading) return;
@@ -71,6 +72,8 @@ export default function CheckoutPage() {
       // Load loyalty balance
       loyaltyApi.getBalance().then(setLoyaltyBalance).catch(() => {});
     }
+    // Fetch public platform fee rate (no auth required)
+    settingsApi.getPublicFeeRate().then((r) => setPlatformFeeRate(r.percentageFee)).catch(() => {});
   }, [isAuthenticated, authLoading, router]);
 
   if (authLoading) return <div className="flex justify-center py-20"><Spinner size="lg" /></div>;
@@ -92,7 +95,9 @@ export default function CheckoutPage() {
   const currentStepIndex = STEPS.findIndex((s) => s.key === step);
   const shippingCost = selectedShippingMethod?.effectiveCost ?? selectedShippingMethod?.basePrice ?? 0;
   const loyaltyDiscount = useLoyalty ? loyaltyPointsToRedeem / 100 : 0;
-  const orderTotal = Math.max(0, cartTotal - couponDiscount - loyaltyDiscount + Number(shippingCost));
+  const subtotal = cartTotal - couponDiscount - loyaltyDiscount;
+  const platformFee = Math.max(0, (subtotal * platformFeeRate) / 100);
+  const orderTotal = Math.max(0, subtotal + platformFee + Number(shippingCost));
 
   const validateShipping = (): boolean => {
     if (!shippingAddress.fullName || !shippingAddress.addressLine1 || !shippingAddress.city || !shippingAddress.country) {
@@ -318,8 +323,8 @@ export default function CheckoutPage() {
                 )}
               </div>
               <div className="flex justify-between text-sm text-neutral-600">
-                <span>Platform fee</span>
-                <span className="text-green-600">Included</span>
+                <span>Platform fee ({platformFeeRate}%)</span>
+                <PriceDisplay amount={platformFee} className="text-neutral-600" />
               </div>
               <div className="flex justify-between font-bold text-lg border-t border-neutral-200 pt-2">
                 <span>Total</span>
@@ -444,6 +449,10 @@ export default function CheckoutPage() {
                   )}
                 </div>
               )}
+              <div className="py-2 flex justify-between text-sm text-neutral-600">
+                <span>Platform fee ({platformFeeRate}%)</span>
+                <PriceDisplay amount={platformFee} className="font-medium" />
+              </div>
               <div className="pt-2 flex justify-between font-bold">
                 <span>Total</span>
                 <PriceDisplay amount={orderTotal} />
