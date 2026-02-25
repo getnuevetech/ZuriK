@@ -103,6 +103,12 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    // Don't attempt token refresh for auth endpoints — their 401s mean
+    // invalid credentials, not expired tokens.
+    const skipRefreshPaths = ['/auth/login', '/auth/register', '/auth/refresh', '/auth/forgot-password', '/auth/reset-password'];
+    if (skipRefreshPaths.some(path => originalRequest.url?.includes(path))) {
+      return Promise.reject(error);
+    }
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
         return new Promise<string>((resolve, reject) => {
@@ -161,6 +167,11 @@ export function extractErrorMessage(err: unknown, fallback: string): string {
     }
     if (axiosErr.response.status === 429) {
       return 'Too many attempts. Please wait a moment before trying again.';
+    }
+    if (axiosErr.response.status === 401) {
+      const msg = axiosErr.response.data?.message;
+      if (msg) return Array.isArray(msg) ? msg[0] : msg;
+      return 'Invalid email or password';
     }
     const msg = axiosErr.response.data?.message;
     if (msg) {
