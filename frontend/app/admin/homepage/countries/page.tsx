@@ -1,10 +1,75 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { homepageApi, uploadApi } from '../../../../lib/api';
 import AdminPageHeader from '../../../../components/admin/AdminPageHeader';
 import { Spinner } from '../../../../components/ui/Spinner';
 import { useToast } from '../../../../components/ui/Toast';
+
+function countryCodeToFlag(code: string): string {
+  return code
+    .toUpperCase()
+    .split('')
+    .map((char) => String.fromCodePoint(0x1f1e6 + char.charCodeAt(0) - 65))
+    .join('');
+}
+
+const AFRICAN_COUNTRIES = [
+  { name: 'Algeria', code: 'DZ' },
+  { name: 'Angola', code: 'AO' },
+  { name: 'Benin', code: 'BJ' },
+  { name: 'Botswana', code: 'BW' },
+  { name: 'Burkina Faso', code: 'BF' },
+  { name: 'Burundi', code: 'BI' },
+  { name: 'Cameroon', code: 'CM' },
+  { name: 'Cape Verde', code: 'CV' },
+  { name: 'Central African Republic', code: 'CF' },
+  { name: 'Chad', code: 'TD' },
+  { name: 'Comoros', code: 'KM' },
+  { name: 'DR Congo', code: 'CD' },
+  { name: 'Republic of Congo', code: 'CG' },
+  { name: 'Djibouti', code: 'DJ' },
+  { name: 'Egypt', code: 'EG' },
+  { name: 'Equatorial Guinea', code: 'GQ' },
+  { name: 'Eritrea', code: 'ER' },
+  { name: 'Eswatini', code: 'SZ' },
+  { name: 'Ethiopia', code: 'ET' },
+  { name: 'Gabon', code: 'GA' },
+  { name: 'Gambia', code: 'GM' },
+  { name: 'Ghana', code: 'GH' },
+  { name: 'Guinea', code: 'GN' },
+  { name: 'Guinea-Bissau', code: 'GW' },
+  { name: 'Ivory Coast', code: 'CI' },
+  { name: 'Kenya', code: 'KE' },
+  { name: 'Lesotho', code: 'LS' },
+  { name: 'Liberia', code: 'LR' },
+  { name: 'Libya', code: 'LY' },
+  { name: 'Madagascar', code: 'MG' },
+  { name: 'Malawi', code: 'MW' },
+  { name: 'Mali', code: 'ML' },
+  { name: 'Mauritania', code: 'MR' },
+  { name: 'Mauritius', code: 'MU' },
+  { name: 'Morocco', code: 'MA' },
+  { name: 'Mozambique', code: 'MZ' },
+  { name: 'Namibia', code: 'NA' },
+  { name: 'Niger', code: 'NE' },
+  { name: 'Nigeria', code: 'NG' },
+  { name: 'Rwanda', code: 'RW' },
+  { name: 'São Tomé and Príncipe', code: 'ST' },
+  { name: 'Senegal', code: 'SN' },
+  { name: 'Seychelles', code: 'SC' },
+  { name: 'Sierra Leone', code: 'SL' },
+  { name: 'Somalia', code: 'SO' },
+  { name: 'South Africa', code: 'ZA' },
+  { name: 'South Sudan', code: 'SS' },
+  { name: 'Sudan', code: 'SD' },
+  { name: 'Tanzania', code: 'TZ' },
+  { name: 'Togo', code: 'TG' },
+  { name: 'Tunisia', code: 'TN' },
+  { name: 'Uganda', code: 'UG' },
+  { name: 'Zambia', code: 'ZM' },
+  { name: 'Zimbabwe', code: 'ZW' },
+].map((c) => ({ ...c, flag: countryCodeToFlag(c.code) }));
 
 interface CountryHero {
   id: string;
@@ -39,6 +104,9 @@ export default function AdminCountriesPage() {
   const [form, setForm] = useState(emptyForm());
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [countrySearch, setCountrySearch] = useState('');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const comboboxRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   const fetchCountries = useCallback(async () => {
@@ -60,6 +128,7 @@ export default function AdminCountriesPage() {
   const openCreate = () => {
     setEditId(null);
     setForm(emptyForm());
+    setCountrySearch('');
     setShowForm(true);
   };
 
@@ -76,6 +145,7 @@ export default function AdminCountriesPage() {
       displayOrder: c.displayOrder,
       isActive: c.isActive,
     });
+    setCountrySearch(c.countryName);
     setShowForm(true);
   };
 
@@ -200,45 +270,79 @@ export default function AdminCountriesPage() {
             </h2>
 
             <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-medium text-neutral-600 mb-1">Country Name *</label>
-                  <input
-                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
-                    value={form.countryName}
-                    onChange={(e) => setForm({ ...form, countryName: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-neutral-600 mb-1">Country Code * (e.g. NG)</label>
-                  <input
-                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
-                    value={form.countryCode}
-                    onChange={(e) => setForm({ ...form, countryCode: e.target.value.toUpperCase() })}
-                    maxLength={3}
-                  />
-                </div>
+              {/* Country selector combobox */}
+              <div ref={comboboxRef} className="relative">
+                <label className="block text-xs font-medium text-neutral-600 mb-1">Country Name *</label>
+                <input
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+                  value={countrySearch}
+                  onChange={(e) => {
+                    setCountrySearch(e.target.value);
+                    setDropdownOpen(true);
+                  }}
+                  onFocus={() => setDropdownOpen(true)}
+                  onBlur={() => setTimeout(() => setDropdownOpen(false), 150)}
+                  placeholder="Search country…"
+                  autoComplete="off"
+                />
+                {dropdownOpen && (
+                  <ul className="absolute z-50 mt-1 w-full bg-white border border-neutral-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                    {AFRICAN_COUNTRIES.filter((c) =>
+                      c.name.toLowerCase().includes(countrySearch.toLowerCase())
+                    ).length === 0 ? (
+                      <li className="px-3 py-2 text-sm text-neutral-400">No countries found</li>
+                    ) : (
+                      AFRICAN_COUNTRIES.filter((c) =>
+                        c.name.toLowerCase().includes(countrySearch.toLowerCase())
+                      ).map((c) => (
+                        <li
+                          key={c.code}
+                          className="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer hover:bg-indigo-50"
+                          onMouseDown={() => {
+                            setForm((prev) => ({ ...prev, countryName: c.name, countryCode: c.code, flag: c.flag }));
+                            setCountrySearch(c.name);
+                            setDropdownOpen(false);
+                          }}
+                        >
+                          <span>{c.flag}</span>
+                          <span>{c.name}</span>
+                          <span className="ml-auto text-xs text-neutral-400">{c.code}</span>
+                        </li>
+                      ))
+                    )}
+                  </ul>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-neutral-600 mb-1">Flag Emoji (e.g. 🇳🇬)</label>
+                  <label className="block text-xs font-medium text-neutral-600 mb-1">Country Code</label>
                   <input
-                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
-                    value={form.flag}
-                    onChange={(e) => setForm({ ...form, flag: e.target.value })}
-                    placeholder="🇳🇬"
+                    readOnly
+                    disabled
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm bg-neutral-50 text-neutral-400 cursor-not-allowed"
+                    value={form.countryCode}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-neutral-600 mb-1">Subtitle (optional)</label>
+                  <label className="block text-xs font-medium text-neutral-600 mb-1">Flag Emoji</label>
                   <input
-                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
-                    value={form.subtitle}
-                    onChange={(e) => setForm({ ...form, subtitle: e.target.value })}
-                    placeholder="e.g. West African fashion hub"
+                    readOnly
+                    disabled
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm bg-neutral-50 text-neutral-400 cursor-not-allowed"
+                    value={form.flag}
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-neutral-600 mb-1">Subtitle (optional)</label>
+                <input
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+                  value={form.subtitle}
+                  onChange={(e) => setForm({ ...form, subtitle: e.target.value })}
+                  placeholder="e.g. West African fashion hub"
+                />
               </div>
 
               <div>
