@@ -65,10 +65,9 @@ export class AuthService {
     await this.userRepo.save(user);
     const frontendUrl = this.configService.get<string>('FRONTEND_URL');
     const verifyUrl = `${frontendUrl}/verify-email?token=${token}`;
-    try {
-      await this.emailService.sendEmailVerification(user, verifyUrl);
-    } catch (emailErr) {
-      this.logger.error(`Failed to send verification email to ${user.email}: ${(emailErr as Error).message}`);
+    const emailSent = await this.emailService.sendEmailVerification(user, verifyUrl);
+    if (!emailSent) {
+      this.logger.warn(`Registration succeeded but verification email was not sent to ${user.email}`);
     }
 
     const tokens = await this.generateTokens(user);
@@ -232,10 +231,10 @@ export class AuthService {
     return { message: 'Password has been reset successfully. You can now log in.' };
   }
 
-  async sendVerificationEmail(userId: string): Promise<{ message: string }> {
+  async sendVerificationEmail(userId: string): Promise<{ message: string; emailSent: boolean }> {
     const user = await this.userRepo.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('User not found');
-    if (user.isEmailVerified) return { message: 'Email is already verified' };
+    if (user.isEmailVerified) return { message: 'Email is already verified', emailSent: false };
 
     const token = crypto.randomBytes(32).toString('hex');
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
@@ -246,9 +245,13 @@ export class AuthService {
 
     const frontendUrl = this.configService.get<string>('FRONTEND_URL');
     const verifyUrl = `${frontendUrl}/verify-email?token=${token}`;
-    await this.emailService.sendEmailVerification(user, verifyUrl);
+    const emailSent = await this.emailService.sendEmailVerification(user, verifyUrl);
 
-    return { message: 'Verification email sent' };
+    if (!emailSent) {
+      return { message: 'Verification email could not be sent. Please contact support or try again later.', emailSent: false };
+    }
+
+    return { message: 'Verification email sent', emailSent: true };
   }
 
   async verifyEmail(token: string): Promise<{ message: string }> {

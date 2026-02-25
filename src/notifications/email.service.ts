@@ -20,17 +20,19 @@ export class EmailService {
     });
   }
 
-  private async sendEmail(to: string, subject: string, html: string): Promise<void> {
+  private async sendEmail(to: string, subject: string, html: string): Promise<boolean> {
     try {
       const from = this.configService.get('SMTP_FROM') || this.configService.get('SMTP_USER') || 'noreply@africanfashion.com';
       if (!this.configService.get('SMTP_USER') || !this.configService.get('SMTP_PASS')) {
         this.logger.warn(`Email not sent (SMTP not configured): ${subject} to ${to}`);
-        return;
+        return false;
       }
       await this.transporter.sendMail({ from, to, subject, html });
       this.logger.log(`Email sent: ${subject} to ${to}`);
+      return true;
     } catch (error) {
       this.logger.error(`Failed to send email to ${to}: ${error.message}`);
+      return false;
     }
   }
 
@@ -146,7 +148,7 @@ export class EmailService {
     await this.sendEmail(user.email, `Order Delivered — ${order.orderNumber}`, this.baseTemplate(content));
   }
 
-  async sendPasswordReset(user: User, resetUrl: string): Promise<void> {
+  async sendPasswordReset(user: User, resetUrl: string): Promise<boolean> {
     const html = this.baseTemplate(`
       <h2>Reset Your Password</h2>
       <p>Hi ${user.firstName || user.email},</p>
@@ -156,10 +158,10 @@ export class EmailService {
         This link will expire in 1 hour. If you didn't request this, you can safely ignore this email.
       </p>
     `);
-    await this.sendEmail(user.email, 'Reset Your Password — African Fashion', html);
+    return this.sendEmail(user.email, 'Reset Your Password — African Fashion', html);
   }
 
-  async sendEmailVerification(user: User, verifyUrl: string): Promise<void> {
+  async sendEmailVerification(user: User, verifyUrl: string): Promise<boolean> {
     const html = this.baseTemplate(`
       <h2>Verify Your Email</h2>
       <p>Hi ${user.firstName || user.email},</p>
@@ -169,7 +171,7 @@ export class EmailService {
         This link will expire in 24 hours.
       </p>
     `);
-    await this.sendEmail(user.email, 'Verify Your Email — African Fashion', html);
+    return this.sendEmail(user.email, 'Verify Your Email — African Fashion', html);
   }
 
   async sendAccountLockout(user: User): Promise<void> {
