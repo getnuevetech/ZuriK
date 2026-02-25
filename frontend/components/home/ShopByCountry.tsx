@@ -119,7 +119,7 @@ export function ShopByCountry() {
                   <Link href={`/products?country=${encodeURIComponent(country.name)}`} className="group block">
                     {/* Image container - sharp corners */}
                     <div className="relative overflow-hidden aspect-[3/2] bg-neutral-200">
-                      <span className="absolute top-3 left-3 z-10 text-2xl leading-none">{country.flag}</span>
+                      <span className="absolute top-3 left-3 z-10 text-3xl leading-none">{country.flag}</span>
                       <Image
                         src={country.image}
                         alt={`Fashion from ${country.name}`}

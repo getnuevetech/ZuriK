@@ -396,7 +396,7 @@ export const uploadApi = {
   uploadImage: (file: File): Promise<{ url: string }> => {
     const formData = new FormData();
     formData.append('file', file);
-    return api.post<{ url: string }>('/upload', formData, {
+    return api.post<{ url: string }>('/upload/image', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     }).then((r) => r.data);
   },
