@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRequireRole } from '../../lib/with-role';
-import { authApi, ordersApi } from '../../lib/api';
+import { ordersApi, usersApi } from '../../lib/api';
 import { useAuth } from '../../lib/auth-context';
 import { useToast } from '../../components/ui/Toast';
 import { Button } from '../../components/ui/Button';
@@ -28,7 +28,7 @@ const STATUS_VARIANTS: Record<string, 'default' | 'info' | 'warning' | 'success'
 
 export default function AccountPage() {
   const { user, isLoading } = useRequireRole(['customer', 'designer', 'fabric_seller', 'qa', 'admin']);
-  const { logout } = useAuth();
+  const { logout, updateUser } = useAuth();
   const { toast } = useToast();
 
   const [orders, setOrders] = useState<Order[]>([]);
@@ -65,8 +65,11 @@ export default function AccountPage() {
     e.preventDefault();
     setProfileSaving(true);
     try {
-      await authApi.getProfile(); // Verify auth still valid
-      // In a real app, call usersApi.update(user.id, profile)
+      const updatedUser = await usersApi.update(user!.id, {
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+      });
+      updateUser(updatedUser);
       toast('success', 'Profile updated successfully');
     } catch {
       toast('error', 'Failed to update profile');
