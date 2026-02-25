@@ -36,6 +36,7 @@ export interface ProductFilters {
   designerId?: string;
   page?: number;
   limit?: number;
+  includeInactive?: boolean;
 }
 
 export type DesignFilters = ProductFilters;
@@ -52,6 +53,7 @@ export interface FabricFilters {
   sort?: string;
   page?: number;
   limit?: number;
+  includeInactive?: boolean;
 }
 
 export interface OrderFilters {
@@ -216,6 +218,7 @@ export const designsApi = {
     if (filters?.designerId) params.set('designerId', filters.designerId);
     if (filters?.page !== undefined) params.set('page', String(filters.page));
     if (filters?.limit !== undefined) params.set('limit', String(filters.limit));
+    if (filters?.includeInactive) params.set('includeInactive', 'true');
     const query = params.toString();
     return api.get<PaginatedResponse<Design>>(`/designs${query ? `?${query}` : ''}`).then((r) => r.data);
   },
@@ -256,6 +259,7 @@ export const readyToWearApi = {
     if (filters?.designerId) params.set('designerId', filters.designerId);
     if (filters?.page !== undefined) params.set('page', String(filters.page));
     if (filters?.limit !== undefined) params.set('limit', String(filters.limit));
+    if (filters?.includeInactive) params.set('includeInactive', 'true');
     const query = params.toString();
     return api.get<PaginatedResponse<ReadyToWearProduct>>(`/ready-to-wear${query ? `?${query}` : ''}`).then((r) => r.data);
   },
@@ -291,6 +295,7 @@ export const fabricsApi = {
     if (filters?.sort) params.set('sort', filters.sort);
     if (filters?.page !== undefined) params.set('page', String(filters.page));
     if (filters?.limit !== undefined) params.set('limit', String(filters.limit));
+    if (filters?.includeInactive) params.set('includeInactive', 'true');
     const query = params.toString();
     return api.get<PaginatedResponse<Fabric>>(`/fabrics${query ? `?${query}` : ''}`).then((r) => r.data);
   },

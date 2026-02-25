@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
@@ -9,12 +9,98 @@ export interface SidebarItem {
   href: string;
   label: string;
   icon: React.ReactNode;
+  children?: SidebarItem[];
 }
 
 interface AdminSidebarProps {
   items: SidebarItem[];
   collapsed: boolean;
   onToggle: () => void;
+}
+
+function NavItem({
+  item,
+  collapsed,
+  pathname,
+  onMobileClose,
+}: {
+  item: SidebarItem;
+  collapsed: boolean;
+  pathname: string;
+  onMobileClose?: () => void;
+}) {
+  const isChildActive = item.children?.some(
+    (c) => pathname === c.href || pathname.startsWith(c.href + '/'),
+  );
+  const isActive =
+    pathname === item.href ||
+    (!item.children && pathname.startsWith(item.href + '/')) ||
+    !!isChildActive;
+
+  const [open, setOpen] = useState(isChildActive ?? false);
+
+  if (item.children && item.children.length > 0) {
+    return (
+      <div>
+        <button
+          onClick={() => setOpen((prev) => !prev)}
+          title={collapsed ? item.label : undefined}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm font-medium ${
+            isActive
+              ? 'bg-indigo-600 text-white'
+              : 'text-neutral-300 hover:bg-neutral-800 hover:text-white'
+          } ${collapsed ? 'justify-center' : ''}`}
+        >
+          <span className="text-lg flex-shrink-0">{item.icon}</span>
+          {!collapsed && (
+            <>
+              <span className="truncate flex-1 text-left">{item.label}</span>
+              <span className="text-xs">{open ? '▾' : '▸'}</span>
+            </>
+          )}
+        </button>
+        {open && !collapsed && (
+          <div className="mt-1 ml-4 space-y-1 border-l border-neutral-700 pl-3">
+            {item.children.map((child) => {
+              const childActive =
+                pathname === child.href || pathname.startsWith(child.href + '/');
+              return (
+                <Link
+                  key={child.href}
+                  href={child.href}
+                  onClick={onMobileClose}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm font-medium ${
+                    childActive
+                      ? 'bg-indigo-500 text-white'
+                      : 'text-neutral-400 hover:bg-neutral-800 hover:text-white'
+                  }`}
+                >
+                  <span className="text-base flex-shrink-0">{child.icon}</span>
+                  <span className="truncate">{child.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <Link
+      href={item.href}
+      title={collapsed ? item.label : undefined}
+      onClick={onMobileClose}
+      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm font-medium ${
+        isActive
+          ? 'bg-indigo-600 text-white'
+          : 'text-neutral-300 hover:bg-neutral-800 hover:text-white'
+      } ${collapsed ? 'justify-center' : ''}`}
+    >
+      <span className="text-lg flex-shrink-0">{item.icon}</span>
+      {!collapsed && <span className="truncate">{item.label}</span>}
+    </Link>
+  );
 }
 
 export default function AdminSidebar({ items, collapsed, onToggle }: AdminSidebarProps) {
@@ -72,24 +158,14 @@ export default function AdminSidebar({ items, collapsed, onToggle }: AdminSideba
 
       {/* Nav items */}
       <nav className="flex-1 overflow-y-auto py-4 space-y-1 px-2">
-        {items.map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              title={collapsed ? item.label : undefined}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm font-medium ${
-                isActive
-                  ? 'bg-indigo-600 text-white'
-                  : 'text-neutral-300 hover:bg-neutral-800 hover:text-white'
-              } ${collapsed ? 'justify-center' : ''}`}
-            >
-              <span className="text-lg flex-shrink-0">{item.icon}</span>
-              {!collapsed && <span className="truncate">{item.label}</span>}
-            </Link>
-          );
-        })}
+        {items.map((item) => (
+          <NavItem
+            key={item.href}
+            item={item}
+            collapsed={collapsed}
+            pathname={pathname}
+          />
+        ))}
       </nav>
     </div>
   );
@@ -135,24 +211,15 @@ export default function AdminSidebar({ items, collapsed, onToggle }: AdminSideba
               </button>
             </div>
             <nav className="flex-1 overflow-y-auto py-4 space-y-1 px-2">
-              {items.map((item) => {
-                const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={onToggle}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm font-medium ${
-                      isActive
-                        ? 'bg-indigo-600 text-white'
-                        : 'text-neutral-300 hover:bg-neutral-800 hover:text-white'
-                    }`}
-                  >
-                    <span className="text-lg flex-shrink-0">{item.icon}</span>
-                    <span className="truncate">{item.label}</span>
-                  </Link>
-                );
-              })}
+              {items.map((item) => (
+                <NavItem
+                  key={item.href}
+                  item={item}
+                  collapsed={false}
+                  pathname={pathname}
+                  onMobileClose={onToggle}
+                />
+              ))}
             </nav>
           </div>
         </aside>
