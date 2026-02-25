@@ -46,6 +46,7 @@ export class CartService {
           price: details ? Number(details.customerPrice ?? details.sellerPrice) : 0,
           image: details?.images?.[0] ?? null,
           inStock: details ? (details.stock === undefined || details.stock > 0) : false,
+          isActive: details?.isActive ?? false,
           createdAt: item.createdAt,
         };
       }),

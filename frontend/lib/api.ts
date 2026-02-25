@@ -940,6 +940,7 @@ export interface ServerCartItem {
   price: number;
   image: string | null;
   inStock: boolean;
+  isActive?: boolean;
 }
 
 export interface CartSummary {
