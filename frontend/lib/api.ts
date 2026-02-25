@@ -550,6 +550,7 @@ export interface PromoBanner {
   title: string;
   subtitle: string | null;
   imageUrl: string;
+  location: string;
   ctaText: string | null;
   ctaLink: string | null;
   displayOrder: number;
@@ -569,6 +570,8 @@ export const homepageApi = {
   getCollections: () => api.get('/homepage/collections').then((r) => r.data),
   getPromoBanners: (): Promise<PromoBanner[]> =>
     api.get('/homepage/promo-banners').then((r) => r.data),
+  getPromoBannersByLocation: (): Promise<Record<string, PromoBanner | null>> =>
+    api.get('/homepage/promo-banners/by-location').then((r) => r.data),
 
   // Admin — Featured Sections
   adminGetFeatured: () => api.get('/homepage/admin/featured').then((r) => r.data),

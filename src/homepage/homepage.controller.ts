@@ -256,6 +256,12 @@ export class HomepageController {
     return this.homepageService.getActivePromoBanners();
   }
 
+  @Get('promo-banners/by-location')
+  @ApiOperation({ summary: 'Get active promo banners grouped by location (public)' })
+  getPromoBannersByLocation() {
+    return this.homepageService.getActivePromoBannersByLocation();
+  }
+
   @Get('shop-by-country')
   @ApiOperation({ summary: 'Get shop by country data (public)' })
   getShopByCountry() {
