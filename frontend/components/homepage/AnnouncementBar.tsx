@@ -1,56 +1,46 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-
-const STORAGE_KEY = 'announcement-bar-dismissed';
+import React from 'react';
 
 export function AnnouncementBar() {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    try {
-      const dismissed = localStorage.getItem(STORAGE_KEY);
-      if (!dismissed) setVisible(true);
-    } catch {
-      setVisible(true);
-    }
-  }, []);
-
-  const dismiss = () => {
-    try {
-      localStorage.setItem(STORAGE_KEY, '1');
-    } catch {
-      // localStorage unavailable (e.g. private browsing)
-    }
-    setVisible(false);
-  };
-
-  if (!visible) return null;
-
   return (
-    <div
-      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-[11px] font-semibold relative uppercase tracking-[0.16em] border-b"
-      style={{
-        background: 'linear-gradient(90deg, #f2e2cf 0%, #f7ecde 50%, #f2e2cf 100%)',
-        color: 'var(--color-primary-dark)',
-        borderColor: '#e0cfba',
-      }}
-      role="banner"
-    >
-      <span className="hidden sm:inline-block opacity-80">New Season</span>
-      <span aria-hidden="true">•</span>
-      <span className="text-center">
-        Free shipping over $100 &nbsp;|&nbsp; Code <strong>AFRICAN20</strong>
-      </span>
-      <button
-        onClick={dismiss}
-        className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-5 rounded-full hover:bg-black/10 transition-colors"
-        aria-label="Dismiss announcement"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-        </svg>
-      </button>
+    <div className="w-full bg-[#1a237e] text-white py-2" role="banner">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          {[
+            {
+              label: 'Facebook',
+              d: 'M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z',
+            },
+            {
+              label: 'Instagram',
+              d: 'M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069z',
+            },
+            {
+              label: 'Twitter',
+              d: 'M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z',
+            },
+          ].map((icon) => (
+            <a
+              key={icon.label}
+              href="#"
+              aria-label={icon.label}
+              className="hover:opacity-70 transition-opacity"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d={icon.d} />
+              </svg>
+            </a>
+          ))}
+        </div>
+        <div className="hidden sm:flex items-center gap-2 text-xs">
+          <span className="opacity-70">— Follow us</span>
+          <span className="font-semibold">@AfricanFashion</span>
+        </div>
+        <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-white/80">
+          Free shipping over $100
+        </div>
+      </div>
     </div>
   );
 }

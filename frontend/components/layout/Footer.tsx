@@ -1,34 +1,27 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { CurrencySwitcher } from './CurrencySwitcher';
 
-const FOOTER_LINKS = {
-  quickLinks: [
-    { href: '/products', label: 'Ready-to-Wear' },
-    { href: '/fabrics', label: 'Premium Fabrics' },
-    { href: '/orders/custom-design', label: 'Custom Design' },
-    { href: '/designers', label: 'Designers' },
-    { href: '/cart', label: 'Cart' },
-  ],
-  countries: [
-    { name: 'Nigeria', flag: '🇳🇬' },
-    { name: 'Ghana', flag: '🇬🇭' },
-    { name: 'Kenya', flag: '🇰🇪' },
-    { name: 'South Africa', flag: '🇿🇦' },
-    { name: 'Senegal', flag: '🇸🇳' },
-    { name: 'Ethiopia', flag: '🇪🇹' },
-  ],
-  support: [
-    { href: '/login', label: 'Sign In' },
-    { href: '/register', label: 'Register' },
-    { href: '#', label: 'FAQ' },
-    { href: '#', label: 'Shipping Info' },
-    { href: '#', label: 'Returns' },
-    { href: '#', label: 'Privacy Policy' },
-  ],
-};
+const MENU_LINKS = [
+  { href: '/products', label: 'About Us' },
+  { href: '/products', label: 'Products' },
+  { href: '/designers', label: 'Journal' },
+  { href: '/account', label: 'Contact Us' },
+];
+
+const STORE_LINKS = [
+  { href: '/products', label: 'Dresses' },
+  { href: '/fabrics', label: 'Fabrics' },
+  { href: '/products', label: 'Accessories' },
+  { href: '/designers', label: 'Designers' },
+];
+
+const FEATURED_ITEMS = [
+  { name: 'Kitenge Fabric', price: 85 },
+  { name: 'Light Rods Chandelier', price: 210 },
+  { name: 'Lawrance', price: 210 },
+];
 
 const SOCIAL_ICONS = [
   {
@@ -46,20 +39,21 @@ const SOCIAL_ICONS = [
 ];
 
 export function Footer() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+
   return (
     <footer
-      className="border-t"
       style={{
         background: 'linear-gradient(160deg, #18254f 0%, #1f2f62 55%, #22376f 100%)',
-        borderColor: 'rgba(255, 255, 255, 0.08)',
       }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
           {/* Brand column */}
-          <div>
-            <Link href="/" className="font-heading font-semibold text-lg text-white flex items-center gap-1.5 mb-4 tracking-tight">
-              <span style={{ color: 'var(--color-secondary)' }}>✦</span> African Fashion
+          <div className="lg:col-span-1">
+            <Link href="/" className="font-heading text-2xl font-bold mb-4 text-white flex items-center gap-1.5">
+              African Fashion<sup className="text-sm">®</sup>
             </Link>
             <p className="text-sm footer-link leading-relaxed mb-5 font-light max-w-xs">
               Celebrating the richness of African culture through fashion, fabrics, and craftsmanship. Every piece tells a story.
@@ -83,13 +77,18 @@ export function Footer() {
                 </a>
               ))}
             </div>
+            <div className="mt-6">
+              <span className="inline-block bg-white/10 text-xs px-3 py-1 rounded">
+                Powered by <span className="font-semibold">stripe</span>
+              </span>
+            </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Menu */}
           <div>
-            <h3 className="text-[11px] font-semibold text-white uppercase tracking-[0.2em] mb-5">Quick Links</h3>
+            <h3 className="text-sm uppercase tracking-wider text-white/50 mb-4">Menu</h3>
             <ul className="space-y-3 text-sm">
-              {FOOTER_LINKS.quickLinks.map((link) => (
+              {MENU_LINKS.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="footer-link font-light">{link.label}</Link>
                 </li>
@@ -97,38 +96,80 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Countries */}
+          {/* Store */}
           <div>
-            <h3 className="text-[11px] font-semibold text-white uppercase tracking-[0.2em] mb-5">Countries</h3>
+            <h3 className="text-sm uppercase tracking-wider text-white/50 mb-4">Store</h3>
             <ul className="space-y-3 text-sm">
-              {FOOTER_LINKS.countries.map((c) => (
-                <li key={c.name}>
-                  <Link href={`/products?country=${encodeURIComponent(c.name)}`} className="footer-link font-light">
-                    {c.flag} {c.name}
+              {STORE_LINKS.map((link) => (
+                <li key={link.label}>
+                  <Link href={link.href} className="footer-link font-light">
+                    {link.label}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Customer Service */}
+          {/* Featured */}
           <div>
-            <h3 className="text-[11px] font-semibold text-white uppercase tracking-[0.2em] mb-5">Customer Service</h3>
-            <ul className="space-y-3 text-sm">
-              {FOOTER_LINKS.support.map((link) => (
-                <li key={link.label}>
-                  <Link href={link.href} className="footer-link font-light">{link.label}</Link>
+            <h3 className="text-sm uppercase tracking-wider text-white/50 mb-4">Featured</h3>
+            <ul className="space-y-4">
+              {FEATURED_ITEMS.map((item) => (
+                <li key={item.name} className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-white/10" />
+                  <div>
+                    <p className="text-white/80 text-sm">{item.name}</p>
+                    <p className="text-white/50 text-xs">$ {item.price}.00 USD</p>
+                  </div>
                 </li>
               ))}
             </ul>
           </div>
+
+          {/* Newsletter */}
+          <div>
+            <h3 className="text-sm uppercase tracking-wider text-white/50 mb-4">Newsletter</h3>
+            <div className="space-y-3">
+              <input
+                type="text"
+                placeholder="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full bg-white text-gray-900 px-4 py-3 text-sm placeholder:text-gray-400"
+              />
+              <input
+                type="email"
+                placeholder="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-white text-gray-900 px-4 py-3 text-sm placeholder:text-gray-400"
+              />
+              <button className="w-full bg-[#00c853] hover:bg-[#00b248] text-white py-3 font-medium transition-colors">
+                Submit
+              </button>
+            </div>
+            <div className="mt-4 space-y-2">
+              <div className="flex items-center gap-2 text-sm text-white/70">
+                <span className="text-[#00c853]">✓</span>
+                <span>Exclusive Product Releases</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-white/70">
+                <span className="text-[#00c853]">✓</span>
+                <span>Only Subscribers Offers</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="mt-14 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs footer-link" style={{ borderTop: '1px solid rgba(255,255,255,0.14)' }}>
-          <span>&copy; 2026 African Fashion. All rights reserved.</span>
-          <div className="flex items-center gap-4">
-            <CurrencySwitcher />
-            <span className="font-light">✦ Proudly African. Globally Delivered.</span>
+        <div className="border-t border-white/10 mt-10 pt-4">
+          <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-white/50">
+            <span>&copy; 2026 African Fashion</span>
+            <span>|</span>
+            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+            <span>|</span>
+            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+            <span>|</span>
+            <span>Made with love for African fashion</span>
           </div>
         </div>
       </div>
