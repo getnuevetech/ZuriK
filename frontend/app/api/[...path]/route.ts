@@ -1,0 +1,103 @@
+import { NextRequest, NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
+const HOP_BY_HOP_HEADERS = new Set([
+  'connection',
+  'keep-alive',
+  'proxy-authenticate',
+  'proxy-authorization',
+  'te',
+  'trailer',
+  'transfer-encoding',
+  'upgrade',
+]);
+
+function normalizeBaseUrl(value: string): string {
+  return value.replace(/\/+$/, '');
+}
+
+function getBackendBaseUrl(): string {
+  const configured =
+    process.env.API_URL ||
+    process.env.BACKEND_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    'http://localhost:3001';
+  return normalizeBaseUrl(configured);
+}
+
+function buildTargetUrl(req: NextRequest, path: string[]): string {
+  const backend = getBackendBaseUrl();
+  const encodedPath = path.map((segment) => encodeURIComponent(segment)).join('/');
+  const target = new URL(`${backend}/${encodedPath}`);
+  target.search = req.nextUrl.search;
+  return target.toString();
+}
+
+async function proxyRequest(req: NextRequest, path: string[]): Promise<NextResponse> {
+  const targetUrl = buildTargetUrl(req, path);
+  const upstreamHeaders = new Headers(req.headers);
+
+  // Ensure fetch computes correct protocol-level headers for the upstream.
+  upstreamHeaders.delete('host');
+  upstreamHeaders.delete('content-length');
+
+  const method = req.method.toUpperCase();
+  let body: BodyInit | undefined;
+  if (method !== 'GET' && method !== 'HEAD') {
+    const raw = await req.arrayBuffer();
+    body = raw.byteLength > 0 ? raw : undefined;
+  }
+
+  const upstreamResponse = await fetch(targetUrl, {
+    method,
+    headers: upstreamHeaders,
+    body,
+    redirect: 'manual',
+    cache: 'no-store',
+  });
+
+  const responseHeaders = new Headers(upstreamResponse.headers);
+  HOP_BY_HOP_HEADERS.forEach((header) => responseHeaders.delete(header));
+
+  return new NextResponse(upstreamResponse.body, {
+    status: upstreamResponse.status,
+    headers: responseHeaders,
+  });
+}
+
+type RouteContext = {
+  params: {
+    path: string[];
+  };
+};
+
+export async function GET(req: NextRequest, context: RouteContext) {
+  return proxyRequest(req, context.params.path);
+}
+
+export async function POST(req: NextRequest, context: RouteContext) {
+  return proxyRequest(req, context.params.path);
+}
+
+export async function PUT(req: NextRequest, context: RouteContext) {
+  return proxyRequest(req, context.params.path);
+}
+
+export async function PATCH(req: NextRequest, context: RouteContext) {
+  return proxyRequest(req, context.params.path);
+}
+
+export async function DELETE(req: NextRequest, context: RouteContext) {
+  return proxyRequest(req, context.params.path);
+}
+
+export async function OPTIONS(req: NextRequest, context: RouteContext) {
+  return proxyRequest(req, context.params.path);
+}
+
+export async function HEAD(req: NextRequest, context: RouteContext) {
+  return proxyRequest(req, context.params.path);
+}
+

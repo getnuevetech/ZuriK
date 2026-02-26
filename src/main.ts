@@ -10,11 +10,22 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule, { rawBody: true });
 
+  const normalizeOrigin = (value: string) => {
+    const trimmed = value.trim();
+    try {
+      return new URL(trimmed).origin;
+    } catch {
+      return trimmed.replace(/\/+$/, '');
+    }
+  };
+
   const allowedOrigins = (
     process.env.FRONTEND_URL || 'http://localhost:3000'
   )
     .split(',')
-    .map((o) => o.trim());
+    .map((o) => o.trim())
+    .filter(Boolean)
+    .map(normalizeOrigin);
 
   // Dynamic CORS: explicit allowlist + *.vercel.app preview deployments + localhost.
   // For production with a custom domain, set FRONTEND_URL explicitly.
@@ -22,12 +33,13 @@ async function bootstrap() {
     origin: (origin, callback) => {
       // Allow server-to-server or same-origin requests (no Origin header)
       if (!origin) return callback(null, true);
+      const normalizedOrigin = normalizeOrigin(origin);
       // Explicit allowlist (FRONTEND_URL env var)
-      if (allowedOrigins.includes(origin)) return callback(null, true);
+      if (allowedOrigins.includes(normalizedOrigin)) return callback(null, true);
       // Allow any *.vercel.app subdomain for preview deployments
-      if (/\.vercel\.app$/.test(origin)) return callback(null, true);
+      if (/\.vercel\.app$/.test(normalizedOrigin)) return callback(null, true);
       // Allow localhost in development only
-      if (process.env.NODE_ENV !== 'production' && origin.startsWith('http://localhost:')) return callback(null, true);
+      if (process.env.NODE_ENV !== 'production' && normalizedOrigin.startsWith('http://localhost:')) return callback(null, true);
       callback(new Error('Not allowed by CORS'));
     },
     credentials: true,

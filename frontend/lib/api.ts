@@ -160,6 +160,9 @@ export function extractErrorMessage(err: unknown, fallback: string): string {
     const axiosErr = err as { response?: { status?: number; data?: { message?: string | string[] } }; message?: string };
     if (!axiosErr.response) {
       // Network error or no response from server
+      if (API_URL === '/api') {
+        return 'Unable to reach backend through API proxy. Set API_URL (or NEXT_PUBLIC_API_URL) to your backend URL.';
+      }
       if (/^https?:\/\/localhost(:\d+)?/.test(API_URL)) {
         return 'API is configured to connect to localhost. Please set NEXT_PUBLIC_API_URL environment variable.';
       }

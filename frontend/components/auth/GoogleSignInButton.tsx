@@ -1,5 +1,7 @@
 'use client';
 
+import { config } from '../../lib/config';
+
 interface GoogleSignInButtonProps {
   mode?: 'signin' | 'signup';
   className?: string;
@@ -7,8 +9,7 @@ interface GoogleSignInButtonProps {
 
 export function GoogleSignInButton({ mode = 'signin', className }: GoogleSignInButtonProps) {
   const handleGoogleLogin = () => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-    window.location.href = `${apiUrl}/auth/google`;
+    window.location.href = `${config.apiUrl}/auth/google`;
   };
 
   return (
