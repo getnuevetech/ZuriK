@@ -76,8 +76,12 @@ export function MobileBottomTabs() {
 
   return (
     <nav
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-neutral-200 shadow-lg"
-      style={{ height: 64 }}
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t shadow-lg backdrop-blur-md"
+      style={{
+        backgroundColor: 'rgba(255, 253, 249, 0.94)',
+        borderColor: 'var(--color-border)',
+        height: 64,
+      }}
       aria-label="Mobile navigation"
     >
       <div className="grid grid-cols-5 h-full">
@@ -104,12 +108,12 @@ export function MobileBottomTabs() {
               href={resolvedHref}
               className={[
                 'flex flex-col items-center justify-center gap-0.5 transition-colors',
-                isActive ? 'text-primary-600' : 'text-neutral-400 hover:text-neutral-600',
+                isActive ? 'text-[var(--color-primary)]' : 'text-[var(--color-primary)]/45 hover:text-[var(--color-primary)]/70',
               ].join(' ')}
               aria-label={resolvedLabel}
               aria-current={isActive ? 'page' : undefined}
             >
-              <div className={isActive ? 'text-primary-600' : ''}>{tab.icon}</div>
+              <div className={isActive ? 'text-[var(--color-primary)]' : ''}>{tab.icon}</div>
               <span className="text-xs font-medium">{resolvedLabel}</span>
             </Link>
           );

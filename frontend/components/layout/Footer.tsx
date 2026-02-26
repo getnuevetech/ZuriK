@@ -47,12 +47,18 @@ const SOCIAL_ICONS = [
 
 export function Footer() {
   return (
-    <footer style={{ backgroundColor: 'var(--color-primary)' }}>
+    <footer
+      className="border-t"
+      style={{
+        background: 'linear-gradient(160deg, #18254f 0%, #1f2f62 55%, #22376f 100%)',
+        borderColor: 'rgba(255, 255, 255, 0.08)',
+      }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           {/* Brand column */}
           <div>
-            <Link href="/" className="font-heading font-bold text-base text-white flex items-center gap-1.5 mb-4 tracking-tight">
+            <Link href="/" className="font-heading font-semibold text-lg text-white flex items-center gap-1.5 mb-4 tracking-tight">
               <span style={{ color: 'var(--color-secondary)' }}>✦</span> African Fashion
             </Link>
             <p className="text-sm footer-link leading-relaxed mb-5 font-light max-w-xs">
@@ -81,7 +87,7 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-xs font-semibold text-white uppercase tracking-[0.15em] mb-5">Quick Links</h3>
+            <h3 className="text-[11px] font-semibold text-white uppercase tracking-[0.2em] mb-5">Quick Links</h3>
             <ul className="space-y-3 text-sm">
               {FOOTER_LINKS.quickLinks.map((link) => (
                 <li key={link.href}>
@@ -93,7 +99,7 @@ export function Footer() {
 
           {/* Countries */}
           <div>
-            <h3 className="text-xs font-semibold text-white uppercase tracking-[0.15em] mb-5">Countries</h3>
+            <h3 className="text-[11px] font-semibold text-white uppercase tracking-[0.2em] mb-5">Countries</h3>
             <ul className="space-y-3 text-sm">
               {FOOTER_LINKS.countries.map((c) => (
                 <li key={c.name}>
@@ -107,7 +113,7 @@ export function Footer() {
 
           {/* Customer Service */}
           <div>
-            <h3 className="text-xs font-semibold text-white uppercase tracking-[0.15em] mb-5">Customer Service</h3>
+            <h3 className="text-[11px] font-semibold text-white uppercase tracking-[0.2em] mb-5">Customer Service</h3>
             <ul className="space-y-3 text-sm">
               {FOOTER_LINKS.support.map((link) => (
                 <li key={link.label}>
@@ -118,7 +124,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-14 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs footer-link" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+        <div className="mt-14 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs footer-link" style={{ borderTop: '1px solid rgba(255,255,255,0.14)' }}>
           <span>&copy; 2026 African Fashion. All rights reserved.</span>
           <div className="flex items-center gap-4">
             <CurrencySwitcher />

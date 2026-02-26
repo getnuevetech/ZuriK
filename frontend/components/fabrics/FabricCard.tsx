@@ -22,7 +22,7 @@ export function FabricCard({ fabric, onOrder }: FabricCardProps) {
 
   return (
     <Card hover className="flex flex-col h-full">
-      <div className="relative w-full h-48 bg-gradient-to-br from-secondary-100 to-accent-100 flex items-center justify-center overflow-hidden">
+      <div className="relative w-full h-60 bg-gradient-to-br from-[#efe4d6] to-[#f9f3eb] flex items-center justify-center overflow-hidden">
         {fabric.images && fabric.images.length > 0 ? (
           <Image
             src={fabric.images[0]}
@@ -36,7 +36,7 @@ export function FabricCard({ fabric, onOrder }: FabricCardProps) {
         )}
         {!inStock && (
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-            <span className="text-white font-semibold text-sm bg-black/60 px-3 py-1 rounded-full">Out of Stock</span>
+            <span className="text-white font-semibold text-sm bg-black/60 px-3 py-1 rounded-full uppercase tracking-[0.12em]">Out of Stock</span>
           </div>
         )}
       </div>
@@ -46,17 +46,17 @@ export function FabricCard({ fabric, onOrder }: FabricCardProps) {
           {fabric.patterns?.[0] && <Badge variant="secondary">{fabric.patterns[0]}</Badge>}
           {fabric.seller?.country && <Badge variant="default">{fabric.seller.country}</Badge>}
         </div>
-        <h3 className="font-semibold text-neutral-900 mb-1 line-clamp-1">{fabric.name}</h3>
+        <h3 className="font-heading font-semibold text-[var(--color-primary-dark)] text-lg mb-1 line-clamp-1">{fabric.name}</h3>
         {sellerName && (
-          <p className="text-xs text-neutral-500 mb-1">Seller: {sellerName}</p>
+          <p className="text-xs text-[var(--color-text-muted)] mb-1">Seller: {sellerName}</p>
         )}
         {fabric.description && (
-          <p className="text-sm text-neutral-500 mb-2 line-clamp-2 flex-1">{fabric.description}</p>
+          <p className="text-sm text-[var(--color-text-muted)] mb-2 line-clamp-2 flex-1">{fabric.description}</p>
         )}
         <div className="mt-auto">
           <div className="flex items-center justify-between mb-3">
-            <PriceDisplay amount={fabric.customerPrice} className="text-xl font-bold text-secondary-600" />
-            <span className={`text-xs font-medium ${inStock ? 'text-green-600' : 'text-red-500'}`}>
+            <PriceDisplay amount={fabric.customerPrice} className="text-2xl font-heading font-semibold text-[var(--color-primary)]" />
+            <span className={`text-xs font-semibold uppercase tracking-[0.12em] ${inStock ? 'text-[#2f7d55]' : 'text-red-500'}`}>
               {inStock ? `${fabric.stock} in stock` : 'Out of Stock'}
             </span>
           </div>

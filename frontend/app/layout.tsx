@@ -32,7 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body text-neutral-900 bg-neutral-50 min-h-screen flex flex-col">
+      <body className="site-shell font-body text-neutral-900 min-h-screen flex flex-col antialiased">
         <AuthProvider>
           <CurrencyProvider>
             <CartProvider>
@@ -42,7 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     <AnnouncementBar />
                     <NavbarWrapper />
                     <EmailVerificationBanner />
-                    <main className="flex-1 pb-16 md:pb-0 page-transition">
+                    <main className="site-main flex-1 pb-16 md:pb-0 page-transition">
                       {children}
                     </main>
                     <Footer />

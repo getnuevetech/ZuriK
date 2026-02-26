@@ -25,7 +25,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
 
   return (
     <Card hover className="flex flex-col h-full">
-      <div className="relative w-full h-48 bg-gradient-to-br from-primary-100 to-accent-100 flex items-center justify-center overflow-hidden">
+      <div className="relative w-full h-60 bg-gradient-to-br from-[#ece3d6] to-[#f8f3ea] flex items-center justify-center overflow-hidden">
         {product.images && product.images.length > 0 ? (
           <Image
             src={product.images[0]}
@@ -40,7 +40,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
         <WishlistButton
           productId={product.id}
           size="sm"
-          className="absolute top-2 right-2 bg-white/80 hover:bg-white p-1.5 shadow-sm"
+          className="absolute top-2 right-2 bg-white/90 hover:bg-white p-1.5 shadow-sm border border-[#e5d8c9]"
         />
         <div className="absolute top-2 left-2 z-10">
           <ShareButton
@@ -59,30 +59,30 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           {product.category && <Badge variant="primary">{product.category}</Badge>}
           {product.designer?.country && <Badge variant="secondary">{product.designer.country}</Badge>}
         </div>
-        <h3 className="font-semibold text-neutral-900 mb-1 line-clamp-1">{product.name}</h3>
+        <h3 className="font-heading font-semibold text-[var(--color-primary-dark)] text-lg mb-1 line-clamp-1">{product.name}</h3>
         {/* Rating */}
         {(product.totalReviews ?? 0) > 0 ? (
           <div className="flex items-center gap-1.5 mb-1">
             <StarRating rating={product.averageRating ?? 0} size="sm" />
-            <span className="text-xs text-neutral-500">({product.totalReviews})</span>
+            <span className="text-xs text-[var(--color-text-muted)]">({product.totalReviews})</span>
           </div>
         ) : (
-          <p className="text-xs text-neutral-400 mb-1">No reviews yet</p>
+          <p className="text-xs text-[var(--color-text-muted)]/80 mb-1">No reviews yet</p>
         )}
         {designerName && (
           <Link
             href={`/designers/${product.designer!.id}`}
-            className="text-xs text-primary-600 hover:underline mb-2"
+            className="text-xs text-[var(--color-primary)] hover:underline mb-2"
             onClick={(e) => e.stopPropagation()}
           >
             by {designerName}
           </Link>
         )}
         {product.description && (
-          <p className="text-sm text-neutral-500 mb-3 line-clamp-2 flex-1">{product.description}</p>
+          <p className="text-sm text-[var(--color-text-muted)] mb-3 line-clamp-2 flex-1">{product.description}</p>
         )}
         <div className="mt-auto">
-          <PriceDisplay amount={product.customerPrice} className="text-xl font-bold text-secondary-600 block mb-3" />
+          <PriceDisplay amount={product.customerPrice} className="text-2xl font-heading font-semibold text-[var(--color-primary)] block mb-3" />
           <div className="grid grid-cols-2 gap-2">
             <Link href={`/products/${product.id}`}>
               <Button variant="outline" size="sm" className="w-full">View Details</Button>

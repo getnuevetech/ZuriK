@@ -9,20 +9,20 @@ interface BadgeProps {
 }
 
 const variantClasses: Record<BadgeVariant, string> = {
-  default: 'bg-neutral-100 text-neutral-700',
-  primary: 'bg-primary-100 text-primary-700',
-  secondary: 'bg-secondary-100 text-secondary-700',
-  success: 'bg-green-100 text-green-700',
-  warning: 'bg-yellow-100 text-yellow-700',
-  danger: 'bg-red-100 text-red-700',
-  info: 'bg-blue-100 text-blue-700',
+  default: 'bg-[#f4eee6] text-[#5c5146] border border-[#e0d4c5]',
+  primary: 'bg-[#e9edf7] text-[#233769] border border-[#ccd5eb]',
+  secondary: 'bg-[#f8e8d5] text-[#6f5235] border border-[#e6ceb0]',
+  success: 'bg-[#e5f3ec] text-[#2f7d55] border border-[#c8e8d7]',
+  warning: 'bg-[#fff3d8] text-[#9a6a10] border border-[#f4dfac]',
+  danger: 'bg-[#fde8e8] text-[#b42323] border border-[#f6caca]',
+  info: 'bg-[#e8eef9] text-[#2457aa] border border-[#cad9f2]',
 };
 
 export function Badge({ children, variant = 'default', className = '' }: BadgeProps) {
   return (
     <span
       className={[
-        'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+        'inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-[0.12em]',
         variantClasses[variant],
         className,
       ].join(' ')}

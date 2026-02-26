@@ -30,7 +30,7 @@ export function CurrencySwitcher() {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1 text-xs font-medium text-white/60 hover:text-white transition-colors px-2 py-2"
+        className="flex items-center gap-1 text-xs font-medium text-[var(--color-primary)]/70 hover:text-[var(--color-primary)] transition-colors px-2 py-2"
         aria-label="Select currency"
         aria-expanded={open}
         aria-haspopup="listbox"
@@ -46,7 +46,8 @@ export function CurrencySwitcher() {
 
       {open && (
         <div
-          className="absolute right-0 mt-1 w-52 bg-[#1A1412] border border-white/10 py-1 z-50 shadow-modal max-h-72 overflow-y-auto"
+          className="absolute right-0 mt-2 w-56 bg-[#fffdf9] border py-1 z-50 shadow-modal max-h-72 overflow-y-auto rounded-lg"
+          style={{ borderColor: 'var(--color-border)' }}
           role="listbox"
           aria-label="Currency options"
         >
@@ -54,7 +55,7 @@ export function CurrencySwitcher() {
             <>
               <button
                 onClick={() => handleSelect(detectedCurrency!)}
-                className="w-full text-left flex items-center gap-2 px-3 py-2 text-xs text-[#C97B3A] hover:bg-white/10 transition-colors"
+                className="w-full text-left flex items-center gap-2 px-3 py-2 text-xs text-[var(--color-secondary)] hover:bg-[#f7f1e8] transition-colors"
                 role="option"
                 aria-selected={false}
               >
@@ -63,7 +64,7 @@ export function CurrencySwitcher() {
                 </svg>
                 Reset to local ({detectedCurrency})
               </button>
-              <div className="border-t border-white/10 my-1" />
+              <div className="border-t my-1" style={{ borderColor: 'var(--color-border)' }} />
             </>
           )}
           {SUPPORTED_CURRENCIES.map((c) => (
@@ -72,17 +73,19 @@ export function CurrencySwitcher() {
               onClick={() => handleSelect(c.code)}
               className={[
                 'w-full text-left flex items-center justify-between gap-2 px-3 py-2 text-xs transition-colors',
-                currency === c.code ? 'text-white bg-white/5' : 'text-white/60 hover:bg-white/10 hover:text-white',
+                currency === c.code
+                  ? 'text-[var(--color-primary-dark)] bg-[#f7f1e8]'
+                  : 'text-[var(--color-primary)]/70 hover:bg-[#f7f1e8] hover:text-[var(--color-primary-dark)]',
               ].join(' ')}
               role="option"
               aria-selected={currency === c.code}
             >
               <span>
-                <span className="font-medium text-white/90">{c.code}</span>
-                <span className="text-white/40 ml-1">— {c.label}</span>
+                <span className="font-medium text-[var(--color-primary-dark)]">{c.code}</span>
+                <span className="text-[var(--color-text-muted)] ml-1">— {c.label}</span>
               </span>
               {currency === c.code && (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-[#C97B3A] flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-[var(--color-secondary)] flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               )}

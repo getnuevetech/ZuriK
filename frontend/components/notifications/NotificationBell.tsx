@@ -78,7 +78,7 @@ export function NotificationBell() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className={['relative p-2 text-neutral-200 hover:text-secondary-300 transition-colors rounded-lg', animate ? 'animate-bounce' : ''].join(' ')}
+        className={['relative p-2 text-[var(--color-primary)]/70 hover:text-[var(--color-primary)] transition-colors rounded-lg', animate ? 'animate-bounce' : ''].join(' ')}
         aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -92,14 +92,14 @@ export function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-modal border border-neutral-100 z-50 sm:w-96">
+        <div className="absolute right-0 mt-2 w-80 bg-[#fffdf9] rounded-xl shadow-modal border border-[#e3d7c8] z-50 sm:w-96">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-100">
-            <h3 className="font-semibold text-neutral-800 text-sm">Notifications</h3>
+          <div className="flex items-center justify-between px-4 py-3 border-b border-[#eee3d6]">
+            <h3 className="font-semibold text-[var(--color-primary-dark)] text-sm">Notifications</h3>
             {unreadCount > 0 && (
               <button
                 onClick={handleMarkAllAsRead}
-                className="text-xs text-primary-600 hover:text-primary-800 transition-colors font-medium"
+                className="text-xs text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] transition-colors font-medium"
               >
                 Mark all as read
               </button>
@@ -117,10 +117,10 @@ export function NotificationBell() {
           </div>
 
           {/* Footer */}
-          <div className="border-t border-neutral-100 px-4 py-2.5 text-center">
+          <div className="border-t border-[#eee3d6] px-4 py-2.5 text-center">
             <Link
               href="/notifications"
-              className="text-sm text-primary-600 hover:text-primary-800 transition-colors font-medium"
+              className="text-sm text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] transition-colors font-medium"
               onClick={() => setOpen(false)}
             >
               View all notifications →

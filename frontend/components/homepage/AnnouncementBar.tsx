@@ -29,12 +29,18 @@ export function AnnouncementBar() {
 
   return (
     <div
-      className="w-full flex items-center justify-center gap-2 px-4 py-2 text-xs font-medium relative"
-      style={{ backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}
+      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-[11px] font-semibold relative uppercase tracking-[0.16em] border-b"
+      style={{
+        background: 'linear-gradient(90deg, #f2e2cf 0%, #f7ecde 50%, #f2e2cf 100%)',
+        color: 'var(--color-primary-dark)',
+        borderColor: '#e0cfba',
+      }}
       role="banner"
     >
+      <span className="hidden sm:inline-block opacity-80">New Season</span>
+      <span aria-hidden="true">•</span>
       <span className="text-center">
-        Free Shipping on Orders Over $100 &nbsp;|&nbsp; Use Code: <strong>AFRICAN20</strong>
+        Free shipping over $100 &nbsp;|&nbsp; Code <strong>AFRICAN20</strong>
       </span>
       <button
         onClick={dismiss}

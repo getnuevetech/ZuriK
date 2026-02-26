@@ -13,15 +13,15 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary: 'bg-primary-600 text-white hover:bg-primary-700 focus-visible:ring-primary-500 shadow-sm',
-  secondary: 'bg-secondary-500 text-white hover:bg-secondary-600 focus-visible:ring-secondary-400 shadow-sm',
-  outline: 'border border-primary-600 text-primary-600 hover:bg-primary-50 focus-visible:ring-primary-500',
-  ghost: 'text-neutral-700 hover:bg-neutral-100 focus-visible:ring-neutral-400',
-  danger: 'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500 shadow-sm',
+  primary: 'bg-primary-700 text-white hover:bg-primary-800 focus-visible:ring-primary-500 shadow-sm border border-primary-800',
+  secondary: 'bg-[#f3e5d4] text-primary-700 hover:bg-[#ecd9c4] focus-visible:ring-secondary-400 border border-[#e1ceb8]',
+  outline: 'border border-[#d7cbbd] text-primary-700 hover:bg-[#f7f1e8] focus-visible:ring-primary-500',
+  ghost: 'text-neutral-700 hover:bg-[#f6f0e8] focus-visible:ring-neutral-400',
+  danger: 'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500 shadow-sm border border-red-700',
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: 'px-3 py-1.5 text-sm',
+  sm: 'px-3 py-1.5 text-xs',
   md: 'px-4 py-2 text-sm',
   lg: 'px-6 py-3 text-base',
 };
@@ -33,7 +33,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || loading}
         className={[
-          'inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-150',
+          'inline-flex items-center justify-center gap-2 font-medium rounded-md transition-all duration-150',
+          'tracking-[0.08em] uppercase',
           'active:scale-95',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
           'disabled:opacity-60 disabled:cursor-not-allowed',

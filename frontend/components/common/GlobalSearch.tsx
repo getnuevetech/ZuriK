@@ -161,7 +161,7 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
   return (
     <div className="relative w-full">
       <div className="relative">
-        <svg xmlns="http://www.w3.org/2000/svg" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--color-primary)]/40 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
         </svg>
         <input
@@ -172,7 +172,7 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
           onFocus={() => { if (results || (!query && searchHistory.length > 0)) setOpen(true); }}
           onKeyDown={handleKeyDown}
           placeholder="Search designs, fabrics, designers..."
-          className="w-full pl-9 pr-4 py-2.5 bg-white border border-neutral-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+          className="w-full pl-9 pr-4 py-2.5 bg-[#fffdf9] border border-[#d9cdbd] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-400/40 focus:border-primary-700"
           role="combobox"
           aria-expanded={open}
           aria-autocomplete="list"
@@ -180,7 +180,7 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
         />
         {loading && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            <svg className="animate-spin h-4 w-4 text-neutral-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg className="animate-spin h-4 w-4 text-[var(--color-primary)]/40" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
@@ -192,15 +192,15 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
         <div
           ref={dropdownRef}
           role="listbox"
-          className="absolute top-full left-0 right-0 mt-2 bg-white border border-neutral-200 rounded-xl shadow-modal z-50 max-h-96 overflow-y-auto"
+          className="absolute top-full left-0 right-0 mt-2 bg-[#fffdf9] border border-[#e3d7c8] rounded-xl shadow-modal z-50 max-h-96 overflow-y-auto"
         >
-          <div className="p-3 border-b border-neutral-100 text-xs text-neutral-400">
+          <div className="p-3 border-b border-[#eee3d6] text-xs text-[var(--color-text-muted)]">
             🔍 Results for &quot;{query}&quot;
           </div>
 
           {results.designs.length > 0 && (
             <div>
-              <div className="px-3 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">🎨 Designs</div>
+              <div className="px-3 py-2 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">🎨 Designs</div>
               {results.designs.map((p, i) => {
                 const globalIndex = i;
                 return (
@@ -210,12 +210,12 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
                     aria-selected={activeIndex === globalIndex}
                     onClick={() => navigate(`/designs/${p.id}`)}
                     className={[
-                      'w-full text-left px-3 py-2 text-sm flex justify-between items-center hover:bg-neutral-50 transition-colors',
-                      activeIndex === globalIndex ? 'bg-primary-50' : '',
+                      'w-full text-left px-3 py-2 text-sm flex justify-between items-center hover:bg-[#f7f0e7] transition-colors',
+                      activeIndex === globalIndex ? 'bg-[#edf1fa]' : '',
                     ].join(' ')}
                   >
-                    <span className="text-neutral-800">{p.name}</span>
-                    <span className="text-primary-600 font-medium text-xs">{formatPrice(p.customerPrice ?? 0)}</span>
+                    <span className="text-[var(--color-primary-dark)]">{p.name}</span>
+                    <span className="text-[var(--color-primary)] font-medium text-xs">{formatPrice(p.customerPrice ?? 0)}</span>
                   </button>
                 );
               })}
@@ -224,7 +224,7 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
 
           {results.readyToWear.length > 0 && (
             <div>
-              <div className="px-3 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-t border-neutral-50">👗 Ready-to-Wear</div>
+              <div className="px-3 py-2 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider border-t border-[#f1e8dc]">👗 Ready-to-Wear</div>
               {results.readyToWear.map((p, i) => {
                 const globalIndex = results.designs.length + i;
                 return (
@@ -234,12 +234,12 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
                     aria-selected={activeIndex === globalIndex}
                     onClick={() => navigate(`/ready-to-wear/${p.id}`)}
                     className={[
-                      'w-full text-left px-3 py-2 text-sm flex justify-between items-center hover:bg-neutral-50 transition-colors',
-                      activeIndex === globalIndex ? 'bg-primary-50' : '',
+                      'w-full text-left px-3 py-2 text-sm flex justify-between items-center hover:bg-[#f7f0e7] transition-colors',
+                      activeIndex === globalIndex ? 'bg-[#edf1fa]' : '',
                     ].join(' ')}
                   >
-                    <span className="text-neutral-800">{p.name}</span>
-                    <span className="text-primary-600 font-medium text-xs">{formatPrice(p.customerPrice ?? 0)}</span>
+                    <span className="text-[var(--color-primary-dark)]">{p.name}</span>
+                    <span className="text-[var(--color-primary)] font-medium text-xs">{formatPrice(p.customerPrice ?? 0)}</span>
                   </button>
                 );
               })}
@@ -248,7 +248,7 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
 
           {results.fabrics.length > 0 && (
             <div>
-              <div className="px-3 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-t border-neutral-50">🧵 Fabrics</div>
+              <div className="px-3 py-2 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider border-t border-[#f1e8dc]">🧵 Fabrics</div>
               {results.fabrics.map((f, i) => {
                 const globalIndex = results.designs.length + results.readyToWear.length + i;
                 return (
@@ -258,12 +258,12 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
                     aria-selected={activeIndex === globalIndex}
                     onClick={() => navigate(`/fabrics/${f.id}`)}
                     className={[
-                      'w-full text-left px-3 py-2 text-sm flex justify-between items-center hover:bg-neutral-50 transition-colors',
-                      activeIndex === globalIndex ? 'bg-primary-50' : '',
+                      'w-full text-left px-3 py-2 text-sm flex justify-between items-center hover:bg-[#f7f0e7] transition-colors',
+                      activeIndex === globalIndex ? 'bg-[#edf1fa]' : '',
                     ].join(' ')}
                   >
-                    <span className="text-neutral-800">{f.name}</span>
-                    <span className="text-secondary-600 font-medium text-xs">{formatPrice(f.customerPrice ?? 0)}</span>
+                    <span className="text-[var(--color-primary-dark)]">{f.name}</span>
+                    <span className="text-[var(--color-primary)] font-medium text-xs">{formatPrice(f.customerPrice ?? 0)}</span>
                   </button>
                 );
               })}
@@ -272,7 +272,7 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
 
           {results.designers.length > 0 && (
             <div>
-              <div className="px-3 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-t border-neutral-50">👤 Designers</div>
+              <div className="px-3 py-2 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider border-t border-[#f1e8dc]">👤 Designers</div>
               {results.designers.map((d, i) => {
                 const globalIndex = results.designs.length + results.readyToWear.length + results.fabrics.length + i;
                 return (
@@ -282,22 +282,22 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
                     aria-selected={activeIndex === globalIndex}
                     onClick={() => navigate(`/designers/${d.id}`)}
                     className={[
-                      'w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 transition-colors',
-                      activeIndex === globalIndex ? 'bg-primary-50' : '',
+                      'w-full text-left px-3 py-2 text-sm hover:bg-[#f7f0e7] transition-colors',
+                      activeIndex === globalIndex ? 'bg-[#edf1fa]' : '',
                     ].join(' ')}
                   >
-                    <span className="text-neutral-800">{d.name}</span>
-                    {d.country && <span className="text-neutral-400 text-xs ml-2">({d.country})</span>}
+                    <span className="text-[var(--color-primary-dark)]">{d.name}</span>
+                    {d.country && <span className="text-[var(--color-text-muted)] text-xs ml-2">({d.country})</span>}
                   </button>
                 );
               })}
             </div>
           )}
 
-          <div className="px-3 py-2.5 border-t border-neutral-100">
+          <div className="px-3 py-2.5 border-t border-[#eee3d6]">
             <button
               onClick={() => navigate(`/products?search=${encodeURIComponent(query.trim())}`)}
-              className="w-full text-center text-sm text-primary-600 hover:text-primary-700 font-medium transition-colors"
+              className="w-full text-center text-sm text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] font-medium transition-colors"
             >
               View all results for &quot;{query}&quot; →
             </button>
@@ -306,23 +306,23 @@ export function GlobalSearch({ onClose, autoFocus }: GlobalSearchProps) {
       )}
 
       {open && results && totalResults === 0 && !loading && (
-        <div ref={dropdownRef} className="absolute top-full left-0 right-0 mt-2 bg-white border border-neutral-200 rounded-xl shadow-modal z-50 p-6 text-center text-sm text-neutral-400">
+        <div ref={dropdownRef} className="absolute top-full left-0 right-0 mt-2 bg-[#fffdf9] border border-[#e3d7c8] rounded-xl shadow-modal z-50 p-6 text-center text-sm text-[var(--color-text-muted)]">
           No results found for &quot;{query}&quot;
         </div>
       )}
 
       {open && !query && searchHistory.length > 0 && !results && (
-        <div ref={dropdownRef} className="absolute top-full left-0 right-0 mt-2 bg-white border border-neutral-200 rounded-xl shadow-modal z-50 max-h-64 overflow-y-auto">
-          <div className="px-3 py-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-100">
+        <div ref={dropdownRef} className="absolute top-full left-0 right-0 mt-2 bg-[#fffdf9] border border-[#e3d7c8] rounded-xl shadow-modal z-50 max-h-64 overflow-y-auto">
+          <div className="px-3 py-2 text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider border-b border-[#eee3d6]">
             Recent searches
           </div>
           {searchHistory.map((h) => (
             <button
               key={h}
               onClick={() => { setQuery(h); }}
-              className="w-full text-left px-4 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 flex items-center gap-2 transition-colors"
+              className="w-full text-left px-4 py-2.5 text-sm text-[var(--color-primary-dark)] hover:bg-[#f7f0e7] flex items-center gap-2 transition-colors"
             >
-              <span className="text-neutral-400">🕐</span>
+              <span className="text-[var(--color-text-muted)]">🕐</span>
               {h}
             </button>
           ))}

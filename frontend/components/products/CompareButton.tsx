@@ -31,11 +31,11 @@ export function CompareButton({ product, size = 'sm', className = '' }: CompareB
       onClick={handleClick}
       aria-label={inComparison ? 'Remove from comparison' : 'Add to comparison'}
       className={[
-        'inline-flex items-center gap-1 font-medium rounded-lg border transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1',
+        'inline-flex items-center gap-1 font-medium rounded-md border transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 uppercase tracking-[0.08em]',
         sizeClasses,
         inComparison
-          ? 'bg-indigo-600 border-indigo-600 text-white hover:bg-indigo-700'
-          : 'border-indigo-300 text-indigo-600 hover:bg-indigo-50',
+          ? 'bg-[var(--color-primary)] border-[var(--color-primary)] text-white hover:bg-[var(--color-primary-dark)]'
+          : 'border-[#ccd5ea] text-[var(--color-primary)] hover:bg-[#edf1fa]',
         className,
       ].join(' ')}
     >

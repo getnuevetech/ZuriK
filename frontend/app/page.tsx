@@ -29,8 +29,8 @@ export default function Home() {
   return (
     <div className="mueble-home min-h-screen">
       <HeroBannerCarousel />
-      <section className="px-4 -mt-12 relative z-20">
-        <div className="max-w-7xl mx-auto admin-surface px-8 py-8 md:px-10 md:py-10">
+      <section className="px-4 -mt-16 relative z-20">
+        <div className="max-w-7xl mx-auto catalog-hero px-8 py-8 md:px-10 md:py-10">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             <div className="lg:col-span-2">
               <p className="mueble-eyebrow mb-3">Curated marketplace</p>

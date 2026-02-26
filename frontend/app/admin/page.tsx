@@ -125,11 +125,11 @@ export default function AdminDashboardPage() {
       />
 
       <section className="admin-surface p-6 md:p-8">
-        <p className="text-[11px] uppercase tracking-[0.2em] text-[#9f8f80] mb-2">Studio overview</p>
-        <h2 className="font-heading text-3xl text-[#1f1a15] font-semibold mb-3">
+        <p className="text-[11px] uppercase tracking-[0.2em] text-[#7d8fbb] mb-2">Studio overview</p>
+        <h2 className="font-heading text-3xl text-[#1f2f62] font-semibold mb-3">
           Performance at a glance
         </h2>
-        <p className="text-sm md:text-base text-[#706657] max-w-3xl">
+        <p className="text-sm md:text-base text-[#6e7fa8] max-w-3xl">
           Monitor revenue, orders, and customer activity in a single view designed for calm,
           fast operational decisions.
         </p>
@@ -162,7 +162,7 @@ export default function AdminDashboardPage() {
       {/* Revenue chart */}
       {overview?.revenueByMonth && overview.revenueByMonth.length > 0 && (
         <div className="admin-surface p-6">
-          <h2 className="text-base font-semibold text-[#2a221b] mb-4 font-heading">Revenue by Month</h2>
+          <h2 className="text-base font-semibold text-[#23376a] mb-4 font-heading">Revenue by Month</h2>
           <SimpleBarChart data={overview.revenueByMonth} height={180} color="amber" />
         </div>
       )}
@@ -170,12 +170,12 @@ export default function AdminDashboardPage() {
       {/* Orders by status */}
       {overview?.ordersByStatus && Object.keys(overview.ordersByStatus).length > 0 && (
         <div className="admin-surface p-6">
-          <h2 className="text-base font-semibold text-[#2a221b] mb-4 font-heading">Orders by Status</h2>
+          <h2 className="text-base font-semibold text-[#23376a] mb-4 font-heading">Orders by Status</h2>
           <div className="flex flex-wrap gap-3">
             {Object.entries(overview.ordersByStatus).map(([status, count]) => (
               <div key={status} className="flex items-center gap-2">
                 <StatusBadge status={status} />
-                <span className="text-sm text-[#6f6457] font-medium">{count}</span>
+                <span className="text-sm text-[#6378a8] font-medium">{count}</span>
               </div>
             ))}
           </div>
@@ -184,7 +184,7 @@ export default function AdminDashboardPage() {
 
       {/* Recent orders table */}
       <div className="admin-surface p-6">
-        <h2 className="text-base font-semibold text-[#2a221b] mb-4 font-heading">Recent Orders</h2>
+        <h2 className="text-base font-semibold text-[#23376a] mb-4 font-heading">Recent Orders</h2>
         <DataTable<RecentOrder>
           columns={recentOrderColumns}
           data={overview?.recentOrders ?? []}
@@ -195,16 +195,16 @@ export default function AdminDashboardPage() {
 
       {/* Quick Actions */}
       <div className="admin-surface p-6">
-        <h2 className="text-base font-semibold text-[#2a221b] mb-4 font-heading">Quick Actions</h2>
+        <h2 className="text-base font-semibold text-[#23376a] mb-4 font-heading">Quick Actions</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {QUICK_ACTIONS.map((action) => (
             <Link
               key={action.href}
               href={action.href}
-              className="flex items-center gap-3 p-4 rounded-xl border border-[#e3d7ca] bg-white/70 hover:bg-[#f5ece2] hover:border-[#cfb79d] transition-colors"
+              className="flex items-center gap-3 p-4 rounded-xl border border-[#d4deef] bg-white/80 hover:bg-[#eef3ff] hover:border-[#aac0eb] transition-colors"
             >
               <span className="text-2xl">{action.icon}</span>
-              <span className="text-sm font-medium text-[#4a4137]">{action.label}</span>
+              <span className="text-sm font-medium text-[#385489]">{action.label}</span>
             </Link>
           ))}
         </div>

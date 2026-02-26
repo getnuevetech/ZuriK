@@ -144,10 +144,13 @@ function FabricsContent() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="mb-8">
-        <h1 className="font-heading text-4xl font-bold text-neutral-900 mb-2">Premium Fabrics</h1>
-        <p className="text-neutral-500">Authentic African textiles — Ankara, Kente, Adire and more</p>
+    <div className="catalog-shell">
+      <div className="catalog-hero mb-8">
+        <p className="text-[11px] uppercase tracking-[0.2em] text-[var(--color-primary)]/70 font-semibold mb-2">
+          Textile Library
+        </p>
+        <h1 className="catalog-hero-title font-heading font-semibold mb-2">Premium Fabrics</h1>
+        <p className="catalog-hero-copy">Authentic African textiles — Ankara, Kente, Adire and more.</p>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
@@ -177,7 +180,7 @@ function FabricsContent() {
         />
       ) : (
         <>
-          <p className="text-sm text-neutral-500 mb-4">
+          <p className="text-sm text-[var(--color-text-muted)] mb-4">
             {total} fabric{total !== 1 ? 's' : ''} found
             {totalPages > 1 && ` — page ${page} of ${totalPages}`}
           </p>
@@ -195,7 +198,7 @@ function FabricsContent() {
 
 export default function FabricsPage() {
   return (
-    <Suspense fallback={<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"><SkeletonGrid count={6} columns="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" /></div>}>
+    <Suspense fallback={<div className="catalog-shell"><SkeletonGrid count={6} columns="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" /></div>}>
       <FabricsContent />
     </Suspense>
   );
