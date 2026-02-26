@@ -29,6 +29,14 @@ const navLinks = [
   { href: '/designers', label: 'Designers' },
 ];
 
+const homeCategories = [
+  { href: '/', label: 'All' },
+  { href: '/products', label: 'Dresses' },
+  { href: '/fabrics', label: 'Fabrics' },
+  { href: '/products?category=Accessories', label: 'Accessories' },
+  { href: '/designers', label: 'Designers' },
+];
+
 export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [shopOpen, setShopOpen] = useState(false);
@@ -67,6 +75,89 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
   const displayName = authUser?.firstName
     ? `${authUser.firstName} ${authUser.lastName ?? ''}`.trim()
     : authUser?.email;
+
+  if (pathname === '/') {
+    return (
+      <nav
+        className="fixed top-10 left-0 right-0 z-40 bg-white border-b border-gray-200"
+        style={{ borderColor: 'var(--color-border)' }}
+      >
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <Link href="/" className="text-2xl font-bold text-[#1a237e] font-heading">
+              African Fashion
+            </Link>
+
+            <div className="hidden lg:flex items-center gap-8">
+              {homeCategories.map((cat) => (
+                <Link
+                  key={cat.label}
+                  href={cat.href}
+                  className="text-[#1a237e] hover:text-[#00c853] transition-colors text-sm font-medium"
+                >
+                  {cat.label}
+                </Link>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-4">
+              <button className="text-[#1a237e] hover:text-[#00c853] transition-colors" aria-label="Search">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+                </svg>
+              </button>
+              <Link href="/cart" className="text-[#1a237e] hover:text-[#00c853] transition-colors relative" aria-label="Cart">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#00c853] text-white text-[10px] rounded-full flex items-center justify-center">
+                  {cartCount > 9 ? '9+' : cartCount}
+                </span>
+              </Link>
+              <button
+                className="lg:hidden text-[#1a237e]"
+                onClick={() => setMobileOpen((v) => !v)}
+                aria-label="Toggle menu"
+                aria-expanded={mobileOpen}
+              >
+                {mobileOpen ? (
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                ) : (
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                )}
+              </button>
+              <button className="hidden lg:block text-[#1a237e] hover:text-[#00c853] transition-colors" aria-label="Menu">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {mobileOpen && (
+          <div className="lg:hidden bg-white border-t border-gray-200">
+            <div className="max-w-[1400px] mx-auto px-4 py-4">
+              {homeCategories.map((cat) => (
+                <Link
+                  key={cat.label}
+                  href={cat.href}
+                  className="block py-2 text-[#1a237e] hover:text-[#00c853] transition-colors"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {cat.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+      </nav>
+    );
+  }
 
   return (
     <nav

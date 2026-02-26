@@ -32,16 +32,16 @@
 }
 
 :root {
-  --color-primary: #1f2f62;
-  --color-primary-dark: #16234b;
-  --color-secondary: #d3a26d;
-  --color-accent: #2e4377;
-  --color-background: #f6f2ec;
-  --color-neutral-bg: #eee7dd;
-  --color-text: #141a2c;
-  --color-text-muted: #70695f;
+  --color-primary: #1a237e;
+  --color-primary-dark: #0d1450;
+  --color-secondary: #00c853;
+  --color-accent: #00b248;
+  --color-background: #ffffff;
+  --color-neutral-bg: #f5f5f5;
+  --color-text: #1a237e;
+  --color-text-muted: #666666;
   --color-surface: #ffffff;
-  --color-border: #e4dacd;
+  --color-border: #e0e0e0;
   --color-success: #2f7d55;
   --font-heading: 'Playfair Display', Georgia, serif;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
@@ -54,9 +54,7 @@
 
   body {
     @apply font-body text-neutral-900;
-    background:
-      radial-gradient(1400px 680px at 50% -20%, rgba(31, 47, 98, 0.08), transparent 65%),
-      linear-gradient(180deg, #f9f6f1 0%, var(--color-background) 35%, #f2ece4 100%);
+    background: var(--color-background);
     color: var(--color-text);
     min-height: 100vh;
   }
