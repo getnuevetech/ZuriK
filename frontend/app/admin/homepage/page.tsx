@@ -116,6 +116,7 @@ export default function AdminHomepagePage() {
     BOLD_VIBRANT: { label: 'Bold & Vibrant', color: '#D4A017' },
     WARM_EARTHY: { label: 'Warm & Earthy', color: '#E07A2F' },
     MODERN_PUNCHY: { label: 'Modern & Punchy', color: '#1B4965' },
+    MUEBLE_MODERN: { label: 'Modern & Clean', color: '#1E3A5F' },
   };
 
   return (
@@ -155,7 +156,7 @@ export default function AdminHomepagePage() {
         >
           {THEME_LABELS[themeKey]?.label ?? themeKey}
         </span>
-        <Link href="/admin/homepage/theme" className="text-sm text-indigo-600 hover:underline ml-auto">
+        <Link href="/admin/homepage/theme" className="text-sm text-[#1E3A5F] hover:underline ml-auto">
           Change theme →
         </Link>
       </div>
@@ -167,7 +168,7 @@ export default function AdminHomepagePage() {
           <button
             onClick={saveLayout}
             disabled={saving}
-            className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 disabled:opacity-60 transition-colors"
+            className="px-4 py-2 bg-[#1E3A5F] text-white text-sm rounded-lg hover:bg-[#162D4A] disabled:opacity-60 transition-colors"
           >
             {saving ? 'Saving…' : 'Save Order'}
           </button>

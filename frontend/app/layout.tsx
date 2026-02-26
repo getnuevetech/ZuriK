@@ -12,6 +12,7 @@ import { Footer } from '../components/layout/Footer';
 import { MobileBottomTabs } from '../components/layout/MobileBottomTabs';
 import { ComparisonBar } from '../components/products/ComparisonBar';
 import { EmailVerificationBanner } from '../components/common/EmailVerificationBanner';
+import { AnnouncementBar } from '../components/homepage/AnnouncementBar';
 
 export const metadata: Metadata = {
   title: 'African Fashion — Premium African Marketplace',
@@ -38,6 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <WishlistProvider>
                 <ToastProvider>
                   <ComparisonProvider>
+                    <AnnouncementBar />
                     <NavbarWrapper />
                     <EmailVerificationBanner />
                     <main className="flex-1 pb-16 md:pb-0 page-transition">

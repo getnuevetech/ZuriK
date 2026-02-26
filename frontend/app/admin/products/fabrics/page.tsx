@@ -229,7 +229,7 @@ export default function AdminFabricsPage() {
           { label: 'Fabrics' },
         ]}
         actions={
-          <button onClick={openCreate} className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700">
+          <button onClick={openCreate} className="px-4 py-2 bg-[#1E3A5F] text-white text-sm rounded-lg hover:bg-[#162D4A]">
             + Create
           </button>
         }
@@ -238,31 +238,31 @@ export default function AdminFabricsPage() {
       {/* Filters */}
       <div className="bg-white rounded-xl border border-neutral-200 p-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
         <input
-          className="col-span-2 border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+          className="col-span-2 border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]"
           placeholder="Search by name…"
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
         />
         <input
-          className="border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+          className="border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]"
           placeholder="Filter by country…"
           value={country}
           onChange={(e) => { setCountry(e.target.value); setPage(1); }}
         />
         <input
-          className="border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+          className="border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]"
           placeholder="Filter by seller…"
           value={seller}
           onChange={(e) => { setSeller(e.target.value); setPage(1); }}
         />
         <input
-          className="border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+          className="border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]"
           placeholder="Filter by material…"
           value={material}
           onChange={(e) => { setMaterial(e.target.value); setPage(1); }}
         />
         <select
-          className="border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+          className="border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]"
           value={stockFilter}
           onChange={(e) => { setStockFilter(e.target.value as StockFilter); setPage(1); }}
         >
@@ -272,7 +272,7 @@ export default function AdminFabricsPage() {
           <option value="out_of_stock">Out of Stock</option>
         </select>
         <select
-          className="border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+          className="border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]"
           value={statusFilter}
           onChange={(e) => { setStatusFilter(e.target.value as StatusFilter); setPage(1); }}
         >
@@ -281,7 +281,7 @@ export default function AdminFabricsPage() {
           <option value="inactive">Inactive</option>
         </select>
         <select
-          className="border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+          className="border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]"
           value={featuredFilter}
           onChange={(e) => { setFeaturedFilter(e.target.value as FeaturedFilter); setPage(1); }}
         >
@@ -372,7 +372,7 @@ export default function AdminFabricsPage() {
                         <div className="flex gap-2 whitespace-nowrap">
                           <button
                             onClick={() => openDetail(fabric)}
-                            className="text-indigo-600 hover:underline text-xs"
+                            className="text-[#1E3A5F] hover:underline text-xs"
                           >
                             View
                           </button>
@@ -482,7 +482,7 @@ export default function AdminFabricsPage() {
             <div className="flex justify-end gap-3 pt-2">
               <button
                 onClick={() => openEdit(selectedFabric)}
-                className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700"
+                className="px-4 py-2 bg-[#1E3A5F] text-white text-sm rounded-lg hover:bg-[#162D4A]"
               >
                 Edit
               </button>
@@ -510,7 +510,7 @@ export default function AdminFabricsPage() {
               <div>
                 <label className="block text-xs font-medium text-neutral-600 mb-1">Name</label>
                 <input
-                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]"
                   value={editForm.name ?? ''}
                   onChange={(e) => setEditForm((p) => ({ ...p, name: e.target.value }))}
                 />
@@ -519,7 +519,7 @@ export default function AdminFabricsPage() {
                 <label className="block text-xs font-medium text-neutral-600 mb-1">Description</label>
                 <textarea
                   rows={3}
-                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]"
                   value={editForm.description ?? ''}
                   onChange={(e) => setEditForm((p) => ({ ...p, description: e.target.value }))}
                 />
@@ -528,7 +528,7 @@ export default function AdminFabricsPage() {
                 <div>
                   <label className="block text-xs font-medium text-neutral-600 mb-1">Type</label>
                   <input
-                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]"
                     value={editForm.type ?? ''}
                     onChange={(e) => setEditForm((p) => ({ ...p, type: e.target.value }))}
                   />
@@ -536,7 +536,7 @@ export default function AdminFabricsPage() {
                 <div>
                   <label className="block text-xs font-medium text-neutral-600 mb-1">Material</label>
                   <input
-                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]"
                     value={editForm.material ?? ''}
                     onChange={(e) => setEditForm((p) => ({ ...p, material: e.target.value }))}
                   />
@@ -547,7 +547,7 @@ export default function AdminFabricsPage() {
                   <label className="block text-xs font-medium text-neutral-600 mb-1">Customer Price ({currencySymbol})</label>
                   <input
                     type="number"
-                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]"
                     value={editForm.customerPrice ?? ''}
                     onChange={(e) => setEditForm((p) => ({ ...p, customerPrice: Number(e.target.value) }))}
                   />
@@ -556,7 +556,7 @@ export default function AdminFabricsPage() {
                   <label className="block text-xs font-medium text-neutral-600 mb-1">Seller Price ({currencySymbol})</label>
                   <input
                     type="number"
-                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]"
                     value={editForm.sellerPrice ?? ''}
                     onChange={(e) => setEditForm((p) => ({ ...p, sellerPrice: Number(e.target.value) }))}
                   />
@@ -567,7 +567,7 @@ export default function AdminFabricsPage() {
                   <label className="block text-xs font-medium text-neutral-600 mb-1">Stock</label>
                   <input
                     type="number"
-                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]"
                     value={editForm.stock ?? ''}
                     onChange={(e) => setEditForm((p) => ({ ...p, stock: Number(e.target.value) }))}
                   />
@@ -576,7 +576,7 @@ export default function AdminFabricsPage() {
                   <label className="block text-xs font-medium text-neutral-600 mb-1">Width (m)</label>
                   <input
                     type="number"
-                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]"
                     value={editForm.width ?? ''}
                     onChange={(e) => setEditForm((p) => ({ ...p, width: Number(e.target.value) }))}
                   />
@@ -585,7 +585,7 @@ export default function AdminFabricsPage() {
               <div>
                 <label className="block text-xs font-medium text-neutral-600 mb-1">Colors (comma-separated)</label>
                 <input
-                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]"
                   value={editForm.colors?.join(', ') ?? ''}
                   onChange={(e) =>
                     setEditForm((p) => ({
@@ -598,7 +598,7 @@ export default function AdminFabricsPage() {
               <div>
                 <label className="block text-xs font-medium text-neutral-600 mb-1">Patterns (comma-separated)</label>
                 <input
-                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400"
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]"
                   value={editForm.patterns?.join(', ') ?? ''}
                   onChange={(e) =>
                     setEditForm((p) => ({
@@ -640,7 +640,7 @@ export default function AdminFabricsPage() {
               <button
                 onClick={handleSaveEdit}
                 disabled={saving}
-                className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 disabled:opacity-60"
+                className="px-4 py-2 bg-[#1E3A5F] text-white text-sm rounded-lg hover:bg-[#162D4A] disabled:opacity-60"
               >
                 {saving ? 'Saving…' : 'Save'}
               </button>
@@ -661,55 +661,55 @@ export default function AdminFabricsPage() {
             <div className="space-y-3">
               <div>
                 <label className="block text-xs font-medium text-neutral-600 mb-1">Name *</label>
-                <input className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.name ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, name: e.target.value }))} />
+                <input className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]" value={createForm.name ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, name: e.target.value }))} />
               </div>
               <div>
                 <label className="block text-xs font-medium text-neutral-600 mb-1">Description *</label>
-                <textarea rows={3} className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.description ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, description: e.target.value }))} />
+                <textarea rows={3} className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]" value={createForm.description ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, description: e.target.value }))} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-neutral-600 mb-1">Type</label>
-                  <input className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.type ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, type: e.target.value }))} />
+                  <input className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]" value={createForm.type ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, type: e.target.value }))} />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-neutral-600 mb-1">Material</label>
-                  <input className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.material ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, material: e.target.value }))} />
+                  <input className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]" value={createForm.material ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, material: e.target.value }))} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-neutral-600 mb-1">Customer Price ({currencySymbol}) *</label>
-                  <input type="number" className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.customerPrice ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, customerPrice: Number(e.target.value) }))} />
+                  <input type="number" className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]" value={createForm.customerPrice ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, customerPrice: Number(e.target.value) }))} />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-neutral-600 mb-1">Seller Price ({currencySymbol}) *</label>
-                  <input type="number" className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.sellerPrice ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, sellerPrice: Number(e.target.value) }))} />
+                  <input type="number" className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]" value={createForm.sellerPrice ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, sellerPrice: Number(e.target.value) }))} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-neutral-600 mb-1">Stock</label>
-                  <input type="number" className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.stock ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, stock: Number(e.target.value) }))} />
+                  <input type="number" className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]" value={createForm.stock ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, stock: Number(e.target.value) }))} />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-neutral-600 mb-1">Width (m)</label>
-                  <input type="number" className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.width ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, width: Number(e.target.value) }))} />
+                  <input type="number" className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]" value={createForm.width ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, width: Number(e.target.value) }))} />
                 </div>
               </div>
               <div>
                 <label className="block text-xs font-medium text-neutral-600 mb-1">Colors (comma-separated)</label>
-                <input className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.colors?.join(', ') ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, colors: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) }))} />
+                <input className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]" value={createForm.colors?.join(', ') ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, colors: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) }))} />
               </div>
               <div>
                 <label className="block text-xs font-medium text-neutral-600 mb-1">Patterns (comma-separated)</label>
-                <input className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-400" value={createForm.patterns?.join(', ') ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, patterns: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) }))} />
+                <input className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#1E3A5F]" value={createForm.patterns?.join(', ') ?? ''} onChange={(e) => setCreateForm((p) => ({ ...p, patterns: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) }))} />
               </div>
             </div>
 
             <div className="flex justify-end gap-3 pt-2">
               <button onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm text-neutral-600 border border-neutral-200 rounded-lg">Cancel</button>
-              <button onClick={handleCreate} disabled={saving} className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 disabled:opacity-60">{saving ? 'Creating…' : 'Create'}</button>
+              <button onClick={handleCreate} disabled={saving} className="px-4 py-2 bg-[#1E3A5F] text-white text-sm rounded-lg hover:bg-[#162D4A] disabled:opacity-60">{saving ? 'Creating…' : 'Create'}</button>
             </div>
           </div>
         </div>

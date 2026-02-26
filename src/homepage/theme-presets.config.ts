@@ -72,4 +72,21 @@ export const THEME_PRESETS: ThemePreset[] = [
       error: '#FF6B35',
     },
   },
+  {
+    name: 'Modern & Clean',
+    key: ThemeKey.MUEBLE_MODERN,
+    colors: {
+      primary: '#1E3A5F',
+      secondary: '#FFD100',
+      accent: '#1E3A5F',
+      dark: '#162D4A',
+      lightBg: '#F9FAFB',
+      text: '#1E1E1E',
+      textLight: '#6B7280',
+      buttonText: '#FFFFFF',
+      success: '#10B981',
+      warning: '#F59E0B',
+      error: '#EF4444',
+    },
+  },
 ];

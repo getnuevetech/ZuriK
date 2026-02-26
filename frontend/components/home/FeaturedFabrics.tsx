@@ -17,17 +17,32 @@ interface CardProps {
 
 function FabricCard({ image, name, price, href }: CardProps) {
   return (
-    <Link href={href} className="group block rounded-2xl overflow-hidden border border-neutral-100 hover:shadow-lg transition-shadow">
-      <div className="aspect-[3/4] bg-neutral-50 overflow-hidden relative">
+    <Link href={href} className="group block bg-white rounded-xl overflow-hidden border hover:shadow-lg transition-all duration-300" style={{ borderColor: 'var(--color-border)' }}>
+      <div className="aspect-[3/4] overflow-hidden relative rounded-t-xl">
         {image ? (
           <Image src={image} alt={name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 640px) 50vw, 25vw" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-4xl">🧵</div>
+          <div className="w-full h-full flex items-center justify-center text-4xl" style={{ backgroundColor: 'var(--color-surface)' }}>🧵</div>
         )}
+        {/* Wishlist heart */}
+        <div className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+          </svg>
+        </div>
       </div>
       <div className="p-4">
-        <h3 className="font-semibold text-neutral-900 text-sm leading-tight mb-1 line-clamp-1">{name}</h3>
-        <PriceDisplay amount={price} className="text-indigo-600 font-bold text-sm" />
+        <h3 className="font-medium text-neutral-900 text-sm leading-tight mb-1 truncate">{name}</h3>
+        <span style={{ color: 'var(--color-primary)' }}>
+          <PriceDisplay amount={price} className="font-semibold text-base" />
+        </span>
+        <button
+          className="mt-3 w-full py-2 text-sm font-semibold text-white rounded-lg transition-opacity hover:opacity-90"
+          style={{ backgroundColor: 'var(--color-primary)' }}
+          onClick={(e) => { e.preventDefault(); window.location.href = href; }}
+        >
+          Add to Cart
+        </button>
       </div>
     </Link>
   );
@@ -66,15 +81,16 @@ export function FeaturedFabrics() {
   const displayFabrics = fabrics.length > 0 ? fabrics : DEMO_FABRICS;
 
   return (
-    <section className="py-16 px-4 bg-white">
+    <section className="py-16 px-4" style={{ backgroundColor: 'var(--color-surface)' }}>
       <div className="max-w-7xl mx-auto">
         <div className="flex items-end justify-between mb-10">
           <div>
             <p className="text-xs font-semibold text-neutral-400 uppercase tracking-[0.2em] mb-2">Premium Materials</p>
             <h2 className="font-heading text-3xl font-bold text-neutral-900">Featured Fabrics</h2>
+            <div className="mt-2 h-1 w-12 rounded" style={{ backgroundColor: 'var(--color-secondary)' }} />
           </div>
-          <Link href="/fabrics" className="hidden md:inline text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors">
-            Browse All →
+          <Link href="/fabrics" className="hidden md:inline text-sm font-semibold uppercase tracking-wider transition-colors hover:opacity-80" style={{ color: 'var(--color-primary)' }}>
+            View All →
           </Link>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
