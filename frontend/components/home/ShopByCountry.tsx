@@ -100,16 +100,16 @@ export function ShopByCountry() {
   const cardWidthPct = 100 / visibleCount;
 
   return (
-    <section className="py-24 px-4" style={{ backgroundColor: '#F9F6F2' }} aria-labelledby="shop-by-country-heading">
+    <section className="py-24 px-4" style={{ backgroundColor: '#efe9df' }} aria-labelledby="shop-by-country-heading">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-14">
-          <span className="inline-block border border-[#C97B3A]/40 text-[#C97B3A] text-xs font-medium px-4 py-1.5 rounded-full mb-4">
+          <span className="inline-block border border-[var(--color-secondary)]/40 text-[var(--color-secondary)] text-xs font-medium px-4 py-1.5 rounded-full mb-4 uppercase tracking-[0.2em]">
             Explore the Continent
           </span>
-          <h2 id="shop-by-country-heading" className="font-heading text-4xl font-bold text-neutral-900 tracking-tight mb-4">
+          <h2 id="shop-by-country-heading" className="font-heading text-4xl font-semibold mueble-section-title mb-4">
             Shop by Country
           </h2>
-          <p className="text-neutral-500 text-base max-w-md mx-auto font-light">
+          <p className="text-[var(--color-text-muted)] text-base max-w-xl mx-auto font-light">
             Discover traditional fabrics, designs, and artisans from across the continent
           </p>
         </div>
@@ -123,8 +123,8 @@ export function ShopByCountry() {
             <button
               onClick={() => setIndex((i) => Math.max(0, i - 1))}
               aria-label="Previous"
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-10 h-10 flex items-center justify-center bg-white border border-neutral-200 shadow-md hover:shadow-lg text-neutral-700 transition-all"
-              style={{ borderRadius: '50%' }}
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-10 h-10 flex items-center justify-center bg-white border rounded-full shadow-md hover:shadow-lg text-neutral-700 transition-all"
+              style={{ borderColor: 'var(--color-border)' }}
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -145,7 +145,7 @@ export function ShopByCountry() {
                 >
                   <Link href={`/products?country=${encodeURIComponent(country.name)}`} className="group block">
                     {/* Image container - sharp corners */}
-                    <div className="relative overflow-hidden bg-neutral-200" style={{ aspectRatio: settings.aspectRatio }}>
+                    <div className="relative overflow-hidden bg-neutral-200 rounded-2xl border border-[var(--color-border)] shadow-[0_8px_20px_rgba(39,28,17,0.08)]" style={{ aspectRatio: settings.aspectRatio }}>
                       <span className="absolute top-3 left-3 z-10 text-3xl leading-none">{country.flag}</span>
                       <Image
                         src={country.image}
@@ -155,15 +155,15 @@ export function ShopByCountry() {
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 33vw, 25vw"
                       />
                       {/* Gradient overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent" />
                       {/* Text overlay at bottom of image */}
                       <div className="absolute bottom-0 left-0 right-0 px-3 pb-3 z-10">
-                        <div className="font-bold text-white text-base leading-tight">{country.name}</div>
+                        <div className="font-semibold text-white text-lg leading-tight font-heading">{country.name}</div>
                         {country.fabrics && (
                           <div className="text-white/70 text-xs mt-0.5 font-light">{country.fabrics.join(' · ')}</div>
                         )}
                         {country.productCount != null && country.productCount > 0 && (
-                          <div className="mt-1.5 inline-block text-xs text-white/80 bg-white/20 px-2 py-0.5 rounded-full">
+                          <div className="mt-1.5 inline-block text-[11px] text-white/90 bg-black/30 px-2.5 py-0.5 rounded-full uppercase tracking-widest">
                             {country.productCount} products
                           </div>
                         )}
@@ -179,8 +179,8 @@ export function ShopByCountry() {
             <button
               onClick={() => setIndex((i) => Math.min(maxIndex, i + 1))}
               aria-label="Next"
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-10 h-10 flex items-center justify-center bg-white border border-neutral-200 shadow-md hover:shadow-lg text-neutral-700 transition-all"
-              style={{ borderRadius: '50%' }}
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-10 h-10 flex items-center justify-center bg-white border rounded-full shadow-md hover:shadow-lg text-neutral-700 transition-all"
+              style={{ borderColor: 'var(--color-border)' }}
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />

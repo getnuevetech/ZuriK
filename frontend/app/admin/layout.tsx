@@ -65,16 +65,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const toggleSidebar = () => setSidebarCollapsed((prev: boolean) => !prev);
 
   return (
-    <div className="flex h-screen bg-neutral-50">
+    <div className="flex h-screen admin-shell">
       <AdminSidebar
         items={ADMIN_NAV_ITEMS}
         collapsed={sidebarCollapsed}
         onToggle={toggleSidebar}
       />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white border-b border-neutral-200 px-4 py-3 flex items-center justify-between flex-shrink-0">
+        <header className="bg-[#fffaf4]/90 backdrop-blur-sm border-b border-[#e4d8cb] px-4 py-3 flex items-center justify-between flex-shrink-0">
           <button
-            className="md:hidden text-neutral-600 hover:text-neutral-900 p-1 rounded"
+            className="md:hidden text-[#5c5247] hover:text-[#201a15] p-1 rounded"
             onClick={toggleSidebar}
             aria-label="Open sidebar"
           >
@@ -84,18 +84,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </button>
           <div className="hidden md:block" />
           <div className="flex items-center gap-4">
-            <span className="text-sm text-neutral-600">
+            <span className="text-sm text-[#5f5549]">
               {user?.firstName ? `${user.firstName} ${user.lastName ?? ''}`.trim() : user?.email}
             </span>
             <button
               onClick={logout}
-              className="text-sm text-neutral-500 hover:text-neutral-900 border border-neutral-200 rounded px-3 py-1.5 transition-colors"
+              className="text-xs uppercase tracking-[0.18em] text-[#4f463b] hover:text-[#201a15] border border-[#d9cdbc] rounded-lg px-3 py-2 transition-colors"
             >
               Logout
             </button>
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">{children}</main>
       </div>
     </div>
   );

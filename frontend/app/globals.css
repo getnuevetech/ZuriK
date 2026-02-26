@@ -32,16 +32,16 @@
 }
 
 :root {
-  --color-primary: #1E3A5F;
-  --color-primary-dark: #162D4A;
-  --color-secondary: #FFD100;
-  --color-accent: #1E3A5F;
-  --color-background: #FFFFFF;
-  --color-neutral-bg: #F9FAFB;
-  --color-text: #1E1E1E;
-  --color-text-muted: #6B7280;
-  --color-surface: #F9FAFB;
-  --color-border: #E5E7EB;
+  --color-primary: #23345f;
+  --color-primary-dark: #17243f;
+  --color-secondary: #c88b49;
+  --color-accent: #23345f;
+  --color-background: #f7f3ee;
+  --color-neutral-bg: #f1ebe4;
+  --color-text: #1f1a17;
+  --color-text-muted: #756b61;
+  --color-surface: #fffdfa;
+  --color-border: #e6dbcf;
   --font-heading: 'Playfair Display', Georgia, serif;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
 }
@@ -52,7 +52,9 @@
   }
 
   body {
-    @apply font-body text-neutral-900 bg-neutral-50;
+    @apply font-body text-neutral-900;
+    background: var(--color-background);
+    color: var(--color-text);
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -62,6 +64,61 @@
   *:focus-visible {
     @apply outline-2 outline-offset-2 outline-primary-500;
   }
+}
+
+.mueble-home {
+  background:
+    radial-gradient(1200px 500px at 100% 0%, rgba(200, 139, 73, 0.12), transparent 62%),
+    linear-gradient(180deg, #f5f1ea 0%, #faf8f4 35%, #f4eee6 100%);
+}
+
+.mueble-home .mueble-eyebrow {
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-secondary);
+  font-weight: 600;
+  font-size: 0.7rem;
+}
+
+.mueble-home .mueble-section-title {
+  color: var(--color-text);
+  letter-spacing: -0.02em;
+}
+
+.mueble-home .mueble-link {
+  color: var(--color-primary);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+}
+
+.mueble-home .mueble-link:hover {
+  opacity: 0.75;
+}
+
+.mueble-home .mueble-card {
+  border: 1px solid var(--color-border);
+  background: linear-gradient(180deg, #ffffff 0%, #fffcf8 100%);
+  border-radius: 1rem;
+  box-shadow: 0 6px 22px rgba(38, 28, 16, 0.05);
+}
+
+.mueble-home .mueble-card:hover {
+  box-shadow: 0 14px 34px rgba(38, 28, 16, 0.1);
+}
+
+.admin-shell {
+  background:
+    radial-gradient(1000px 450px at 100% 0%, rgba(35, 52, 95, 0.08), transparent 60%),
+    linear-gradient(180deg, #f4f0e8 0%, #f7f4ef 100%);
+}
+
+.admin-surface {
+  background: linear-gradient(180deg, #fffdfb 0%, #fcf8f3 100%);
+  border: 1px solid #e8ddd2;
+  box-shadow: 0 10px 28px rgba(27, 19, 10, 0.06);
+  border-radius: 1rem;
 }
 
 /* Footer link hover — yellow accent */

@@ -18,33 +18,33 @@ interface CardProps {
 
 function ProductCard({ image, name, price, href, badge }: CardProps) {
   return (
-    <Link href={href} className="group block bg-white rounded-xl overflow-hidden border hover:shadow-lg transition-all duration-300" style={{ borderColor: 'var(--color-border)' }}>
-      <div className="aspect-[3/4] overflow-hidden relative rounded-t-xl">
+    <Link href={href} className="group mueble-card block overflow-hidden transition-all duration-300 hover:-translate-y-1">
+      <div className="aspect-[4/5] overflow-hidden relative rounded-t-2xl">
         {image ? (
           <Image src={image} alt={name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 640px) 50vw, 25vw" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-4xl" style={{ backgroundColor: 'var(--color-surface)' }}>👗</div>
         )}
         {badge && (
-          <span className="absolute top-3 left-3 text-white text-xs font-semibold px-2 py-1 rounded-full bg-[#EF4444]">
+          <span className="absolute top-3 left-3 text-[var(--color-primary-dark)] text-[11px] font-semibold px-2.5 py-1 rounded-full bg-[#f5d2a5] uppercase tracking-widest">
             {badge}
           </span>
         )}
         {/* Wishlist heart */}
-        <div className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute top-3 right-3 w-8 h-8 bg-white/90 backdrop-blur rounded-full flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
           </svg>
         </div>
       </div>
-      <div className="p-4">
+      <div className="p-4 md:p-5">
         <h3 className="font-medium text-neutral-900 text-sm leading-tight mb-1 truncate">{name}</h3>
-        <span style={{ color: 'var(--color-primary)' }}>
+        <span style={{ color: 'var(--color-primary-dark)' }}>
           <PriceDisplay amount={price} className="font-semibold text-base" />
         </span>
         <button
-          className="mt-3 w-full py-2 text-sm font-semibold text-white rounded-lg transition-opacity hover:opacity-90"
-          style={{ backgroundColor: 'var(--color-primary)' }}
+          className="mt-3 w-full py-2.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white rounded-lg transition-all hover:opacity-95"
+          style={{ backgroundColor: 'var(--color-primary-dark)' }}
         >
           Add to Cart
         </button>
@@ -86,15 +86,15 @@ export function FeaturedReadyToWear() {
   const displayProducts = products.length > 0 ? products : DEMO_PRODUCTS;
 
   return (
-    <section className="py-16 px-4" style={{ backgroundColor: 'var(--color-surface)' }}>
+    <section className="py-20 px-4" style={{ backgroundColor: '#f9f5ef' }}>
       <div className="max-w-7xl mx-auto">
         <div className="flex items-end justify-between mb-10">
           <div>
-            <p className="text-xs font-semibold text-neutral-400 uppercase tracking-[0.2em] mb-2">Ship Immediately</p>
-            <h2 className="font-heading text-3xl font-bold text-neutral-900">Featured Ready-to-Wear</h2>
-            <div className="mt-2 h-1 w-12 rounded" style={{ backgroundColor: 'var(--color-secondary)' }} />
+            <p className="mueble-eyebrow mb-2">Ships immediately</p>
+            <h2 className="font-heading text-3xl font-semibold mueble-section-title">Featured Ready-to-Wear</h2>
+            <div className="mt-3 h-1 w-14 rounded" style={{ backgroundColor: 'var(--color-secondary)' }} />
           </div>
-          <Link href="/ready-to-wear" className="hidden md:inline text-sm font-semibold uppercase tracking-wider transition-colors hover:opacity-80" style={{ color: 'var(--color-primary)' }}>
+          <Link href="/ready-to-wear" className="hidden md:inline mueble-link transition-colors">
             View All →
           </Link>
         </div>
