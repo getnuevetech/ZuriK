@@ -10,7 +10,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { EmailService } from '../notifications/email.service';
 
-interface AuthResult {
+export interface AuthResult {
   user: Omit<User, 'password' | 'refreshToken'>;
   accessToken: string;
   refreshToken: string;
