@@ -55,16 +55,17 @@ export function CategoryBanners() {
   const displayCards = cards.length > 0 ? cards : FALLBACK_COLLECTIONS;
 
   return (
-    <section className="py-24 px-4" style={{ backgroundColor: '#F9F6F2' }} aria-labelledby="collections-heading">
+    <section className="py-24 px-4" style={{ backgroundColor: 'var(--color-surface)' }} aria-labelledby="collections-heading">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-14">
-          <span className="inline-block border border-[#C97B3A]/40 text-[#C97B3A] text-xs font-medium px-4 py-1.5 rounded-full mb-4">
+          <span className="inline-block border text-xs font-medium px-4 py-1.5 rounded-full mb-4" style={{ borderColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}>
             Collections
           </span>
-          <h2 id="collections-heading" className="font-heading text-4xl font-bold text-neutral-900 tracking-tight mb-4">
+          <h2 id="collections-heading" className="font-heading text-4xl font-bold text-neutral-900 tracking-tight mb-2">
             Explore Our Collections
           </h2>
-          <p className="text-neutral-500 text-base max-w-md mx-auto font-light">
+          <div className="mx-auto mt-2 h-1 w-16 rounded" style={{ backgroundColor: 'var(--color-secondary)' }} />
+          <p className="text-neutral-500 text-base max-w-md mx-auto font-light mt-4">
             From ready-to-wear to custom-made, discover fashion celebrating African heritage
           </p>
         </div>
@@ -76,7 +77,7 @@ export function CategoryBanners() {
               href={card.ctaLink || '/products'}
               className="group relative overflow-hidden flex flex-col justify-end aspect-[3/4]"
             >
-              {/* Background image - SHARP CORNERS (no border-radius on image wrapper) */}
+              {/* Background image */}
               {card.image ? (
                 <Image
                   src={card.image}
@@ -86,7 +87,7 @@ export function CategoryBanners() {
                   sizes="(max-width: 768px) 100vw, 33vw"
                 />
               ) : (
-                <div className="absolute inset-0 bg-neutral-800" />
+                <div className="absolute inset-0" style={{ backgroundColor: 'var(--color-primary)' }} />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
@@ -103,7 +104,7 @@ export function CategoryBanners() {
                 {card.description && (
                   <p className="text-white/70 text-sm font-light mb-4 max-w-xs">{card.description}</p>
                 )}
-                <span className="text-[#C97B3A] text-sm font-semibold group-hover:underline">
+                <span className="text-sm font-semibold group-hover:underline" style={{ color: 'var(--color-secondary)' }}>
                   {card.ctaText || 'Explore →'}
                 </span>
               </div>

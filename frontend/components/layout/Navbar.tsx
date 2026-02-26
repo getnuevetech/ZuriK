@@ -69,127 +69,140 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
     : authUser?.email;
 
   return (
-    <nav className="bg-[#1A1412] border-b border-white/10 sticky top-0 z-40">
+    <nav className="sticky top-0 z-40" style={{ backgroundColor: 'var(--color-primary)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-1.5 font-heading font-bold text-lg text-white hover:text-white/80 transition-colors flex-shrink-0 tracking-tight">
-            <span className="text-[#C97B3A]">✦</span>
-            African Fashion
-          </Link>
+        <div className="grid grid-cols-3 items-center h-16">
+          {/* Left: hamburger + nav links */}
+          <div className="flex items-center gap-0.5">
+            <button className="md:hidden p-2 text-white/70 hover:text-white transition-colors" onClick={() => setMobileOpen((v) => !v)} aria-label="Toggle menu" aria-expanded={mobileOpen}>
+              {mobileOpen ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" /></svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" /></svg>
+              )}
+            </button>
 
-          {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-0.5">
-            <Link
-              href="/"
-              className={[
-                'text-sm font-medium px-4 py-2 transition-colors hover:text-white',
-                pathname === '/' ? 'text-white' : 'text-white/60',
-              ].join(' ')}
-            >
-              Home
-            </Link>
-
-            {/* Shop mega menu trigger */}
-            <div className="relative" ref={shopMenuRef}>
-              <button
-                onClick={() => setShopOpen((v) => !v)}
+            {/* Desktop nav links */}
+            <div className="hidden md:flex items-center gap-0.5">
+              <Link
+                href="/"
                 className={[
-                  'flex items-center gap-1 text-sm font-medium px-4 py-2 transition-colors hover:text-white',
-                  (pathname.startsWith('/products') || pathname.startsWith('/fabrics') || pathname.startsWith('/orders/custom'))
-                    ? 'text-white' : 'text-white/60',
+                  'text-xs font-semibold px-3 py-2 uppercase tracking-widest transition-colors',
+                  pathname === '/' ? 'text-[#FFD100]' : 'text-white/70 hover:text-[#FFD100]',
                 ].join(' ')}
-                aria-expanded={shopOpen}
-                aria-haspopup="true"
               >
-                Shop
-                <svg xmlns="http://www.w3.org/2000/svg" className={`h-3.5 w-3.5 transition-transform ${shopOpen ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </button>
+                Home
+              </Link>
 
-              {shopOpen && (
-                <div className="absolute top-full left-0 mt-1 w-72 bg-[#1A1412] text-white border border-white/10 py-2 z-50 shadow-modal">
-                  <div className="px-1">
-                    <Link href="/products" className="flex items-center gap-3 px-3 py-2.5 hover:bg-white/10 transition-colors" onClick={() => setShopOpen(false)}>
-                      <div>
-                        <div className="font-medium text-sm">Ready-to-Wear</div>
-                        <div className="text-xs text-white/40 font-light">Curated African fashion, ready to ship</div>
-                      </div>
-                    </Link>
-                    <Link href="/fabrics" className="flex items-center gap-3 px-3 py-2.5 hover:bg-white/10 transition-colors" onClick={() => setShopOpen(false)}>
-                      <div>
-                        <div className="font-medium text-sm">Premium Fabrics</div>
-                        <div className="text-xs text-white/40 font-light">Authentic African textiles</div>
-                      </div>
-                    </Link>
-                    <Link href="/orders/custom-design" className="flex items-center gap-3 px-3 py-2.5 hover:bg-white/10 transition-colors" onClick={() => setShopOpen(false)}>
-                      <div>
-                        <div className="font-medium text-sm">Custom Design</div>
-                        <div className="text-xs text-white/40 font-light">Your body, your fabric, your style</div>
-                      </div>
-                    </Link>
-                  </div>
-                  <div className="border-t border-white/10 mt-1 pt-1 px-1">
-                    <div className="px-3 py-1.5 text-xs font-semibold text-white/40 uppercase tracking-wider">Shop by Country</div>
-                    <div className="grid grid-cols-2 gap-0.5">
-                      {COUNTRIES.map((c) => (
-                        <Link
-                          key={c.name}
-                          href={`/products?country=${encodeURIComponent(c.name)}`}
-                          className="flex items-center gap-2 px-3 py-2 hover:bg-white/10 transition-colors text-sm text-white/60"
-                          onClick={() => setShopOpen(false)}
-                        >
-                          <span>{c.flag}</span> {c.name}
-                        </Link>
-                      ))}
-                      <Link href="/products" className="col-span-2 flex items-center gap-2 px-3 py-2 hover:bg-white/10 transition-colors text-sm text-white font-medium" onClick={() => setShopOpen(false)}>
-                        View All Countries →
+              {/* Shop mega menu trigger */}
+              <div className="relative" ref={shopMenuRef}>
+                <button
+                  onClick={() => setShopOpen((v) => !v)}
+                  className={[
+                    'flex items-center gap-1 text-xs font-semibold px-3 py-2 uppercase tracking-widest transition-colors',
+                    (pathname.startsWith('/products') || pathname.startsWith('/fabrics') || pathname.startsWith('/orders/custom'))
+                      ? 'text-[#FFD100]' : 'text-white/70 hover:text-[#FFD100]',
+                  ].join(' ')}
+                  aria-expanded={shopOpen}
+                  aria-haspopup="true"
+                >
+                  Shop
+                  <svg xmlns="http://www.w3.org/2000/svg" className={`h-3 w-3 transition-transform ${shopOpen ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </button>
+
+                {shopOpen && (
+                  <div className="absolute top-full left-0 mt-1 w-72 border border-white/10 py-2 z-50 shadow-modal" style={{ backgroundColor: 'var(--color-primary)' }}>
+                    <div className="px-1">
+                      <Link href="/products" className="flex items-center gap-3 px-3 py-2.5 hover:bg-white/10 transition-colors" onClick={() => setShopOpen(false)}>
+                        <div>
+                          <div className="font-medium text-sm text-white">Ready-to-Wear</div>
+                          <div className="text-xs text-white/40 font-light">Curated African fashion, ready to ship</div>
+                        </div>
+                      </Link>
+                      <Link href="/fabrics" className="flex items-center gap-3 px-3 py-2.5 hover:bg-white/10 transition-colors" onClick={() => setShopOpen(false)}>
+                        <div>
+                          <div className="font-medium text-sm text-white">Premium Fabrics</div>
+                          <div className="text-xs text-white/40 font-light">Authentic African textiles</div>
+                        </div>
+                      </Link>
+                      <Link href="/orders/custom-design" className="flex items-center gap-3 px-3 py-2.5 hover:bg-white/10 transition-colors" onClick={() => setShopOpen(false)}>
+                        <div>
+                          <div className="font-medium text-sm text-white">Custom Design</div>
+                          <div className="text-xs text-white/40 font-light">Your body, your fabric, your style</div>
+                        </div>
                       </Link>
                     </div>
+                    <div className="border-t border-white/10 mt-1 pt-1 px-1">
+                      <div className="px-3 py-1.5 text-xs font-semibold text-white/40 uppercase tracking-wider">Shop by Country</div>
+                      <div className="grid grid-cols-2 gap-0.5">
+                        {COUNTRIES.map((c) => (
+                          <Link
+                            key={c.name}
+                            href={`/products?country=${encodeURIComponent(c.name)}`}
+                            className="flex items-center gap-2 px-3 py-2 hover:bg-white/10 transition-colors text-sm text-white/60"
+                            onClick={() => setShopOpen(false)}
+                          >
+                            <span>{c.flag}</span> {c.name}
+                          </Link>
+                        ))}
+                        <Link href="/products" className="col-span-2 flex items-center gap-2 px-3 py-2 hover:bg-white/10 transition-colors text-sm text-white font-medium" onClick={() => setShopOpen(false)}>
+                          View All Countries →
+                        </Link>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                )}
+              </div>
+
+              <Link href="/designers" className={['text-xs font-semibold px-3 py-2 uppercase tracking-widest transition-colors', pathname.startsWith('/designers') ? 'text-[#FFD100]' : 'text-white/70 hover:text-[#FFD100]'].join(' ')}>
+                Designers
+              </Link>
+
+              <Link href="/orders/custom-design" className="relative flex items-center gap-1 text-xs font-semibold px-3 py-2 uppercase tracking-widest transition-colors text-white/70 hover:text-[#FFD100]">
+                3D Try-On
+                <span className="text-[#FFD100] text-[9px] font-bold px-1 py-0.5 leading-none border border-[#FFD100]/50">Soon</span>
+              </Link>
+
+              {isAuthenticated && (
+                <>
+                  <Link href="/orders" className="text-xs font-semibold text-white/70 hover:text-[#FFD100] transition-colors px-3 py-2 uppercase tracking-widest">My Orders</Link>
+                  <Link
+                    href={
+                      authUser?.role === 'designer' ? '/dashboard/designer'
+                      : authUser?.role === 'fabric_seller' ? '/dashboard/fabric-seller'
+                      : authUser?.role === 'qa' ? '/dashboard/qa'
+                      : authUser?.role === 'admin' ? '/admin'
+                      : '/account'
+                    }
+                    className="text-xs font-semibold text-white/70 hover:text-[#FFD100] transition-colors px-3 py-2 uppercase tracking-widest"
+                  >
+                    {authUser?.role === 'designer' ? 'Dashboard'
+                      : authUser?.role === 'fabric_seller' ? 'Dashboard'
+                      : authUser?.role === 'qa' ? 'QA'
+                      : authUser?.role === 'admin' ? 'Admin'
+                      : 'Account'}
+                  </Link>
+                </>
               )}
             </div>
-
-            <Link href="/designers" className={['text-sm font-medium px-4 py-2 transition-colors hover:text-white', pathname.startsWith('/designers') ? 'text-white' : 'text-white/60'].join(' ')}>
-              Designers
-            </Link>
-
-            <Link href="/orders/custom-design" className="relative flex items-center gap-1 text-sm font-medium px-4 py-2 transition-colors hover:text-white text-white/60">
-              3D Try-On
-              <span className="bg-[#C97B3A] text-white text-[9px] font-bold px-1.5 py-0.5 leading-none">Soon</span>
-            </Link>
-
-            {isAuthenticated && (
-              <>
-                <Link href="/orders" className="text-sm font-medium text-white/60 hover:text-white transition-colors px-4 py-2">My Orders</Link>
-                <Link
-                  href={
-                    authUser?.role === 'designer' ? '/dashboard/designer'
-                    : authUser?.role === 'fabric_seller' ? '/dashboard/fabric-seller'
-                    : authUser?.role === 'qa' ? '/dashboard/qa'
-                    : authUser?.role === 'admin' ? '/admin'
-                    : '/account'
-                  }
-                  className="text-sm font-medium text-white/60 hover:text-white transition-colors px-4 py-2"
-                >
-                  {authUser?.role === 'designer' ? 'Designer Dashboard'
-                    : authUser?.role === 'fabric_seller' ? 'Seller Dashboard'
-                    : authUser?.role === 'qa' ? 'QA Dashboard'
-                    : authUser?.role === 'admin' ? 'Admin Dashboard'
-                    : 'My Account'}
-                </Link>
-              </>
-            )}
           </div>
 
-          {/* Right side */}
-          <div className="flex items-center gap-1">
+          {/* Center: Logo */}
+          <div className="flex justify-center">
+            <Link href="/" className="font-heading font-bold text-lg text-white hover:text-[#FFD100] transition-colors tracking-tight flex items-center gap-1.5">
+              <span style={{ color: 'var(--color-secondary)' }}>✦</span>
+              African Fashion
+            </Link>
+          </div>
+
+          {/* Right: search + user icons + cart */}
+          <div className="flex items-center gap-1 justify-end">
             <CurrencySwitcher />
             <button
               onClick={() => setSearchOpen((v) => !v)}
-              className="hidden md:flex p-2 text-white/60 hover:text-white transition-colors"
+              className="hidden md:flex p-2 text-white/70 hover:text-white transition-colors"
               aria-label="Toggle search"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -198,24 +211,24 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
             </button>
 
             {isAuthenticated && (
-              <Link href="/wishlist" className="relative p-2 text-white/60 hover:text-white transition-colors" aria-label="Wishlist">
+              <Link href="/wishlist" className="relative p-2 text-white/70 hover:text-white transition-colors" aria-label="Wishlist">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                 </svg>
                 {wishlistCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 bg-[#C97B3A] text-white text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                  <span className="absolute -top-0.5 -right-0.5 text-[#1E3A5F] text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center" style={{ backgroundColor: 'var(--color-secondary)' }}>
                     {wishlistCount > 9 ? '9+' : wishlistCount}
                   </span>
                 )}
               </Link>
             )}
 
-            <Link href="/cart" className="relative p-2 text-white/60 hover:text-white transition-colors" aria-label="Cart">
+            <Link href="/cart" className="relative p-2 text-white/70 hover:text-white transition-colors" aria-label="Cart">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
               {cartCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-[#C97B3A] text-white text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 text-[#1E3A5F] text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center" style={{ backgroundColor: 'var(--color-secondary)' }}>
                   {cartCount > 9 ? '9+' : cartCount}
                 </span>
               )}
@@ -226,12 +239,12 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
                 <LoyaltyBadge />
                 <NotificationBell />
                 <div className="relative" ref={userMenuRef}>
-                <button onClick={() => setUserMenuOpen((v) => !v)} className="flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 p-1" aria-expanded={userMenuOpen} aria-haspopup="true">
+                <button onClick={() => setUserMenuOpen((v) => !v)} className="flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 p-1" aria-expanded={userMenuOpen} aria-haspopup="true">
                   <Avatar name={displayName} size="sm" />
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-neutral-400" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-white/40" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
                 </button>
                 {userMenuOpen && (
-                  <div className="absolute right-0 mt-1 w-48 bg-[#1A1412] border border-white/10 py-1 text-white z-50 shadow-modal">
+                  <div className="absolute right-0 mt-1 w-48 border border-white/10 py-1 text-white z-50 shadow-modal" style={{ backgroundColor: 'var(--color-primary)' }}>
                     <div className="px-4 py-2 border-b border-white/10">
                       <p className="text-sm font-medium truncate">{displayName}</p>
                       {authUser?.role && <p className="text-xs text-white/40 capitalize font-light">{authUser.role.replace('_', ' ')}</p>}
@@ -274,17 +287,9 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
             ) : (
               <div className="hidden md:flex items-center gap-2 ml-2">
                 <Link href="/login" className="text-sm font-medium text-white/80 hover:text-white transition-colors px-3 py-2">Sign in</Link>
-                <Link href="/register" className="text-sm font-semibold bg-[#C97B3A] text-white hover:bg-[#b06a2a] transition-colors px-4 py-2 uppercase tracking-wider">Register</Link>
+                <Link href="/register" className="text-sm font-semibold text-[#1E3A5F] hover:opacity-90 transition-colors px-4 py-2 uppercase tracking-wider rounded" style={{ backgroundColor: 'var(--color-secondary)' }}>Register</Link>
               </div>
             )}
-
-            <button className="md:hidden p-2 text-white/60 hover:text-white transition-colors" onClick={() => setMobileOpen((v) => !v)} aria-label="Toggle menu" aria-expanded={mobileOpen}>
-              {mobileOpen ? (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" /></svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" /></svg>
-              )}
-            </button>
           </div>
         </div>
 
@@ -310,18 +315,18 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
               <Link
                 key={link.href}
                 href={link.href}
-                className={['block px-3 py-2.5 text-sm font-medium transition-colors', pathname === link.href ? 'text-white' : 'text-white/60 hover:text-white'].join(' ')}
+                className={['block px-3 py-2.5 text-sm font-medium uppercase tracking-widest transition-colors', pathname === link.href ? 'text-[#FFD100]' : 'text-white/70 hover:text-[#FFD100]'].join(' ')}
                 onClick={() => setMobileOpen(false)}
               >
                 {link.label}
               </Link>
             ))}
-            <Link href="/products" className="block px-3 py-2.5 text-sm font-medium text-white/60 hover:text-white transition-colors" onClick={() => setMobileOpen(false)}>Ready-to-Wear</Link>
-            <Link href="/fabrics" className="block px-3 py-2.5 text-sm font-medium text-white/60 hover:text-white transition-colors" onClick={() => setMobileOpen(false)}>Fabrics</Link>
-            <Link href="/orders/custom-design" className="block px-3 py-2.5 text-sm font-medium text-white/60 hover:text-white transition-colors" onClick={() => setMobileOpen(false)}>Custom Design</Link>
+            <Link href="/products" className="block px-3 py-2.5 text-sm font-medium uppercase tracking-widest text-white/70 hover:text-[#FFD100] transition-colors" onClick={() => setMobileOpen(false)}>Ready-to-Wear</Link>
+            <Link href="/fabrics" className="block px-3 py-2.5 text-sm font-medium uppercase tracking-widest text-white/70 hover:text-[#FFD100] transition-colors" onClick={() => setMobileOpen(false)}>Fabrics</Link>
+            <Link href="/orders/custom-design" className="block px-3 py-2.5 text-sm font-medium uppercase tracking-widest text-white/70 hover:text-[#FFD100] transition-colors" onClick={() => setMobileOpen(false)}>Custom Design</Link>
             {isAuthenticated ? (
               <>
-                <Link href="/orders" className="block px-3 py-2.5 text-sm font-medium text-white/60 hover:text-white transition-colors" onClick={() => setMobileOpen(false)}>My Orders</Link>
+                <Link href="/orders" className="block px-3 py-2.5 text-sm font-medium uppercase tracking-widest text-white/70 hover:text-[#FFD100] transition-colors" onClick={() => setMobileOpen(false)}>My Orders</Link>
                 <Link
                   href={
                     authUser?.role === 'designer' ? '/dashboard/designer'
@@ -330,7 +335,7 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
                     : authUser?.role === 'admin' ? '/admin'
                     : '/account'
                   }
-                  className="block px-3 py-2.5 text-sm font-medium text-white/60 hover:text-white transition-colors"
+                  className="block px-3 py-2.5 text-sm font-medium uppercase tracking-widest text-white/70 hover:text-[#FFD100] transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
                   {authUser?.role === 'designer' ? 'Designer Dashboard'
@@ -346,7 +351,7 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
                 <Link href="/login" className="flex-1 text-center py-2.5 text-sm font-medium border border-white/20 text-white/80 hover:border-white transition-colors" onClick={() => setMobileOpen(false)}>
                   Sign in
                 </Link>
-                <Link href="/register" className="flex-1 text-center py-2.5 text-sm font-semibold bg-[#C97B3A] text-white hover:bg-[#b06a2a] transition-colors uppercase tracking-wider" onClick={() => setMobileOpen(false)}>
+                <Link href="/register" className="flex-1 text-center py-2.5 text-sm font-semibold text-[#1E3A5F] hover:opacity-90 transition-colors uppercase tracking-wider rounded" style={{ backgroundColor: 'var(--color-secondary)' }} onClick={() => setMobileOpen(false)}>
                   Register
                 </Link>
               </div>

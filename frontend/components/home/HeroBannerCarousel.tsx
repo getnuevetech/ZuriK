@@ -82,8 +82,8 @@ export function HeroBannerCarousel() {
 
   if (loading) {
     return (
-      <div className="relative w-full min-h-screen bg-[#1A1412] flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-[#C97B3A] border-t-transparent rounded-full animate-spin" />
+      <div className="relative w-full min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--color-primary)' }}>
+        <div className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: 'var(--color-secondary)', borderTopColor: 'transparent' }} />
       </div>
     );
   }
@@ -99,7 +99,7 @@ export function HeroBannerCarousel() {
   return (
     <section
       className="relative w-full min-h-screen overflow-hidden flex flex-col justify-center"
-      style={{ background: '#1A1412' }}
+      style={{ backgroundColor: 'var(--color-primary)' }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       aria-label="Hero banner carousel"
@@ -112,11 +112,11 @@ export function HeroBannerCarousel() {
           ) : (
             <Image key={mediaUrl} src={mediaUrl} alt={banner.title} fill priority={current === 0} sizes="100vw" className="object-cover" />
           )}
-          <div className="absolute inset-0 bg-[#1A1412]" style={overlayStyle} />
+          <div className="absolute inset-0" style={{ backgroundColor: 'var(--color-primary)', ...overlayStyle }} />
         </>
       ) : (
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, #1A1412 0%, #2c1a0e 50%, #1A1412 100%)' }}>
-          <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 70% 30%, #C97B3A, transparent 50%)' }} />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, #1E3A5F 0%, #162D4A 50%, #1E3A5F 100%)' }}>
+          <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 70% 30%, #FFD100, transparent 50%)' }} />
         </div>
       )}
 
@@ -131,7 +131,7 @@ export function HeroBannerCarousel() {
       >
         {/* Premium badge */}
         <div className="mb-8">
-          <span className="inline-flex items-center gap-2 border border-[#C97B3A]/40 text-[#C97B3A] text-xs font-medium px-4 py-2 rounded-full bg-[#C97B3A]/10">
+          <span className="inline-flex items-center gap-2 border text-xs font-medium px-4 py-2 rounded-full" style={{ borderColor: 'var(--color-secondary)', color: 'var(--color-secondary)', backgroundColor: 'rgba(255,209,0,0.1)' }}>
             ✦ Premium African Fashion Marketplace
           </span>
         </div>
@@ -140,7 +140,7 @@ export function HeroBannerCarousel() {
         <h1 className="font-heading text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight mb-6 max-w-5xl text-white">
           {titleParts.length > 1 ? (
             <>
-              {titleParts[0]}<span style={{ color: '#C97B3A' }}>Fashion</span>{titleParts[1]}
+              {titleParts[0]}<span style={{ color: 'var(--color-secondary)' }}>Fashion</span>{titleParts[1]}
             </>
           ) : (
             banner.title
@@ -158,15 +158,15 @@ export function HeroBannerCarousel() {
           {banner.ctaText && banner.ctaLink && (
             <Link
               href={banner.ctaLink}
-              className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full font-semibold text-sm text-white transition-colors"
-              style={{ backgroundColor: '#C97B3A' }}
+              className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-lg font-semibold text-sm uppercase tracking-wider transition-opacity hover:opacity-90"
+              style={{ backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}
             >
               {banner.ctaText} →
             </Link>
           )}
           <Link
             href="/designers"
-            className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full border border-white/30 text-white hover:bg-white/10 font-semibold text-sm transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-lg border border-white/30 text-white hover:bg-white/10 font-semibold text-sm transition-colors"
           >
             ▶ Explore Designers
           </Link>
@@ -177,7 +177,7 @@ export function HeroBannerCarousel() {
           {stats.map((stat) => (
             <div key={stat.id} className="text-center">
               <div className="text-3xl font-bold text-white font-heading">
-                {stat.value}<sup className="text-[#C97B3A] text-sm">+</sup>
+                {stat.value}<sup className="text-sm" style={{ color: 'var(--color-secondary)' }}>+</sup>
               </div>
               <div className="text-white/50 text-xs uppercase tracking-widest mt-1">{stat.label}</div>
             </div>
@@ -192,10 +192,8 @@ export function HeroBannerCarousel() {
             <button
               key={i}
               onClick={() => setCurrent(i)}
-              className={[
-                'rounded-full transition-all duration-300',
-                i === current ? 'w-6 h-2 bg-[#C97B3A]' : 'w-2 h-2 bg-white/30 hover:bg-white/60',
-              ].join(' ')}
+              className="rounded-full transition-all duration-300"
+              style={i === current ? { width: '1.5rem', height: '0.5rem', backgroundColor: 'var(--color-secondary)' } : { width: '0.5rem', height: '0.5rem', backgroundColor: 'rgba(255,255,255,0.3)' }}
               aria-label={`Go to banner ${i + 1}`}
             />
           ))}
@@ -217,7 +215,7 @@ export function HeroBannerCarousel() {
       {/* AI Try-On floating badge */}
       <div className="absolute bottom-8 right-6 z-20">
         <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-white text-xs font-medium flex items-center gap-2">
-          <span className="w-2 h-2 bg-[#C97B3A] rounded-full animate-pulse" />
+          <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: 'var(--color-secondary)' }} />
           AI Try-On
         </div>
       </div>

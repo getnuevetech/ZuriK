@@ -34,7 +34,8 @@ export function PromoBannerSlot({ banner }: Props) {
         {banner.ctaText && banner.ctaLink && (
           <Link
             href={banner.ctaLink}
-            className="inline-block border border-white text-white px-8 py-3 text-sm font-semibold uppercase tracking-widest hover:bg-white hover:text-neutral-900 transition-colors"
+            className="inline-block px-8 py-3 text-sm font-semibold uppercase tracking-widest transition-opacity hover:opacity-90 rounded-lg"
+            style={{ backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}
           >
             {banner.ctaText}
           </Link>

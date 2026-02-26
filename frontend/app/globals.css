@@ -32,15 +32,17 @@
 }
 
 :root {
-  --color-primary: #1a1a1a;
-  --color-primary-dark: #0d0d0d;
-  --color-secondary: #c8a96e;
-  --color-accent: #c8a96e;
-  --color-neutral-bg: #fafafa;
-  --color-text: #1a1a1a;
-  --color-text-muted: #6b6b6b;
-  --color-border: #e5e5e5;
-  --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
+  --color-primary: #1E3A5F;
+  --color-primary-dark: #162D4A;
+  --color-secondary: #FFD100;
+  --color-accent: #1E3A5F;
+  --color-background: #FFFFFF;
+  --color-neutral-bg: #F9FAFB;
+  --color-text: #1E1E1E;
+  --color-text-muted: #6B7280;
+  --color-surface: #F9FAFB;
+  --color-border: #E5E7EB;
+  --font-heading: 'Playfair Display', Georgia, serif;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
@@ -60,4 +62,24 @@
   *:focus-visible {
     @apply outline-2 outline-offset-2 outline-primary-500;
   }
+}
+
+/* Footer link hover — yellow accent */
+.footer-link {
+  color: rgba(255,255,255,0.6);
+  transition: color 0.15s;
+}
+.footer-link:hover {
+  color: var(--color-secondary);
+}
+
+/* Footer social icon hover */
+.footer-social {
+  background-color: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.7);
+  transition: background-color 0.15s, color 0.15s;
+}
+.footer-social:hover {
+  background-color: var(--color-secondary);
+  color: var(--color-primary);
 }

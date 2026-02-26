@@ -6,6 +6,7 @@ export enum ThemeKey {
   BOLD_VIBRANT = 'BOLD_VIBRANT',
   WARM_EARTHY = 'WARM_EARTHY',
   MODERN_PUNCHY = 'MODERN_PUNCHY',
+  MUEBLE_MODERN = 'MUEBLE_MODERN',
 }
 
 @Entity('theme_settings')
