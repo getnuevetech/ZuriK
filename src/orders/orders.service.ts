@@ -500,14 +500,32 @@ export class OrdersService {
   async updateOrderStatus(orderId: string, userId: string, userRole: UserRole, dto: UpdateOrderStatusDto): Promise<Order> {
     const order = await this.orderRepo.findOne({
       where: { id: orderId },
-      relations: ['customer', 'design', 'design.designer', 'fabric'],
+      relations: ['customer', 'design', 'design.designer', 'readyToWearProduct', 'readyToWearProduct.designer', 'fabric'],
     });
     if (!order) throw new NotFoundException(`Order ${orderId} not found`);
 
     const { status } = dto;
-    const adminOnly = [OrderStatus.PAID, OrderStatus.AWAITING_MATERIALS, OrderStatus.DELIVERED, OrderStatus.CANCELLED];
+    const adminOnly = [OrderStatus.PAID, OrderStatus.AWAITING_MATERIALS, OrderStatus.DELIVERED, OrderStatus.CANCELLED, OrderStatus.CLOSED];
     const designerAllowed = [OrderStatus.IN_PRODUCTION, OrderStatus.SHIPPED_TO_QA];
     const qaAllowed = [OrderStatus.QA_INSPECTION, OrderStatus.QA_APPROVED, OrderStatus.QA_REJECTED, OrderStatus.SHIPPED_TO_CUSTOMER];
+    const allowedViaEndpoint = new Set<OrderStatus>([...adminOnly, ...designerAllowed, ...qaAllowed]);
+
+    if (!allowedViaEndpoint.has(status)) {
+      throw new BadRequestException(`Status "${status}" cannot be set via this endpoint`);
+    }
+
+    if (![UserRole.ADMIN, UserRole.DESIGNER, UserRole.QA].includes(userRole)) {
+      throw new ForbiddenException('Only admins, designers, and QA can update order status');
+    }
+
+    if (userRole === UserRole.DESIGNER) {
+      const designOwnerId = order.design?.designer?.id;
+      const rtwOwnerId = order.readyToWearProduct?.designer?.id;
+      const isOwner = designOwnerId === userId || rtwOwnerId === userId;
+      if (!isOwner) {
+        throw new ForbiddenException('You can only update status for your own orders');
+      }
+    }
 
     if (adminOnly.includes(status) && userRole !== UserRole.ADMIN) {
       throw new ForbiddenException('Only admins can set this status');

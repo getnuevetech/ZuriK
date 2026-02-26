@@ -407,6 +407,9 @@ export class AdminService {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) throw new NotFoundException(`User ${id} not found`);
     user.isActive = isActive;
+    if (!isActive) {
+      user.refreshToken = null;
+    }
     const saved = await this.userRepository.save(user);
     return this.sanitizeUser(saved);
   }

@@ -105,7 +105,7 @@ api.interceptors.response.use(
     const originalRequest = error.config;
     // Don't attempt token refresh for auth endpoints — their 401s mean
     // invalid credentials, not expired tokens.
-    const skipRefreshPaths = ['/auth/login', '/auth/register', '/auth/refresh', '/auth/forgot-password', '/auth/reset-password'];
+    const skipRefreshPaths = ['/auth/login', '/auth/register', '/auth/refresh', '/auth/google/exchange', '/auth/forgot-password', '/auth/reset-password'];
     if (skipRefreshPaths.some(path => originalRequest.url?.includes(path))) {
       return Promise.reject(error);
     }
@@ -200,6 +200,8 @@ export const authApi = {
     api.post<AuthResponse>('/auth/login', payload).then((r) => r.data),
   register: (payload: RegisterPayload) =>
     api.post<AuthResponse>('/auth/register', payload).then((r) => r.data),
+  exchangeGoogleCode: (code: string) =>
+    api.post<AuthResponse>('/auth/google/exchange', { code }).then((r) => r.data),
   refresh: (refreshToken: string) =>
     api.post<RefreshResponse>('/auth/refresh', { refreshToken }).then((r) => r.data),
   getProfile: () =>

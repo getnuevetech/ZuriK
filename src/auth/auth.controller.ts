@@ -8,6 +8,7 @@ import { LoginDto } from './dto/login.dto';
 import { RefreshDto } from './dto/refresh.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { GoogleExchangeDto } from './dto/google-exchange.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { GoogleOAuthGuard } from './guards/google-oauth.guard';
 import { RequestWithUser } from './auth.types';
@@ -81,17 +82,25 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(GoogleOAuthGuard)
   @ApiOperation({ summary: 'Google OAuth callback' })
-  @ApiResponse({ status: 302, description: 'Redirects to frontend with tokens' })
+  @ApiResponse({ status: 302, description: 'Redirects to frontend with one-time exchange code' })
   async googleAuthCallback(@Request() req: RequestWithGoogleUser, @Res() res: Response) {
     const result = await this.authService.googleLogin(req.user);
+    const code = this.authService.createGoogleAuthCode(result);
     const frontendUrl =
       this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
     const redirectUrl =
       `${frontendUrl}/auth/google/callback` +
-      `?accessToken=${result.accessToken}` +
-      `&refreshToken=${result.refreshToken}` +
-      `&user=${encodeURIComponent(JSON.stringify(result.user))}`;
+      `?code=${encodeURIComponent(code)}`;
     return res.redirect(redirectUrl);
+  }
+
+  @Throttle({ short: { limit: 10, ttl: 60000 } })
+  @Post('google/exchange')
+  @ApiOperation({ summary: 'Exchange one-time Google OAuth code for tokens' })
+  @ApiResponse({ status: 200, description: 'OAuth code exchanged successfully' })
+  @ApiResponse({ status: 401, description: 'Invalid or expired exchange code' })
+  googleExchange(@Body() dto: GoogleExchangeDto) {
+    return this.authService.exchangeGoogleAuthCode(dto.code);
   }
 
   @Throttle({ short: { limit: 3, ttl: 60000 } })
