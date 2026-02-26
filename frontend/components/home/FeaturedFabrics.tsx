@@ -39,7 +39,6 @@ function FabricCard({ image, name, price, href }: CardProps) {
         <button
           className="mt-3 w-full py-2 text-sm font-semibold text-white rounded-lg transition-opacity hover:opacity-90"
           style={{ backgroundColor: 'var(--color-primary)' }}
-          onClick={(e) => { e.preventDefault(); window.location.href = href; }}
         >
           Add to Cart
         </button>

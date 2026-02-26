@@ -8,12 +8,20 @@ export function AnnouncementBar() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const dismissed = localStorage.getItem(STORAGE_KEY);
-    if (!dismissed) setVisible(true);
+    try {
+      const dismissed = localStorage.getItem(STORAGE_KEY);
+      if (!dismissed) setVisible(true);
+    } catch {
+      setVisible(true);
+    }
   }, []);
 
   const dismiss = () => {
-    localStorage.setItem(STORAGE_KEY, '1');
+    try {
+      localStorage.setItem(STORAGE_KEY, '1');
+    } catch {
+      // localStorage unavailable (e.g. private browsing)
+    }
     setVisible(false);
   };
 
