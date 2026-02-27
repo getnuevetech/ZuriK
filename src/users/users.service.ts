@@ -56,6 +56,7 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
     user.isActive = false;
+    user.refreshToken = null;
     await this.userRepo.save(user);
   }
 }

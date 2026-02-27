@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
-  eslint: {
-    ignoreDuringBuilds: true,
+  turbopack: {
+    root: __dirname,
   },
   images: {
     remotePatterns: [
@@ -13,6 +13,10 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'res.cloudinary.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'raw.githubusercontent.com',
       },
     ],
   },

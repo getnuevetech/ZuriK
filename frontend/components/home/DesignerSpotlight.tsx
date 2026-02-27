@@ -74,18 +74,18 @@ export function DesignerSpotlight() {
   const displayDesigners = designers.length > 0 ? designers : PLACEHOLDER_DESIGNERS;
 
   return (
-    <section className="py-24 px-4 bg-white" aria-labelledby="designer-spotlight-heading">
+    <section className="py-24 px-4 bg-[var(--color-surface)]" aria-labelledby="designer-spotlight-heading">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-14 gap-4">
           <div>
-            <span className="inline-block border border-[#C97B3A]/40 text-[#C97B3A] text-xs font-medium px-4 py-1.5 rounded-full mb-4">
+            <span className="inline-block border border-[var(--color-secondary)]/40 text-[var(--color-secondary)] text-xs font-medium px-4 py-1.5 rounded-full mb-4 uppercase tracking-[0.2em]">
               The Makers
             </span>
-            <h2 id="designer-spotlight-heading" className="font-heading text-4xl font-bold text-neutral-900 tracking-tight">
+            <h2 id="designer-spotlight-heading" className="font-heading text-4xl font-semibold mueble-section-title">
               The Artisans Behind Your Style
             </h2>
           </div>
-          <Link href="/designers" className="text-sm font-medium hover:text-[#C97B3A] transition-colors whitespace-nowrap" style={{ color: '#C97B3A' }}>
+          <Link href="/designers" className="mueble-link hover:opacity-75 transition-colors whitespace-nowrap">
             View All Designers →
           </Link>
         </div>
@@ -101,7 +101,7 @@ export function DesignerSpotlight() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[1,2,3,4].map((i) => (
               <div key={i} className="animate-pulse">
-                <div className="bg-neutral-200 aspect-square mb-4" />
+                <div className="bg-neutral-200 aspect-square rounded-2xl mb-4" />
                 <div className="bg-neutral-200 h-4 w-3/4 rounded mb-2" />
                 <div className="bg-neutral-200 h-3 w-1/2 rounded" />
               </div>
@@ -120,7 +120,7 @@ export function DesignerSpotlight() {
               {[...displayDesigners, ...displayDesigners].map((designer, idx) => (
                 <Link key={`${designer.id}-${idx}`} href={`/designers/${designer.id}`} className="group block flex-shrink-0 w-64">
                   {/* Designer image - SHARP CORNERS */}
-                  <div className="relative aspect-square overflow-hidden bg-neutral-100 mb-4">
+                  <div className="relative aspect-square overflow-hidden bg-neutral-100 mb-4 rounded-2xl border border-[var(--color-border)] shadow-[0_10px_24px_rgba(33,24,14,0.08)]">
                     {designer.image ? (
                       <Image
                         src={designer.image}
@@ -146,8 +146,8 @@ export function DesignerSpotlight() {
                     )}
                   </div>
                   <StarRating />
-                  <div className="font-bold text-neutral-900 text-sm mt-2">{designer.name}</div>
-                  <div className="text-xs text-neutral-500 mt-0.5 font-light">{designer.specialties}</div>
+                  <div className="font-semibold text-neutral-900 text-sm mt-2">{designer.name}</div>
+                  <div className="text-xs text-[var(--color-text-muted)] mt-0.5 font-light">{designer.specialties}</div>
                 </Link>
               ))}
             </div>

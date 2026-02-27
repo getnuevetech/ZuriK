@@ -58,6 +58,8 @@ export class OrdersController {
   }
 
   @Patch(':id/status')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.DESIGNER, UserRole.QA, UserRole.ADMIN)
   updateStatus(
     @Param('id') id: string,
     @Request() req: RequestWithUser,

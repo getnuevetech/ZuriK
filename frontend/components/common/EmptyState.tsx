@@ -12,10 +12,10 @@ interface EmptyStateProps {
 
 export function EmptyState({ title, message, icon = '📭', actionLabel, actionHref }: EmptyStateProps) {
   return (
-    <div className="text-center py-20">
+    <div className="text-center py-20 catalog-surface px-6">
       <div className="text-5xl mb-4">{icon}</div>
-      <h3 className="font-heading text-xl font-semibold text-neutral-700 mb-2">{title}</h3>
-      <p className="text-neutral-500 mb-6">{message}</p>
+      <h3 className="font-heading text-2xl font-semibold text-[var(--color-primary-dark)] mb-2">{title}</h3>
+      <p className="text-[var(--color-text-muted)] mb-6">{message}</p>
       {actionLabel && actionHref && (
         <Link href={actionHref}>
           <Button>{actionLabel}</Button>

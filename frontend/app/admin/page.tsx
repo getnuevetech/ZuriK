@@ -69,7 +69,7 @@ export default function AdminDashboardPage() {
         <p className="text-red-600 text-lg mb-4">Failed to load dashboard data</p>
         <button
           onClick={loadData}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+          className="px-4 py-2 bg-[#2e436f] text-white rounded-lg hover:bg-[#24365b] transition-colors"
         >
           Try Again
         </button>
@@ -116,7 +116,24 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <AdminPageHeader title="Dashboard" />
+      <AdminPageHeader
+        title="Dashboard"
+        breadcrumbs={[
+          { label: 'Admin', href: '/admin' },
+          { label: 'Overview' },
+        ]}
+      />
+
+      <section className="admin-surface p-6 md:p-8">
+        <p className="text-[11px] uppercase tracking-[0.2em] text-[#7d8fbb] mb-2">Studio overview</p>
+        <h2 className="font-heading text-3xl text-[#1f2f62] font-semibold mb-3">
+          Performance at a glance
+        </h2>
+        <p className="text-sm md:text-base text-[#6e7fa8] max-w-3xl">
+          Monitor revenue, orders, and customer activity in a single view designed for calm,
+          fast operational decisions.
+        </p>
+      </section>
 
       {/* Stats cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -144,21 +161,21 @@ export default function AdminDashboardPage() {
 
       {/* Revenue chart */}
       {overview?.revenueByMonth && overview.revenueByMonth.length > 0 && (
-        <div className="bg-white rounded-xl border border-neutral-200 p-6">
-          <h2 className="text-base font-semibold text-neutral-800 mb-4">Revenue by Month</h2>
-          <SimpleBarChart data={overview.revenueByMonth} height={180} color="indigo" />
+        <div className="admin-surface p-6">
+          <h2 className="text-base font-semibold text-[#23376a] mb-4 font-heading">Revenue by Month</h2>
+          <SimpleBarChart data={overview.revenueByMonth} height={180} color="amber" />
         </div>
       )}
 
       {/* Orders by status */}
       {overview?.ordersByStatus && Object.keys(overview.ordersByStatus).length > 0 && (
-        <div className="bg-white rounded-xl border border-neutral-200 p-6">
-          <h2 className="text-base font-semibold text-neutral-800 mb-4">Orders by Status</h2>
+        <div className="admin-surface p-6">
+          <h2 className="text-base font-semibold text-[#23376a] mb-4 font-heading">Orders by Status</h2>
           <div className="flex flex-wrap gap-3">
             {Object.entries(overview.ordersByStatus).map(([status, count]) => (
               <div key={status} className="flex items-center gap-2">
                 <StatusBadge status={status} />
-                <span className="text-sm text-neutral-600 font-medium">{count}</span>
+                <span className="text-sm text-[#6378a8] font-medium">{count}</span>
               </div>
             ))}
           </div>
@@ -166,8 +183,8 @@ export default function AdminDashboardPage() {
       )}
 
       {/* Recent orders table */}
-      <div className="bg-white rounded-xl border border-neutral-200 p-6">
-        <h2 className="text-base font-semibold text-neutral-800 mb-4">Recent Orders</h2>
+      <div className="admin-surface p-6">
+        <h2 className="text-base font-semibold text-[#23376a] mb-4 font-heading">Recent Orders</h2>
         <DataTable<RecentOrder>
           columns={recentOrderColumns}
           data={overview?.recentOrders ?? []}
@@ -177,17 +194,17 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-xl border border-neutral-200 p-6">
-        <h2 className="text-base font-semibold text-neutral-800 mb-4">Quick Actions</h2>
+      <div className="admin-surface p-6">
+        <h2 className="text-base font-semibold text-[#23376a] mb-4 font-heading">Quick Actions</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {QUICK_ACTIONS.map((action) => (
             <Link
               key={action.href}
               href={action.href}
-              className="flex items-center gap-3 p-4 rounded-lg border border-neutral-200 hover:border-indigo-400 hover:bg-indigo-50 transition-colors"
+              className="flex items-center gap-3 p-4 rounded-xl border border-[#d4deef] bg-white/80 hover:bg-[#eef3ff] hover:border-[#aac0eb] transition-colors"
             >
               <span className="text-2xl">{action.icon}</span>
-              <span className="text-sm font-medium text-neutral-700">{action.label}</span>
+              <span className="text-sm font-medium text-[#385489]">{action.label}</span>
             </Link>
           ))}
         </div>

@@ -47,8 +47,8 @@ function NavItem({
           title={collapsed ? item.label : undefined}
           className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm font-medium ${
             isActive
-              ? 'bg-indigo-600 text-white'
-              : 'text-neutral-300 hover:bg-neutral-800 hover:text-white'
+              ? 'bg-[#dfe8ff] text-[#1c2f63]'
+              : 'text-[#c2cde9] hover:bg-[#21366d] hover:text-white'
           } ${collapsed ? 'justify-center' : ''}`}
         >
           <span className="text-lg flex-shrink-0">{item.icon}</span>
@@ -60,7 +60,7 @@ function NavItem({
           )}
         </button>
         {open && !collapsed && (
-          <div className="mt-1 ml-4 space-y-1 border-l border-neutral-700 pl-3">
+          <div className="mt-1 ml-4 space-y-1 border-l border-[#31487f] pl-3">
             {item.children.map((child) => {
               const childActive =
                 pathname === child.href || pathname.startsWith(child.href + '/');
@@ -71,8 +71,8 @@ function NavItem({
                   onClick={onMobileClose}
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm font-medium ${
                     childActive
-                      ? 'bg-indigo-500 text-white'
-                      : 'text-neutral-400 hover:bg-neutral-800 hover:text-white'
+                      ? 'bg-[#dfe8ff] text-[#1c2f63]'
+                      : 'text-[#bfcae5] hover:bg-[#21366d] hover:text-white'
                   }`}
                 >
                   <span className="text-base flex-shrink-0">{child.icon}</span>
@@ -93,8 +93,8 @@ function NavItem({
       onClick={onMobileClose}
       className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm font-medium ${
         isActive
-          ? 'bg-indigo-600 text-white'
-          : 'text-neutral-300 hover:bg-neutral-800 hover:text-white'
+          ? 'bg-[#dfe8ff] text-[#1c2f63]'
+          : 'text-[#c2cde9] hover:bg-[#21366d] hover:text-white'
       } ${collapsed ? 'justify-center' : ''}`}
     >
       <span className="text-lg flex-shrink-0">{item.icon}</span>
@@ -122,25 +122,25 @@ export default function AdminSidebar({ items, collapsed, onToggle }: AdminSideba
 
   const sidebarContent = (
     <div
-      className={`flex flex-col h-full bg-neutral-900 text-white transition-all duration-300 ${
+      className={`flex flex-col h-full bg-[#16244d] text-white transition-all duration-300 ${
         collapsed ? 'w-16' : 'w-64'
       }`}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-4 border-b border-neutral-700 min-h-[64px]">
+      <div className="flex items-center justify-between px-4 py-4 border-b border-[#2a3d71] min-h-[64px]">
         {!collapsed && (
           <div className="flex items-center gap-2 overflow-hidden">
-            <span className="text-indigo-400 text-xl flex-shrink-0">🛡️</span>
-            <span className="font-bold text-lg whitespace-nowrap">Admin Panel</span>
+            <span className="text-[#d9b58a] text-xl flex-shrink-0">◆</span>
+            <span className="font-semibold text-lg whitespace-nowrap font-heading tracking-wide">Control Center</span>
           </div>
         )}
         {collapsed && (
-          <span className="text-indigo-400 text-xl mx-auto">🛡️</span>
+          <span className="text-[#d9b58a] text-xl mx-auto">◆</span>
         )}
         <button
           onClick={onToggle}
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className={`text-neutral-400 hover:text-white hover:bg-neutral-700 rounded p-1 transition-colors flex-shrink-0 ${
+          className={`text-[#b4c2e4] hover:text-white hover:bg-[#21366d] rounded p-1 transition-colors flex-shrink-0 ${
             collapsed ? 'mx-auto' : ''
           }`}
         >
@@ -182,7 +182,7 @@ export default function AdminSidebar({ items, collapsed, onToggle }: AdminSideba
         {/* Backdrop */}
         {!collapsed && (
           <div
-            className="fixed inset-0 bg-black/60 z-40"
+            className="fixed inset-0 bg-black/55 z-40"
             onClick={onToggle}
             aria-hidden="true"
           />
@@ -193,24 +193,24 @@ export default function AdminSidebar({ items, collapsed, onToggle }: AdminSideba
             collapsed ? '-translate-x-full' : 'translate-x-0'
           }`}
         >
-          <div className="flex flex-col h-full bg-neutral-900 text-white w-64">
+          <div className="flex flex-col h-full bg-[#16244d] text-white w-64">
             {/* Mobile header */}
-            <div className="flex items-center justify-between px-4 py-4 border-b border-neutral-700 min-h-[64px]">
+            <div className="flex items-center justify-between px-4 py-4 border-b border-[#2a3d71] min-h-[64px] bg-[#16244d]">
               <div className="flex items-center gap-2">
-                <span className="text-indigo-400 text-xl">🛡️</span>
-                <span className="font-bold text-lg">Admin Panel</span>
+                <span className="text-[#d9b58a] text-xl">◆</span>
+                <span className="font-semibold text-lg font-heading tracking-wide">Control Center</span>
               </div>
               <button
                 onClick={onToggle}
                 aria-label="Close sidebar"
-                className="text-neutral-400 hover:text-white hover:bg-neutral-700 rounded p-1 transition-colors"
+                className="text-[#b4c2e4] hover:text-white hover:bg-[#21366d] rounded p-1 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
-            <nav className="flex-1 overflow-y-auto py-4 space-y-1 px-2">
+            <nav className="flex-1 overflow-y-auto py-4 space-y-1 px-2 bg-[#16244d]">
               {items.map((item) => (
                 <NavItem
                   key={item.href}

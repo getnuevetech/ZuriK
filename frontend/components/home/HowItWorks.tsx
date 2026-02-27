@@ -106,17 +106,17 @@ export function HowItWorks() {
       .catch(() => {});
   }, []);
   return (
-    <section className="py-24 px-4 border-t border-b" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }} aria-labelledby="how-it-works-heading">
+    <section className="py-24 px-4 border-t border-b" style={{ backgroundColor: '#f9f4ed', borderColor: 'var(--color-border)' }} aria-labelledby="how-it-works-heading">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <span className="inline-block border text-xs font-medium px-4 py-1.5 rounded-full mb-4" style={{ borderColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}>
+          <span className="inline-block border text-xs font-medium px-4 py-1.5 rounded-full mb-4 uppercase tracking-[0.18em]" style={{ borderColor: 'var(--color-secondary)', color: 'var(--color-secondary)' }}>
             The Process
           </span>
-          <h2 id="how-it-works-heading" className="font-heading text-4xl font-bold text-neutral-900 tracking-tight mb-2">
+          <h2 id="how-it-works-heading" className="font-heading text-4xl font-semibold mueble-section-title mb-2">
             How It Works
           </h2>
           <div className="mx-auto mt-2 h-1 w-16 rounded" style={{ backgroundColor: 'var(--color-secondary)' }} />
-          <p className="text-neutral-500 text-base font-light max-w-xl mx-auto mt-4">
+          <p className="text-[var(--color-text-muted)] text-base font-light max-w-xl mx-auto mt-4">
             Your journey from discovery to doorstep — worldwide. Simple, transparent, and delightful.
           </p>
         </div>
@@ -124,17 +124,17 @@ export function HowItWorks() {
         {/* Steps */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
           {steps.map((step) => (
-            <div key={step.step} className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow" style={{ border: '1px solid var(--color-border)' }}>
+            <div key={step.step} className="mueble-card p-8 transition-shadow hover:-translate-y-1 duration-300">
               {/* Step number at top-left */}
               <div className="flex items-center gap-3 mb-6">
-                <span className="text-xs font-bold tracking-widest" style={{ color: 'var(--color-secondary)' }}>{step.step}</span>
+                <span className="text-xs font-semibold tracking-[0.22em] uppercase" style={{ color: 'var(--color-secondary)' }}>{step.step}</span>
               </div>
               {/* Icon */}
-              <div className="mb-4" style={{ color: 'var(--color-primary)' }}>
+              <div className="mb-4" style={{ color: 'var(--color-primary-dark)' }}>
                 {step.icon}
               </div>
               <h3 className="font-heading font-bold text-neutral-900 text-lg mb-2">{step.title}</h3>
-              <p className="text-sm text-neutral-500 leading-relaxed font-light">{step.desc}</p>
+              <p className="text-sm text-[var(--color-text-muted)] leading-relaxed font-light">{step.desc}</p>
             </div>
           ))}
         </div>
@@ -142,13 +142,13 @@ export function HowItWorks() {
         {/* Trust Badges */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {TRUST_BADGES.map((badge) => (
-            <div key={badge.label} className="bg-white p-8 text-center rounded-xl shadow-sm" style={{ border: '1px solid var(--color-border)' }}>
-              <div className="w-12 h-12 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(30,58,95,0.08)', color: 'var(--color-primary)' }}>
+            <div key={badge.label} className="mueble-card p-8 text-center">
+              <div className="w-12 h-12 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(35,52,95,0.08)', color: 'var(--color-primary-dark)' }}>
                 {badge.icon}
               </div>
               <div className="font-bold text-neutral-900 text-base mb-1">{badge.label}</div>
-              <div className="font-bold mb-2" style={{ color: 'var(--color-primary)' }}>{badge.stat}</div>
-              <div className="text-xs text-neutral-500 font-light">{badge.desc}</div>
+              <div className="font-bold mb-2" style={{ color: 'var(--color-primary-dark)' }}>{badge.stat}</div>
+              <div className="text-xs text-[var(--color-text-muted)] font-light">{badge.desc}</div>
             </div>
           ))}
         </div>

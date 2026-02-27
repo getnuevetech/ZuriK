@@ -32,7 +32,7 @@ export class User {
 
   @Exclude()
   @Column({ nullable: true })
-  refreshToken: string;
+  refreshToken: string | null;
 
   @Column({ nullable: true })
   firstName: string;

@@ -66,10 +66,13 @@ export default function DesignersPage() {
   }, [designers, search]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="mb-8">
-        <h1 className="font-heading text-4xl font-bold text-neutral-900 mb-2">Our Designers</h1>
-        <p className="text-neutral-500">Talented artisans from across the African continent</p>
+    <div className="catalog-shell">
+      <div className="catalog-hero mb-8">
+        <p className="text-[11px] uppercase tracking-[0.2em] text-[var(--color-primary)]/70 font-semibold mb-2">
+          Atelier Network
+        </p>
+        <h1 className="catalog-hero-title font-heading font-semibold mb-2">Our Designers</h1>
+        <p className="catalog-hero-copy">Talented artisans from across the African continent.</p>
       </div>
 
       <div className="mb-6 max-w-md">
@@ -92,9 +95,9 @@ export default function DesignersPage() {
               <Card key={designer.id} hover>
                 <CardBody className="flex flex-col items-center text-center py-8">
                   <Avatar name={name} size="xl" className="mb-4" />
-                  <h3 className="font-semibold text-neutral-900 text-lg mb-1">{name}</h3>
+                  <h3 className="font-heading font-semibold text-[var(--color-primary-dark)] text-xl mb-1">{name}</h3>
                   {designer.countries.length > 0 && (
-                    <p className="text-sm text-neutral-500 mb-2">📍 {designer.countries.join(', ')}</p>
+                    <p className="text-sm text-[var(--color-text-muted)] mb-2">📍 {designer.countries.join(', ')}</p>
                   )}
                   <div className="flex items-center gap-2 mb-4 flex-wrap justify-center">
                     <Badge variant="primary">Designer</Badge>

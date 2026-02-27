@@ -44,7 +44,7 @@ function LoginForm() {
       toast('success', 'Welcome back!');
       router.push(safeRedirect);
     } catch (err: unknown) {
-      toast('error', extractErrorMessage(err, 'Invalid email or password'));
+      toast('error', extractErrorMessage(err, 'Sign-in failed. Check your email and password, then try again.'));
     } finally {
       setLoading(false);
     }

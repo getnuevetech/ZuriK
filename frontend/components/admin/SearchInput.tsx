@@ -56,7 +56,7 @@ export default function SearchInput({
   return (
     <div className={`relative flex items-center ${className}`}>
       {/* Search icon */}
-      <span className="absolute left-3 text-neutral-400 pointer-events-none select-none text-sm">
+      <span className="absolute left-3 text-[#7f93c1] pointer-events-none select-none text-sm">
         🔍
       </span>
 
@@ -65,7 +65,7 @@ export default function SearchInput({
         value={localValue}
         onChange={handleChange}
         placeholder={placeholder}
-        className="w-full pl-9 pr-8 py-2 text-sm bg-white border border-neutral-300 rounded-lg text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+        className="w-full pl-9 pr-8 py-2.5 text-sm bg-[#fffdf9] border border-[#d6dfef] rounded-lg text-[#1f2f62] placeholder:text-[#8fa0c6] focus:outline-none focus:ring-2 focus:ring-[#5d79b0]/35 focus:border-[#4a659a] transition-colors"
       />
 
       {/* Clear button */}
@@ -73,7 +73,7 @@ export default function SearchInput({
         <button
           onClick={handleClear}
           aria-label="Clear search"
-          className="absolute right-2.5 text-neutral-400 hover:text-neutral-600 transition-colors text-sm leading-none"
+          className="absolute right-2.5 text-[#8ea0c8] hover:text-[#4b6397] transition-colors text-sm leading-none"
         >
           ×
         </button>

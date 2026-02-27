@@ -20,7 +20,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className="w-full">
         {label && (
-          <label htmlFor={selectId} className="block text-sm font-medium text-neutral-700 mb-1">
+          <label htmlFor={selectId} className="block text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-primary)]/75 mb-1.5">
             {label}
           </label>
         )}
@@ -28,9 +28,9 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           ref={ref}
           id={selectId}
           className={[
-            'w-full rounded-lg border px-3 py-2 text-sm text-neutral-900 bg-white',
-            'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition',
-            error ? 'border-red-500' : 'border-neutral-300 hover:border-neutral-400',
+            'w-full rounded-md border px-3 py-2.5 text-sm text-neutral-900 bg-[#fffdf9]',
+            'focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-700 transition',
+            error ? 'border-red-500' : 'border-[#d9cdbd] hover:border-[#cbbda9]',
             className,
           ].join(' ')}
           aria-invalid={!!error}

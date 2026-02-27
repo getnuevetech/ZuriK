@@ -122,8 +122,8 @@ const isProduction = process.env.NODE_ENV === 'production';
         HeritageStory,
         ShopByCountrySettings,
       ],
-      // TODO: switch back to `synchronize: false` and use proper TypeORM migrations once tables are created
-      synchronize: true,
+      // Never auto-sync in production. In development, opt in with AUTO_SYNC=true.
+      synchronize: !isProduction && process.env.AUTO_SYNC === 'true',
       ssl: isProduction
         ? {
             rejectUnauthorized: !!process.env.DATABASE_CA_CERT,

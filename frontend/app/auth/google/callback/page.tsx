@@ -2,29 +2,28 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { authApi, extractErrorMessage } from '../../../../lib/api';
 
 function GoogleCallbackContent() {
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const accessToken = searchParams.get('accessToken');
-    const refreshToken = searchParams.get('refreshToken');
-    const userParam = searchParams.get('user');
+    const code = searchParams.get('code');
 
-    if (accessToken && refreshToken && userParam) {
-      try {
-        const user = JSON.parse(decodeURIComponent(userParam));
-        localStorage.setItem('access_token', accessToken);
-        localStorage.setItem('refresh_token', refreshToken);
-        localStorage.setItem('auth_user', JSON.stringify(user));
-        window.location.href = '/';
-      } catch (err) {
-        console.error('Failed to parse user data from Google callback:', err);
-        setError('Failed to process Google sign-in. Please try again.');
-      }
+    if (code) {
+      authApi.exchangeGoogleCode(code)
+        .then((result) => {
+          localStorage.setItem('access_token', result.accessToken);
+          localStorage.setItem('refresh_token', result.refreshToken);
+          localStorage.setItem('auth_user', JSON.stringify(result.user));
+          window.location.replace('/');
+        })
+        .catch((err: unknown) => {
+          setError(extractErrorMessage(err, 'Google sign-in could not be completed. Please try again.'));
+        });
     } else {
-      setError('Google sign-in failed. Please try again.');
+      setError('Google sign-in was cancelled or missing an authorization code. Please try again.');
     }
   }, [searchParams]);
 

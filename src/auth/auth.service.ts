@@ -10,9 +10,16 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { EmailService } from '../notifications/email.service';
 
+export interface AuthResult {
+  user: Omit<User, 'password' | 'refreshToken'>;
+  accessToken: string;
+  refreshToken: string;
+}
+
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
+  private readonly googleAuthCodeStore = new Map<string, { result: AuthResult; expiresAt: number }>();
 
   constructor(
     @InjectRepository(User) private userRepo: Repository<User>,
@@ -63,7 +70,7 @@ export class AuthService {
     user.emailVerificationToken = hashedToken;
     user.emailVerificationExpires = new Date(Date.now() + 86400000); // 24 hours
     await this.userRepo.save(user);
-    const frontendUrl = this.configService.get<string>('FRONTEND_URL');
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
     const verifyUrl = `${frontendUrl}/verify-email?token=${token}`;
     const emailSent = await this.emailService.sendEmailVerification(user, verifyUrl);
     if (!emailSent) {
@@ -79,6 +86,9 @@ export class AuthService {
     const user = await this.userRepo.findOne({ where: { email: dto.email } });
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
+    }
+    if (!user.isActive) {
+      throw new UnauthorizedException('This account is deactivated. Please contact support.');
     }
 
     // Check if account is locked
@@ -139,9 +149,15 @@ export class AuthService {
     avatarUrl?: string;
   }) {
     let user = await this.userRepo.findOne({ where: { googleId: googleUser.googleId } });
+    if (user && !user.isActive) {
+      throw new UnauthorizedException('This account is deactivated. Please contact support.');
+    }
 
     if (!user) {
       user = await this.userRepo.findOne({ where: { email: googleUser.email } });
+      if (user && !user.isActive) {
+        throw new UnauthorizedException('This account is deactivated. Please contact support.');
+      }
 
       if (user) {
         user.googleId = googleUser.googleId;
@@ -170,6 +186,30 @@ export class AuthService {
     return { user: userWithoutSecrets, ...tokens };
   }
 
+  createGoogleAuthCode(result: AuthResult): string {
+    this.pruneExpiredGoogleAuthCodes();
+    const code = crypto.randomBytes(32).toString('hex');
+    const ttlMs = this.getGoogleAuthCodeTtlMs();
+    this.googleAuthCodeStore.set(code, {
+      result,
+      expiresAt: Date.now() + ttlMs,
+    });
+    return code;
+  }
+
+  exchangeGoogleAuthCode(code: string): AuthResult {
+    this.pruneExpiredGoogleAuthCodes();
+    const record = this.googleAuthCodeStore.get(code);
+    if (!record) {
+      throw new UnauthorizedException('Invalid or expired Google sign-in code');
+    }
+    this.googleAuthCodeStore.delete(code);
+    if (record.expiresAt < Date.now()) {
+      throw new UnauthorizedException('Invalid or expired Google sign-in code');
+    }
+    return record.result;
+  }
+
   async refresh(refreshToken: string) {
     let payload: { sub: string; email: string };
     try {
@@ -180,7 +220,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
     const user = await this.userRepo.findOne({ where: { id: payload.sub } });
-    if (!user || !user.refreshToken) {
+    if (!user || !user.refreshToken || !user.isActive) {
       throw new UnauthorizedException('Invalid refresh token');
     }
     const tokenMatch = await bcrypt.compare(refreshToken, user.refreshToken);
@@ -203,7 +243,7 @@ export class AuthService {
     user.passwordResetExpires = new Date(Date.now() + 3600000); // 1 hour
     await this.userRepo.save(user);
 
-    const frontendUrl = this.configService.get<string>('FRONTEND_URL');
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
     const resetUrl = `${frontendUrl}/reset-password?token=${token}`;
     await this.emailService.sendPasswordReset(user, resetUrl);
 
@@ -243,7 +283,7 @@ export class AuthService {
     user.emailVerificationExpires = new Date(Date.now() + 86400000); // 24 hours
     await this.userRepo.save(user);
 
-    const frontendUrl = this.configService.get<string>('FRONTEND_URL');
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
     const verifyUrl = `${frontendUrl}/verify-email?token=${token}`;
     const emailSent = await this.emailService.sendEmailVerification(user, verifyUrl);
 
@@ -297,5 +337,22 @@ export class AuthService {
     const refreshTokenHash = await bcrypt.hash(refreshToken, 10);
     await this.userRepo.update(user.id, { refreshToken: refreshTokenHash });
     return { accessToken, refreshToken };
+  }
+
+  private getGoogleAuthCodeTtlMs(): number {
+    const ttlSeconds = Number(this.configService.get('GOOGLE_AUTH_CODE_TTL_SECONDS') ?? 120);
+    if (!Number.isFinite(ttlSeconds) || ttlSeconds <= 0) {
+      return 120000;
+    }
+    return Math.min(ttlSeconds, 600) * 1000;
+  }
+
+  private pruneExpiredGoogleAuthCodes(): void {
+    const now = Date.now();
+    for (const [code, record] of this.googleAuthCodeStore.entries()) {
+      if (record.expiresAt <= now) {
+        this.googleAuthCodeStore.delete(code);
+      }
+    }
   }
 }
