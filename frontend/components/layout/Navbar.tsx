@@ -75,6 +75,12 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
   const displayName = authUser?.firstName
     ? `${authUser.firstName} ${authUser.lastName ?? ''}`.trim()
     : authUser?.email;
+  const accountHref =
+    authUser?.role === 'designer' ? '/dashboard/designer'
+    : authUser?.role === 'fabric_seller' ? '/dashboard/fabric-seller'
+    : authUser?.role === 'qa' ? '/dashboard/qa'
+    : authUser?.role === 'admin' ? '/admin'
+    : '/account';
 
   if (pathname === '/') {
     return (
@@ -114,6 +120,66 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
                   {cartCount > 9 ? '9+' : cartCount}
                 </span>
               </Link>
+              {isAuthenticated ? (
+                <div className="hidden lg:flex items-center gap-2">
+                  <Link
+                    href={accountHref}
+                    className="text-sm font-medium text-[#1a237e]/80 hover:text-[#1a237e] transition-colors px-3 py-2"
+                  >
+                    {authUser?.role === 'admin' ? 'Admin' : 'Account'}
+                  </Link>
+                  <div className="relative" ref={userMenuRef}>
+                    <button
+                      onClick={() => setUserMenuOpen((v) => !v)}
+                      className="flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1a237e]/30 p-1 rounded-md"
+                      aria-expanded={userMenuOpen}
+                      aria-haspopup="true"
+                    >
+                      <Avatar name={displayName} size="sm" />
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-[#1a237e]/55" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                    {userMenuOpen && (
+                      <div className="absolute right-0 mt-2 w-56 border py-1 text-[#1a237e] z-50 shadow-modal rounded-lg bg-white">
+                        <div className="px-4 py-2 border-b border-gray-200">
+                          <p className="text-sm font-semibold truncate">{displayName}</p>
+                          {authUser?.role && (
+                            <p className="text-xs text-gray-500 capitalize">{authUser.role.replace('_', ' ')}</p>
+                          )}
+                        </div>
+                        <Link href="/account" className="block px-4 py-2 text-sm hover:bg-gray-50 transition-colors" onClick={() => setUserMenuOpen(false)}>
+                          Profile
+                        </Link>
+                        <Link href="/orders" className="block px-4 py-2 text-sm hover:bg-gray-50 transition-colors" onClick={() => setUserMenuOpen(false)}>
+                          My Orders
+                        </Link>
+                        <Link href={accountHref} className="block px-4 py-2 text-sm hover:bg-gray-50 transition-colors" onClick={() => setUserMenuOpen(false)}>
+                          Dashboard
+                        </Link>
+                        <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                          Sign out
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="hidden lg:flex items-center gap-2 ml-2">
+                  <Link
+                    href="/login"
+                    className="text-sm font-medium text-[#1a237e]/80 hover:text-[#1a237e] transition-colors px-3 py-2"
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="text-sm font-semibold text-white bg-[#1a237e] hover:bg-[#0d1450] transition-colors px-4 py-2 rounded-md"
+                  >
+                    Register
+                  </Link>
+                </div>
+              )}
               <button
                 className="lg:hidden text-[#1a237e]"
                 onClick={() => setMobileOpen((v) => !v)}
