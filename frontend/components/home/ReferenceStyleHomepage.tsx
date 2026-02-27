@@ -4,50 +4,55 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+const DESIGN_REFERENCE_IMAGE_BASE =
+  'https://raw.githubusercontent.com/agolomola/africanfashionone/main/frontend/design-reference/app/public/images';
+
+const img = (name: string) => `${DESIGN_REFERENCE_IMAGE_BASE}/${name}`;
+
 const heroProducts = [
-  { id: 1, name: 'Kente Gown', price: 450, image: '/images/product-1.jpg' },
-  { id: 2, name: 'Ankara Set', price: 295, image: '/images/product-2.jpg' },
-  { id: 3, name: 'Dashiki', price: 180, image: '/images/product-3.jpg' },
+  { id: 1, name: 'Kente Gown', price: 450, image: img('product-1.jpg') },
+  { id: 2, name: 'Ankara Set', price: 295, image: img('product-2.jpg') },
+  { id: 3, name: 'Dashiki', price: 180, image: img('product-3.jpg') },
 ];
 
 const categories = [
   {
     title: 'Fabrics',
     description: '—Find authentic fabrics your wardrobe will love',
-    image: '/images/category-fabrics.jpg',
+    image: img('category-fabrics.jpg'),
     href: '/fabrics',
   },
   {
     title: 'Dresses',
     description: '—Top colors for our new season collection',
-    image: '/images/category-dresses.jpg',
+    image: img('category-dresses.jpg'),
     href: '/products',
   },
 ];
 
 const products = [
-  { id: 1, name: 'Kente Gown', category: 'Dresses', price: 450, image: '/images/product-1.jpg', isNew: false },
-  { id: 2, name: 'Ankara Set', category: 'Dresses', price: 295, image: '/images/product-2.jpg', isNew: true },
-  { id: 3, name: 'Royal Dashiki', category: 'Dresses', price: 180, image: '/images/product-3.jpg', isNew: false },
-  { id: 4, name: 'Emerald Caftan', category: 'Dresses', price: 380, image: '/images/product-4.jpg', isNew: false },
-  { id: 5, name: 'Kitenge Fabric', category: 'Fabrics', price: 85, image: '/images/product-5.jpg', isNew: false },
-  { id: 6, name: 'Headwrap Set', category: 'Accessories', price: 120, image: '/images/product-6.jpg', isNew: true },
-  { id: 7, name: 'Boubou Gown', category: 'Dresses', price: 520, image: '/images/product-7.jpg', isNew: false },
-  { id: 8, name: 'Wax Print Bundle', category: 'Fabrics', price: 150, image: '/images/product-8.jpg', isNew: false },
+  { id: 1, name: 'Kente Gown', category: 'Dresses', price: 450, image: img('product-1.jpg'), isNew: false },
+  { id: 2, name: 'Ankara Set', category: 'Dresses', price: 295, image: img('product-2.jpg'), isNew: true },
+  { id: 3, name: 'Royal Dashiki', category: 'Dresses', price: 180, image: img('product-3.jpg'), isNew: false },
+  { id: 4, name: 'Emerald Caftan', category: 'Dresses', price: 380, image: img('product-4.jpg'), isNew: false },
+  { id: 5, name: 'Kitenge Fabric', category: 'Fabrics', price: 85, image: img('product-5.jpg'), isNew: false },
+  { id: 6, name: 'Headwrap Set', category: 'Accessories', price: 120, image: img('product-6.jpg'), isNew: true },
+  { id: 7, name: 'Boubou Gown', category: 'Dresses', price: 520, image: img('product-7.jpg'), isNew: false },
+  { id: 8, name: 'Wax Print Bundle', category: 'Fabrics', price: 150, image: img('product-8.jpg'), isNew: false },
 ];
 
 const posts = [
-  { id: 1, title: 'Discover a world of authentic African fashion', category: 'Promos', image: '/images/blog-1.jpg' },
-  { id: 2, title: 'It is time to renew your wardrobe with our new collection', category: 'News', image: '/images/blog-2.jpg' },
-  { id: 3, title: 'Fresh colors for our new season fabrics', category: 'Promos', image: '/images/blog-3.jpg' },
+  { id: 1, title: 'Discover a world of authentic African fashion', category: 'Promos', image: img('blog-1.jpg') },
+  { id: 2, title: 'It is time to renew your wardrobe with our new collection', category: 'News', image: img('blog-2.jpg') },
+  { id: 3, title: 'Fresh colors for our new season fabrics', category: 'Promos', image: img('blog-3.jpg') },
 ];
 
 const instagramImages = [
-  '/images/product-1.jpg',
-  '/images/product-2.jpg',
-  '/images/category-fabrics.jpg',
-  '/images/blog-1.jpg',
-  '/images/product-4.jpg',
+  img('product-1.jpg'),
+  img('product-2.jpg'),
+  img('category-fabrics.jpg'),
+  img('blog-1.jpg'),
+  img('product-4.jpg'),
 ];
 
 export function ReferenceStyleHomepage() {
@@ -66,7 +71,7 @@ export function ReferenceStyleHomepage() {
       <section className="pt-[104px] relative">
         <div className="relative w-full h-[600px] lg:h-[700px]">
           <Image
-            src="/images/hero-bg.jpg"
+            src={img('hero-bg.jpg')}
             alt="African Fashion Collection"
             fill
             priority
@@ -195,9 +200,12 @@ export function ReferenceStyleHomepage() {
                   <span className="text-xs uppercase tracking-wider text-gray-500">{product.category}</span>
                   <h3 className="text-lg font-semibold text-[#1a237e] mt-1 font-heading">{product.name}</h3>
                   <p className="text-gray-500 mt-1">$ {product.price}.00 USD</p>
-                  <button className="mt-3 bg-[#00c853] hover:bg-[#00b248] text-white text-sm px-4 py-2 transition-colors">
+                  <Link
+                    href="/products"
+                    className="inline-block mt-3 bg-[#00c853] hover:bg-[#00b248] text-white text-sm px-4 py-2 transition-colors"
+                  >
                     View more
-                  </button>
+                  </Link>
                 </div>
               </div>
             ))}
@@ -231,9 +239,9 @@ export function ReferenceStyleHomepage() {
                 <div className="bg-white p-6 -mt-8 mx-4 relative shadow-lg">
                   <span className="text-xs uppercase tracking-wider text-gray-500">{post.category}</span>
                   <h3 className="text-lg font-bold text-[#1a237e] mt-2 font-heading">—{post.title}</h3>
-                  <a href="#" className="inline-block mt-4 text-sm text-gray-500 hover:text-[#00c853] transition-colors underline underline-offset-4">
+                  <Link href="/designers" className="inline-block mt-4 text-sm text-gray-500 hover:text-[#00c853] transition-colors underline underline-offset-4">
                     read more
-                  </a>
+                  </Link>
                 </div>
               </article>
             ))}
@@ -297,7 +305,12 @@ export function ReferenceStyleHomepage() {
             ))}
           </div>
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-            <a href="#" className="inline-flex items-center gap-2 text-[#1a237e] hover:text-[#00c853] transition-colors">
+            <a
+              href="https://www.instagram.com/"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 text-[#1a237e] hover:text-[#00c853] transition-colors"
+            >
               <span className="text-sm">— Follow us</span>
               <span className="font-semibold">@AfricanFashion</span>
             </a>
