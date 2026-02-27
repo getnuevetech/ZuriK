@@ -28,7 +28,7 @@ export default function StatsCard({ label, value, icon, trend, className = '' }:
           <span className="text-xs font-medium text-neutral-500 uppercase tracking-wide">{label}</span>
           <span className="text-3xl font-bold text-neutral-900">{value}</span>
         </div>
-        <div className="flex-shrink-0 w-11 h-11 rounded-full bg-indigo-100 flex items-center justify-center text-xl">
+        <div className="flex-shrink-0 w-11 h-11 rounded-full bg-[#1a237e]/10 flex items-center justify-center text-xl">
           {icon}
         </div>
       </div>
