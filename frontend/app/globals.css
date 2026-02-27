@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,12 +15,10 @@
   100% { background-position: 400px 0; }
 }
 
-/* Applied to the <main> children via the root layout */
 .page-transition {
   animation: fade-in-up 0.35s ease both;
 }
 
-/* Skeleton shimmer base */
 .skeleton {
   background: linear-gradient(
     90deg,
@@ -31,40 +31,72 @@
   border-radius: 0.375rem;
 }
 
-:root {
-  --color-primary: #1E3A5F;
-  --color-primary-dark: #162D4A;
-  --color-secondary: #FFD100;
-  --color-accent: #1E3A5F;
-  --color-background: #FFFFFF;
-  --color-neutral-bg: #F9FAFB;
-  --color-text: #1E1E1E;
-  --color-text-muted: #6B7280;
-  --color-surface: #F9FAFB;
-  --color-border: #E5E7EB;
-  --font-heading: 'Playfair Display', Georgia, serif;
-  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 233 75% 30%;
+    --card: 0 0% 100%;
+    --card-foreground: 233 75% 30%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 233 75% 30%;
+    --primary: 233 75% 30%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 233 75% 30%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 145 100% 40%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 233 75% 30%;
+    --radius: 0px;
+    /* Legacy compat vars */
+    --color-primary: #1a237e;
+    --color-primary-dark: #0d1450;
+    --color-secondary: #00c853;
+    --color-accent: #1a237e;
+    --color-background: #ffffff;
+    --color-neutral-bg: #f9fafb;
+    --color-text: #1a237e;
+    --color-text-muted: #666666;
+    --color-surface: #f9fafb;
+    --color-border: #e0e0e0;
+    --font-heading: 'Playfair Display', Georgia, serif;
+    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  }
 }
 
 @layer base {
-  html {
-    scroll-behavior: smooth;
-  }
-
+  html { scroll-behavior: smooth; }
   body {
-    @apply font-body text-neutral-900 bg-neutral-50;
+    @apply bg-white text-[#1a237e] font-sans antialiased;
+    font-family: 'Inter', sans-serif;
   }
-
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading;
+    font-family: 'Playfair Display', serif;
   }
-
   *:focus-visible {
-    @apply outline-2 outline-offset-2 outline-primary-500;
+    @apply outline-2 outline-offset-2 outline-[#1a237e];
   }
 }
 
-/* Footer link hover — yellow accent */
+/* Green CTA button */
+.btn-green {
+  @apply bg-[#00c853] hover:bg-[#00b248] text-white transition-colors;
+}
+/* Navy text */
+.text-navy { @apply text-[#1a237e]; }
+/* Full width section */
+.section-full { @apply w-full; }
+/* Container with padding */
+.container-padded {
+  @apply max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Footer link hover */
 .footer-link {
   color: rgba(255,255,255,0.6);
   transition: color 0.15s;
@@ -81,5 +113,14 @@
 }
 .footer-social:hover {
   background-color: var(--color-secondary);
-  color: var(--color-primary);
+  color: #ffffff;
 }
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #a1a1a1; }
+
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }

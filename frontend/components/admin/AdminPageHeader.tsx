@@ -24,7 +24,7 @@ export default function AdminPageHeader({ title, breadcrumbs, actions }: AdminPa
               {crumb.href ? (
                 <Link
                   href={crumb.href}
-                  className="hover:text-indigo-600 hover:underline transition-colors"
+                  className="hover:text-[#1a237e] hover:underline transition-colors"
                 >
                   {crumb.label}
                 </Link>
@@ -38,7 +38,7 @@ export default function AdminPageHeader({ title, breadcrumbs, actions }: AdminPa
 
       {/* Title row */}
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold text-neutral-900">{title}</h1>
+        <h1 className="text-2xl font-bold text-[#1a237e]">{title}</h1>
         {actions && <div className="flex items-center gap-2 flex-shrink-0">{actions}</div>}
       </div>
     </div>

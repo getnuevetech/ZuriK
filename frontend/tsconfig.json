@@ -32,6 +32,7 @@
   ],
   "exclude": [
     "node_modules",
-    "components/home/_backup"
+    "components/home/_backup",
+    "design-reference"
   ]
 }
