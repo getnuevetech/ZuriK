@@ -1,0 +1,77 @@
+'use client';
+
+import React from 'react';
+
+const posts = [
+  {
+    id: 1,
+    title: 'Discover a world of authentic African fashion',
+    category: 'Promos',
+    image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&h=450&fit=crop',
+  },
+  {
+    id: 2,
+    title: 'It is time to renew your wardrobe with our new collection',
+    category: 'News',
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=450&fit=crop',
+  },
+  {
+    id: 3,
+    title: 'Fresh colors for our new season fabrics',
+    category: 'Promos',
+    image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&h=450&fit=crop',
+  },
+];
+
+export function MuebleJournal() {
+  return (
+    <section className="py-16 lg:py-24">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section header */}
+        <div className="text-center mb-12">
+          <span className="text-xs uppercase tracking-wider text-gray-500">Journal</span>
+          <h2
+            className="text-3xl lg:text-4xl font-bold text-[#1a237e] mt-2"
+            style={{ fontFamily: 'Playfair Display, serif' }}
+          >
+            Latest Posts
+          </h2>
+        </div>
+
+        {/* Posts grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {posts.map((post) => (
+            <article key={post.id} className="group">
+              {/* Image */}
+              <div className="aspect-[4/3] overflow-hidden bg-gray-100">
+                <img
+                  src={post.image}
+                  alt={post.title}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  loading="lazy"
+                />
+              </div>
+
+              {/* Content card */}
+              <div className="bg-white p-6 -mt-8 mx-4 relative shadow-lg">
+                <span className="text-xs uppercase tracking-wider text-gray-500">{post.category}</span>
+                <h3
+                  className="text-lg font-bold text-[#1a237e] mt-2"
+                  style={{ fontFamily: 'Playfair Display, serif' }}
+                >
+                  —{post.title}
+                </h3>
+                <a
+                  href="#"
+                  className="inline-block mt-4 text-sm text-gray-500 hover:text-[#00c853] transition-colors underline underline-offset-4"
+                >
+                  read more
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
