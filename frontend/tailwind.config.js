@@ -9,7 +9,15 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        /* Legacy palette tokens kept for backward compat */
+        navy: {
+          DEFAULT: '#1a237e',
+          dark: '#0d1450',
+          light: '#3949ab',
+        },
+        green: {
+          cta: '#00c853',
+          hover: '#00b248',
+        },
         primary: {
           50: '#f0f4f9',
           100: '#d9e4f0',
@@ -19,23 +27,21 @@ module.exports = {
           500: '#4178b7',
           600: '#1a237e',
           700: '#0d1450',
-          800: '#0f1f33',
-          900: '#07121c',
+          800: '#0a0f3d',
+          900: '#07091f',
           950: '#040b12',
         },
         secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
-          /* Legacy shades */
-          400: '#FFD100',
-        },
-        destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
-        },
-        muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
+          50: '#e8fff0',
+          100: '#ccffe0',
+          200: '#99ffbc',
+          300: '#66ff98',
+          400: '#33ff74',
+          500: '#00c853',
+          600: '#00b248',
+          700: '#008c38',
+          800: '#006628',
+          900: '#004018',
         },
         accent: {
           50: '#f0f4f9',
@@ -46,8 +52,8 @@ module.exports = {
           500: '#4178b7',
           600: '#1a237e',
           700: '#0d1450',
-          800: '#0f1f33',
-          900: '#07121c',
+          800: '#0a0f3d',
+          900: '#07091f',
           950: '#040b12',
         },
         navy: '#1a237e',

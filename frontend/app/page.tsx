@@ -1,19 +1,19 @@
 'use client';
 
 import React from 'react';
-import { MuebleHero } from '../components/homepage/MuebleHero';
-import { MuebleCategoryShowcase } from '../components/homepage/MuebleCategoryShowcase';
-import { MuebleProducts } from '../components/homepage/MuebleProducts';
-import { MuebleJournal } from '../components/homepage/MuebleJournal';
-import { MuebleFeatures } from '../components/homepage/MuebleFeatures';
-import { MuebleInstagram } from '../components/homepage/MuebleInstagram';
+import { MuebleHero } from '../components/home/MuebleHero';
+import { MuebleCategoryShowcase } from '../components/home/MuebleCategoryShowcase';
+import { MuebleLatestProducts } from '../components/home/MuebleLatestProducts';
+import { MuebleJournal } from '../components/home/MuebleJournal';
+import { MuebleFeatures } from '../components/home/MuebleFeatures';
+import { MuebleInstagram } from '../components/home/MuebleInstagram';
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       <MuebleHero />
       <MuebleCategoryShowcase />
-      <MuebleProducts />
+      <MuebleLatestProducts />
       <MuebleJournal />
       <MuebleFeatures />
       <MuebleInstagram />

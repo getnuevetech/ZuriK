@@ -69,7 +69,7 @@ export default function AdminDashboardPage() {
         <p className="text-red-600 text-lg mb-4">Failed to load dashboard data</p>
         <button
           onClick={loadData}
-          className="px-4 py-2 bg-[#00c853] hover:bg-[#00b248] text-white rounded-lg transition-colors"
+          className="px-4 py-2 bg-[#1a237e] text-white rounded-lg hover:bg-[#0d1450] transition-colors"
         >
           Try Again
         </button>
@@ -184,7 +184,7 @@ export default function AdminDashboardPage() {
             <Link
               key={action.href}
               href={action.href}
-              className="flex items-center gap-3 p-4 rounded-lg border border-neutral-200 hover:border-[#00c853] hover:bg-[#00c853]/5 transition-colors"
+              className="flex items-center gap-3 p-4 rounded-lg border border-neutral-200 hover:border-[#1a237e] hover:bg-[#1a237e]/5 transition-colors"
             >
               <span className="text-2xl">{action.icon}</span>
               <span className="text-sm font-medium text-[#1a237e]/80">{action.label}</span>

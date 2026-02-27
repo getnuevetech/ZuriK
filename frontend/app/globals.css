@@ -59,7 +59,6 @@
   animation: fade-in-up 0.35s ease both;
 }
 
-/* Skeleton shimmer base */
 .skeleton {
   background: linear-gradient(
     90deg,
@@ -72,24 +71,8 @@
   border-radius: 0.375rem;
 }
 
-/* ─── Mueble Design System CSS Variables ───────────────────────────────────── */
 @layer base {
   :root {
-    /* Legacy tokens (kept for backward compat) */
-    --color-primary: #1a237e;
-    --color-primary-dark: #0d1450;
-    --color-secondary: #FFD100;
-    --color-accent: #1a237e;
-    --color-background: #FFFFFF;
-    --color-neutral-bg: #F9FAFB;
-    --color-text: #1a237e;
-    --color-text-muted: #666666;
-    --color-surface: #F9FAFB;
-    --color-border: #e0e0e0;
-    --font-heading: 'Playfair Display', Georgia, serif;
-    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
-
-    /* Mueble shadcn/ui CSS variable tokens */
     --background: 0 0% 100%;
     --foreground: 233 75% 30%;
     --card: 0 0% 100%;
@@ -110,49 +93,33 @@
     --input: 0 0% 90%;
     --ring: 233 75% 30%;
     --radius: 0px;
-
-    /* Sidebar tokens */
-    --sidebar-background: 233 75% 30%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 145 100% 40%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 233 60% 40%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 233 50% 40%;
-    --sidebar-ring: 145 100% 40%;
+    /* Legacy compat vars */
+    --color-primary: #1a237e;
+    --color-primary-dark: #0d1450;
+    --color-secondary: #00c853;
+    --color-accent: #1a237e;
+    --color-background: #ffffff;
+    --color-neutral-bg: #f9fafb;
+    --color-text: #1a237e;
+    --color-text-muted: #666666;
+    --color-surface: #f9fafb;
+    --color-border: #e0e0e0;
+    --font-heading: 'Playfair Display', Georgia, serif;
+    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
   }
+}
 
-  html {
-    scroll-behavior: smooth;
-  }
+@layer base {
+  html { scroll-behavior: smooth; }
   body {
-    @apply font-body text-neutral-900 bg-white;
+    @apply bg-white text-[#1a237e] font-sans antialiased;
+    font-family: 'Inter', sans-serif;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Playfair Display', serif;
   }
   *:focus-visible {
-    @apply outline-2 outline-offset-2;
-    outline-color: #1a237e;
-  }
-
-  /* Custom scrollbar */
-  ::-webkit-scrollbar {
-    width: 8px;
-  }
-  ::-webkit-scrollbar-track {
-    background: #f1f1f1;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: #1a237e;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: #0d1450;
-  }
-
-  /* Hide scrollbar for horizontal scroll */
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+    @apply outline-2 outline-offset-2 outline-[#1a237e];
   }
   .scrollbar-hide {
     -ms-overflow-style: none;
@@ -172,17 +139,20 @@
   @apply text-[#1a237e];
 }
 
-/* Full width section */
-.section-full {
-  @apply w-full;
+/* Green CTA button */
+.btn-green {
+  @apply bg-[#00c853] hover:bg-[#00b248] text-white transition-colors;
 }
-
+/* Navy text */
+.text-navy { @apply text-[#1a237e]; }
+/* Full width section */
+.section-full { @apply w-full; }
 /* Container with padding */
 .container-padded {
   @apply max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8;
 }
 
-/* Footer link hover — white accent */
+/* Footer link hover */
 .footer-link {
   color: rgba(255,255,255,0.6);
   transition: color 0.15s;
@@ -198,43 +168,17 @@
   transition: background-color 0.15s, color 0.15s;
 }
 .footer-social:hover {
-  background-color: #00c853;
+  background-color: var(--color-secondary);
   color: #ffffff;
 }
 
-/* Mueble Design System */
-@layer base {
-  :root {
-    --mueble-background: 0 0% 100%;
-    --mueble-foreground: 233 75% 30%;
-    --mueble-primary: 233 75% 30%;
-    --mueble-primary-foreground: 0 0% 100%;
-    --mueble-accent: 145 100% 40%;
-    --mueble-accent-foreground: 0 0% 100%;
-    --mueble-border: 0 0% 90%;
-    --mueble-radius: 0px;
-  }
-}
+/* Custom scrollbar (WebKit browsers) */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #a1a1a1; }
+/* Firefox scrollbar fallback */
+* { scrollbar-width: thin; scrollbar-color: #c1c1c1 #f1f1f1; }
 
-/* Mueble utility classes */
-.btn-green {
-  @apply bg-[#00c853] hover:bg-[#00b248] text-white transition-colors;
-}
-.text-navy {
-  @apply text-[#1a237e];
-}
-.section-full {
-  @apply w-full;
-}
-.container-padded {
-  @apply max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8;
-}
-
-/* Custom scrollbar for mueble */
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
