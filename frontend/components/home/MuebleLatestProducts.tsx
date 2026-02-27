@@ -5,14 +5,14 @@ import Image from 'next/image';
 import { readyToWearApi } from '../../lib/api';
 
 const DEMO_PRODUCTS = [
-  { id: 'p1', name: 'Kente Gown', category: 'Dresses', price: 450, image: '', isNew: false },
-  { id: 'p2', name: 'Ankara Set', category: 'Dresses', price: 295, image: '', isNew: true },
-  { id: 'p3', name: 'Royal Dashiki', category: 'Dresses', price: 180, image: '', isNew: false },
-  { id: 'p4', name: 'Emerald Caftan', category: 'Dresses', price: 380, image: '', isNew: false },
-  { id: 'p5', name: 'Kitenge Fabric', category: 'Fabrics', price: 85, image: '', isNew: false },
-  { id: 'p6', name: 'Headwrap Set', category: 'Accessories', price: 120, image: '', isNew: true },
-  { id: 'p7', name: 'Boubou Gown', category: 'Dresses', price: 520, image: '', isNew: false },
-  { id: 'p8', name: 'Wax Print Bundle', category: 'Fabrics', price: 150, image: '', isNew: false },
+  { id: 'demo-p1', name: 'Kente Gown', category: 'Dresses', price: 450, image: '', isNew: false },
+  { id: 'demo-p2', name: 'Ankara Set', category: 'Dresses', price: 295, image: '', isNew: true },
+  { id: 'demo-p3', name: 'Royal Dashiki', category: 'Dresses', price: 180, image: '', isNew: false },
+  { id: 'demo-p4', name: 'Emerald Caftan', category: 'Dresses', price: 380, image: '', isNew: false },
+  { id: 'demo-p5', name: 'Kitenge Fabric', category: 'Fabrics', price: 85, image: '', isNew: false },
+  { id: 'demo-p6', name: 'Headwrap Set', category: 'Accessories', price: 120, image: '', isNew: true },
+  { id: 'demo-p7', name: 'Boubou Gown', category: 'Dresses', price: 520, image: '', isNew: false },
+  { id: 'demo-p8', name: 'Wax Print Bundle', category: 'Fabrics', price: 150, image: '', isNew: false },
 ];
 
 interface Product {
@@ -22,6 +22,15 @@ interface Product {
   price: number;
   image: string;
   isNew: boolean;
+}
+
+interface ApiProduct {
+  id: string;
+  name: string;
+  customerPrice: number;
+  images?: string[];
+  category?: string;
+  isNew?: boolean;
 }
 
 function ProductCard({ product }: { product: Product }) {
@@ -60,7 +69,7 @@ export function MuebleLatestProducts() {
     readyToWearApi.featured()
       .then((data) => {
         if (data && data.length > 0) {
-          setProducts(data.slice(0, 8).map((p: { id: string; name: string; customerPrice: number; images?: string[]; category?: string; isNew?: boolean }) => ({
+          setProducts(data.slice(0, 8).map((p: ApiProduct) => ({
             id: p.id,
             name: p.name,
             category: p.category || 'Dresses',

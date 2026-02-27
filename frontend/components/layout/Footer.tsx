@@ -45,6 +45,7 @@ export function Footer() {
 
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // TODO: Integrate with newsletter API endpoint
     setEmail('');
     setName('');
   };
