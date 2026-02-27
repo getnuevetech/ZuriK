@@ -60,13 +60,13 @@ export function MuebleLatestProducts() {
     readyToWearApi.featured()
       .then((data) => {
         if (data && data.length > 0) {
-          setProducts(data.slice(0, 8).map((p: { id: string; name: string; customerPrice: number; images?: string[] }) => ({
+          setProducts(data.slice(0, 8).map((p: { id: string; name: string; customerPrice: number; images?: string[]; category?: string; isNew?: boolean }) => ({
             id: p.id,
             name: p.name,
-            category: 'Dresses',
+            category: p.category || 'Dresses',
             price: p.customerPrice,
             image: p.images?.[0] || '',
-            isNew: false,
+            isNew: p.isNew || false,
           })));
         } else {
           setProducts(DEMO_PRODUCTS);
