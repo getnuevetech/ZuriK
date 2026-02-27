@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { newsletterApi } from '../../lib/api';
 
 const menuLinks = [
   { href: '/', label: 'Home' },
@@ -28,6 +29,24 @@ const featuredProducts = [
 export function Footer() {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
+  const [subscribing, setSubscribing] = useState(false);
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    setSubscribing(true);
+    try {
+      await newsletterApi.subscribe(email, 'footer');
+      setSubscribed(true);
+      setEmail('');
+      setName('');
+    } catch {
+      // Silently fail — user gets no error for newsletter
+    } finally {
+      setSubscribing(false);
+    }
+  };
 
   return (
     <footer className="bg-[#1a237e] text-white">
@@ -106,25 +125,37 @@ export function Footer() {
           {/* Newsletter */}
           <div>
             <h4 className="text-xs uppercase tracking-wider text-white/50 mb-4">Newsletter</h4>
-            <div className="space-y-3">
-              <input
-                type="text"
-                placeholder="Your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full bg-white text-gray-900 px-4 py-3 text-sm placeholder:text-gray-400 outline-none"
-              />
-              <input
-                type="email"
-                placeholder="Your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white text-gray-900 px-4 py-3 text-sm placeholder:text-gray-400 outline-none"
-              />
-              <button className="w-full bg-[#00c853] hover:bg-[#00b248] text-white py-3 font-medium transition-colors text-sm">
-                Subscribe
-              </button>
-            </div>
+            {subscribed ? (
+              <div className="py-4 text-center">
+                <span className="text-[#00c853] text-2xl">✓</span>
+                <p className="text-white/80 text-sm mt-2">Thanks for subscribing!</p>
+              </div>
+            ) : (
+              <form onSubmit={handleSubscribe} className="space-y-3">
+                <input
+                  type="text"
+                  placeholder="Your name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full bg-white text-gray-900 px-4 py-3 text-sm placeholder:text-gray-400 outline-none"
+                />
+                <input
+                  type="email"
+                  placeholder="Your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full bg-white text-gray-900 px-4 py-3 text-sm placeholder:text-gray-400 outline-none"
+                />
+                <button
+                  type="submit"
+                  disabled={subscribing}
+                  className="w-full bg-[#00c853] hover:bg-[#00b248] text-white py-3 font-medium transition-colors text-sm disabled:opacity-60"
+                >
+                  {subscribing ? 'Subscribing...' : 'Subscribe'}
+                </button>
+              </form>
+            )}
             <div className="mt-4 space-y-2">
               <div className="flex items-center gap-2 text-sm text-white/70">
                 <span className="text-[#00c853]">✓</span>
