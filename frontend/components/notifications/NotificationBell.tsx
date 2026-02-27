@@ -9,7 +9,11 @@ import { NotificationList } from './NotificationList';
 // Poll every 30 seconds — balances near-real-time updates with minimal server load for MVP
 const POLL_INTERVAL_MS = 30000;
 
-export function NotificationBell() {
+interface NotificationBellProps {
+  tone?: 'light' | 'dark';
+}
+
+export function NotificationBell({ tone = 'light' }: NotificationBellProps) {
   const [open, setOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -73,12 +77,16 @@ export function NotificationBell() {
       handleUpdate();
     } catch {}
   };
+  const bellColorClass =
+    tone === 'dark'
+      ? 'text-white/80 hover:text-white'
+      : 'text-[var(--color-primary)]/70 hover:text-[var(--color-primary)]';
 
   return (
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className={['relative p-2 text-[var(--color-primary)]/70 hover:text-[var(--color-primary)] transition-colors rounded-lg', animate ? 'animate-bounce' : ''].join(' ')}
+        className={['relative p-2 transition-colors rounded-lg', bellColorClass, animate ? 'animate-bounce' : ''].join(' ')}
         aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

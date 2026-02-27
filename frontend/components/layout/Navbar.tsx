@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Avatar } from '../ui/Avatar';
 import { GlobalSearch } from '../common/GlobalSearch';
 import { NotificationBell } from '../notifications/NotificationBell';
 import { LoyaltyBadge } from '../loyalty/LoyaltyBadge';
@@ -24,18 +23,12 @@ const COUNTRIES = [
   { name: 'Ethiopia', flag: '🇪🇹' },
 ];
 
-const navLinks = [
-  { href: '/', label: 'Home' },
-  { href: '/designers', label: 'Designers' },
-];
-
-const homeCategories = [
-  { href: '/', label: 'All' },
-  { href: '/products', label: 'Dresses' },
-  { href: '/fabrics', label: 'Fabrics' },
-  { href: '/products?category=Accessories', label: 'Accessories' },
-  { href: '/designers', label: 'Designers' },
-];
+function getInitials(value?: string): string {
+  if (!value) return 'U';
+  const parts = value.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase();
+}
 
 export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -75,170 +68,30 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
   const displayName = authUser?.firstName
     ? `${authUser.firstName} ${authUser.lastName ?? ''}`.trim()
     : authUser?.email;
+  const initials = getInitials(displayName);
+
   const accountHref =
     authUser?.role === 'designer' ? '/dashboard/designer'
-    : authUser?.role === 'fabric_seller' ? '/dashboard/fabric-seller'
-    : authUser?.role === 'qa' ? '/dashboard/qa'
-    : authUser?.role === 'admin' ? '/admin'
-    : '/account';
+      : authUser?.role === 'fabric_seller' ? '/dashboard/fabric-seller'
+        : authUser?.role === 'qa' ? '/dashboard/qa'
+          : authUser?.role === 'admin' ? '/admin'
+            : '/account';
 
-  if (pathname === '/') {
-    return (
-      <nav
-        className="fixed top-10 left-0 right-0 z-40 bg-white border-b border-gray-200"
-        style={{ borderColor: 'var(--color-border)' }}
-      >
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link href="/" className="text-2xl font-bold text-[#1a237e] font-heading">
-              African Fashion
-            </Link>
-
-            <div className="hidden lg:flex items-center gap-8">
-              {homeCategories.map((cat) => (
-                <Link
-                  key={cat.label}
-                  href={cat.href}
-                  className="text-[#1a237e] hover:text-[#00c853] transition-colors text-sm font-medium"
-                >
-                  {cat.label}
-                </Link>
-              ))}
-            </div>
-
-            <div className="flex items-center gap-4">
-              <button className="text-[#1a237e] hover:text-[#00c853] transition-colors" aria-label="Search">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
-                </svg>
-              </button>
-              <Link href="/cart" className="text-[#1a237e] hover:text-[#00c853] transition-colors relative" aria-label="Cart">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#00c853] text-white text-[10px] rounded-full flex items-center justify-center">
-                  {cartCount > 9 ? '9+' : cartCount}
-                </span>
-              </Link>
-              {isAuthenticated ? (
-                <div className="hidden lg:flex items-center gap-2">
-                  <Link
-                    href={accountHref}
-                    className="text-sm font-medium text-[#1a237e]/80 hover:text-[#1a237e] transition-colors px-3 py-2"
-                  >
-                    {authUser?.role === 'admin' ? 'Admin' : 'Account'}
-                  </Link>
-                  <div className="relative" ref={userMenuRef}>
-                    <button
-                      onClick={() => setUserMenuOpen((v) => !v)}
-                      className="flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1a237e]/30 p-1 rounded-md"
-                      aria-expanded={userMenuOpen}
-                      aria-haspopup="true"
-                    >
-                      <Avatar name={displayName} size="sm" />
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-[#1a237e]/55" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                      </svg>
-                    </button>
-                    {userMenuOpen && (
-                      <div className="absolute right-0 mt-2 w-56 border py-1 text-[#1a237e] z-50 shadow-modal rounded-lg bg-white">
-                        <div className="px-4 py-2 border-b border-gray-200">
-                          <p className="text-sm font-semibold truncate">{displayName}</p>
-                          {authUser?.role && (
-                            <p className="text-xs text-gray-500 capitalize">{authUser.role.replace('_', ' ')}</p>
-                          )}
-                        </div>
-                        <Link href="/account" className="block px-4 py-2 text-sm hover:bg-gray-50 transition-colors" onClick={() => setUserMenuOpen(false)}>
-                          Profile
-                        </Link>
-                        <Link href="/orders" className="block px-4 py-2 text-sm hover:bg-gray-50 transition-colors" onClick={() => setUserMenuOpen(false)}>
-                          My Orders
-                        </Link>
-                        <Link href={accountHref} className="block px-4 py-2 text-sm hover:bg-gray-50 transition-colors" onClick={() => setUserMenuOpen(false)}>
-                          Dashboard
-                        </Link>
-                        <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
-                          Sign out
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div className="hidden lg:flex items-center gap-2 ml-2">
-                  <Link
-                    href="/login"
-                    className="text-sm font-medium text-[#1a237e]/80 hover:text-[#1a237e] transition-colors px-3 py-2"
-                  >
-                    Sign in
-                  </Link>
-                  <Link
-                    href="/register"
-                    className="text-sm font-semibold text-white bg-[#1a237e] hover:bg-[#0d1450] transition-colors px-4 py-2 rounded-md"
-                  >
-                    Register
-                  </Link>
-                </div>
-              )}
-              <button
-                className="lg:hidden text-[#1a237e]"
-                onClick={() => setMobileOpen((v) => !v)}
-                aria-label="Toggle menu"
-                aria-expanded={mobileOpen}
-              >
-                {mobileOpen ? (
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                ) : (
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  </svg>
-                )}
-              </button>
-              <button className="hidden lg:block text-[#1a237e] hover:text-[#00c853] transition-colors" aria-label="Menu">
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {mobileOpen && (
-          <div className="lg:hidden bg-white border-t border-gray-200">
-            <div className="max-w-[1400px] mx-auto px-4 py-4">
-              {homeCategories.map((cat) => (
-                <Link
-                  key={cat.label}
-                  href={cat.href}
-                  className="block py-2 text-[#1a237e] hover:text-[#00c853] transition-colors"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {cat.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-      </nav>
-    );
-  }
+  const dashboardLabel = authUser?.role === 'admin' ? 'ADMIN' : 'DASHBOARD';
+  const isShopPath =
+    pathname.startsWith('/products')
+    || pathname.startsWith('/fabrics')
+    || pathname.startsWith('/ready-to-wear')
+    || pathname.startsWith('/orders/custom-design');
 
   return (
-    <nav
-      className="sticky top-0 z-40 border-b backdrop-blur-md"
-      style={{
-        backgroundColor: 'rgba(255, 253, 249, 0.92)',
-        borderColor: 'var(--color-border)',
-      }}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-3 items-center h-20">
-          {/* Left: hamburger + nav links */}
+    <nav className="sticky top-0 z-40 border-b border-white/10 bg-[#1f3a63]">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center h-14">
+          {/* Left: desktop menu */}
           <div className="flex items-center gap-0.5">
             <button
-              className="md:hidden p-2 text-[var(--color-primary)]/70 hover:text-[var(--color-primary)] transition-colors"
+              className="lg:hidden p-2 text-white/85 hover:text-white transition-colors"
               onClick={() => setMobileOpen((v) => !v)}
               aria-label="Toggle menu"
               aria-expanded={mobileOpen}
@@ -250,27 +103,23 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
               )}
             </button>
 
-            {/* Desktop nav links */}
-            <div className="hidden md:flex items-center gap-0.5">
+            <div className="hidden lg:flex items-center gap-0.5">
               <Link
                 href="/"
                 className={[
-                  'text-[11px] font-semibold px-3 py-2 uppercase tracking-[0.18em] transition-colors',
-                  pathname === '/' ? 'text-[var(--color-primary)]' : 'text-[var(--color-primary)]/65 hover:text-[var(--color-primary)]',
+                  'text-[11px] font-semibold px-3 py-2 uppercase tracking-[0.14em] transition-colors',
+                  pathname === '/' ? 'text-[#f2c14d]' : 'text-white/72 hover:text-white',
                 ].join(' ')}
               >
                 Home
               </Link>
 
-              {/* Shop mega menu trigger */}
               <div className="relative" ref={shopMenuRef}>
                 <button
                   onClick={() => setShopOpen((v) => !v)}
                   className={[
-                    'flex items-center gap-1 text-[11px] font-semibold px-3 py-2 uppercase tracking-[0.18em] transition-colors',
-                    (pathname.startsWith('/products') || pathname.startsWith('/fabrics') || pathname.startsWith('/orders/custom'))
-                      ? 'text-[var(--color-primary)]'
-                      : 'text-[var(--color-primary)]/65 hover:text-[var(--color-primary)]',
+                    'flex items-center gap-1 text-[11px] font-semibold px-3 py-2 uppercase tracking-[0.14em] transition-colors',
+                    isShopPath ? 'text-[#f2c14d]' : 'text-white/72 hover:text-white',
                   ].join(' ')}
                   aria-expanded={shopOpen}
                   aria-haspopup="true"
@@ -316,62 +165,46 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
                             <span>{c.flag}</span> {c.name}
                           </Link>
                         ))}
-                        <Link href="/products" className="col-span-2 flex items-center gap-2 px-3 py-2 hover:bg-[#f8f2ea] transition-colors text-sm text-[var(--color-primary-dark)] font-semibold rounded-md" onClick={() => setShopOpen(false)}>
-                          View All Countries →
-                        </Link>
                       </div>
                     </div>
                   </div>
                 )}
               </div>
 
-              <Link href="/designers" className={['text-[11px] font-semibold px-3 py-2 uppercase tracking-[0.18em] transition-colors', pathname.startsWith('/designers') ? 'text-[var(--color-primary)]' : 'text-[var(--color-primary)]/65 hover:text-[var(--color-primary)]'].join(' ')}>
+              <Link href="/designers" className={['text-[11px] font-semibold px-3 py-2 uppercase tracking-[0.14em] transition-colors', pathname.startsWith('/designers') ? 'text-[#f2c14d]' : 'text-white/72 hover:text-white'].join(' ')}>
                 Designers
               </Link>
 
-              <Link href="/orders/custom-design" className="relative flex items-center gap-1 text-[11px] font-semibold px-3 py-2 uppercase tracking-[0.18em] transition-colors text-[var(--color-primary)]/65 hover:text-[var(--color-primary)]">
+              <Link href="/orders/custom-design" className="relative flex items-center gap-1 text-[11px] font-semibold px-3 py-2 uppercase tracking-[0.14em] transition-colors text-white/72 hover:text-white">
                 3D Try-On
-                <span className="text-[var(--color-secondary)] text-[9px] font-bold px-1 py-0.5 leading-none border border-[var(--color-secondary)]/50">Soon</span>
+                <span className="text-[#f2c14d] text-[9px] font-bold px-1 py-0.5 leading-none border border-[#f2c14d]/70">Soon</span>
               </Link>
 
               {isAuthenticated && (
                 <>
-                  <Link href="/orders" className="text-[11px] font-semibold text-[var(--color-primary)]/65 hover:text-[var(--color-primary)] transition-colors px-3 py-2 uppercase tracking-[0.18em]">My Orders</Link>
-                  <Link
-                    href={
-                      authUser?.role === 'designer' ? '/dashboard/designer'
-                      : authUser?.role === 'fabric_seller' ? '/dashboard/fabric-seller'
-                      : authUser?.role === 'qa' ? '/dashboard/qa'
-                      : authUser?.role === 'admin' ? '/admin'
-                      : '/account'
-                    }
-                    className="text-[11px] font-semibold text-[var(--color-primary)]/65 hover:text-[var(--color-primary)] transition-colors px-3 py-2 uppercase tracking-[0.18em]"
-                  >
-                    {authUser?.role === 'designer' ? 'Dashboard'
-                      : authUser?.role === 'fabric_seller' ? 'Dashboard'
-                      : authUser?.role === 'qa' ? 'QA'
-                      : authUser?.role === 'admin' ? 'Admin'
-                      : 'Account'}
+                  <Link href="/orders" className="text-[11px] font-semibold text-white/72 hover:text-white transition-colors px-3 py-2 uppercase tracking-[0.14em]">My Orders</Link>
+                  <Link href={accountHref} className={['text-[11px] font-semibold transition-colors px-3 py-2 uppercase tracking-[0.14em]', authUser?.role === 'admin' ? 'text-[#f2c14d] hover:text-[#f6cf74]' : 'text-white/72 hover:text-white'].join(' ')}>
+                    {dashboardLabel}
                   </Link>
                 </>
               )}
             </div>
           </div>
 
-          {/* Center: Logo */}
+          {/* Center logo */}
           <div className="flex justify-center">
-            <Link href="/" className="font-heading font-semibold text-xl text-[var(--color-primary-dark)] hover:text-[var(--color-primary)] transition-colors tracking-tight flex items-center gap-1.5">
-              <span style={{ color: 'var(--color-secondary)' }}>✦</span>
+            <Link href="/" className="font-heading font-semibold text-2xl text-white hover:text-white/90 transition-colors tracking-tight flex items-center gap-1.5">
+              <span className="text-[#f2c14d]">✦</span>
               African Fashion
             </Link>
           </div>
 
-          {/* Right: search + user icons + cart */}
-          <div className="flex items-center gap-1 justify-end">
-            <CurrencySwitcher />
+          {/* Right actions */}
+          <div className="flex items-center gap-1 justify-end min-w-0">
+            <CurrencySwitcher tone="dark" />
             <button
               onClick={() => setSearchOpen((v) => !v)}
-              className="hidden md:flex p-2 text-[var(--color-primary)]/70 hover:text-[var(--color-primary)] transition-colors"
+              className="hidden md:flex p-2 text-white/80 hover:text-white transition-colors"
               aria-label="Toggle search"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -380,7 +213,7 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
             </button>
 
             {isAuthenticated && (
-              <Link href="/wishlist" className="relative p-2 text-[var(--color-primary)]/70 hover:text-[var(--color-primary)] transition-colors" aria-label="Wishlist">
+              <Link href="/wishlist" className="relative p-2 text-white/80 hover:text-white transition-colors" aria-label="Wishlist">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                 </svg>
@@ -392,7 +225,7 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
               </Link>
             )}
 
-            <Link href="/cart" className="relative p-2 text-[var(--color-primary)]/70 hover:text-[var(--color-primary)] transition-colors" aria-label="Cart">
+            <Link href="/cart" className="relative p-2 text-white/80 hover:text-white transition-colors" aria-label="Cart">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
@@ -406,123 +239,76 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
             {isAuthenticated ? (
               <>
                 <LoyaltyBadge />
-                <NotificationBell />
+                <NotificationBell tone="dark" />
                 <div className="relative" ref={userMenuRef}>
-                <button onClick={() => setUserMenuOpen((v) => !v)} className="flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]/40 p-1" aria-expanded={userMenuOpen} aria-haspopup="true">
-                  <Avatar name={displayName} size="sm" />
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-[var(--color-primary)]/40" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
-                </button>
-                {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-56 border py-1 text-[var(--color-primary-dark)] z-50 shadow-modal rounded-lg" style={{ backgroundColor: '#fffdf9', borderColor: 'var(--color-border)' }}>
-                    <div className="px-4 py-2 border-b" style={{ borderColor: 'var(--color-border)' }}>
-                      <p className="text-sm font-semibold truncate">{displayName}</p>
-                      {authUser?.role && <p className="text-xs text-[var(--color-text-muted)] capitalize font-light">{authUser.role.replace('_', ' ')}</p>}
+                  <button onClick={() => setUserMenuOpen((v) => !v)} className="flex items-center gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 p-1 rounded" aria-expanded={userMenuOpen} aria-haspopup="true">
+                    <span className="text-xs font-semibold text-white/95 uppercase">{initials}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-white/70" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
+                  </button>
+                  {userMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-56 border py-1 text-[var(--color-primary-dark)] z-50 shadow-modal rounded-lg" style={{ backgroundColor: '#fffdf9', borderColor: 'var(--color-border)' }}>
+                      <div className="px-4 py-2 border-b" style={{ borderColor: 'var(--color-border)' }}>
+                        <p className="text-sm font-semibold truncate">{displayName}</p>
+                        {authUser?.role && <p className="text-xs text-[var(--color-text-muted)] capitalize font-light">{authUser.role.replace('_', ' ')}</p>}
+                      </div>
+                      <Link href="/account" className="block px-4 py-2 text-sm hover:bg-[#f8f2ea] transition-colors" onClick={() => setUserMenuOpen(false)}>Profile</Link>
+                      <Link href="/orders" className="block px-4 py-2 text-sm hover:bg-[#f8f2ea] transition-colors" onClick={() => setUserMenuOpen(false)}>My Orders</Link>
+                      <Link href="/wishlist" className="block px-4 py-2 text-sm hover:bg-[#f8f2ea] transition-colors" onClick={() => setUserMenuOpen(false)}>Wishlist</Link>
+                      <Link href={accountHref} className="block px-4 py-2 text-sm hover:bg-[#f8f2ea] transition-colors" onClick={() => setUserMenuOpen(false)}>Dashboard</Link>
+                      <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">Sign out</button>
                     </div>
-                    <Link href="/account" className="block px-4 py-2 text-sm hover:bg-[#f8f2ea] transition-colors" onClick={() => setUserMenuOpen(false)}>Profile</Link>
-                    <Link href="/orders" className="block px-4 py-2 text-sm hover:bg-[#f8f2ea] transition-colors" onClick={() => setUserMenuOpen(false)}>My Orders</Link>
-                    <Link href="/wishlist" className="block px-4 py-2 text-sm hover:bg-[#f8f2ea] transition-colors" onClick={() => setUserMenuOpen(false)}>Wishlist</Link>
-                    <Link href="/account/addresses" className="block px-4 py-2 text-sm hover:bg-[#f8f2ea] transition-colors" onClick={() => setUserMenuOpen(false)}>Addresses</Link>
-                    {authUser?.role === 'customer' && (
-                      <Link href="/become-seller" className="block px-4 py-2 text-sm hover:bg-[#f8f2ea] transition-colors" onClick={() => setUserMenuOpen(false)}>Become a Seller</Link>
-                    )}
-                    {authUser?.role === 'admin' && (
-                      <Link href="/admin/seller-applications" className="block px-4 py-2 text-sm hover:bg-[#f8f2ea] transition-colors" onClick={() => setUserMenuOpen(false)}>Seller Applications</Link>
-                    )}
-                    <Link
-                      href={
-                        authUser?.role === 'designer' ? '/dashboard/designer'
-                        : authUser?.role === 'fabric_seller' ? '/dashboard/fabric-seller'
-                        : authUser?.role === 'qa' ? '/dashboard/qa'
-                        : authUser?.role === 'admin' ? '/admin'
-                        : '/account'
-                      }
-                      className="block px-4 py-2 text-sm hover:bg-[#f8f2ea] transition-colors"
-                      onClick={() => setUserMenuOpen(false)}
-                    >
-                      {authUser?.role === 'designer' ? 'Designer Dashboard'
-                        : authUser?.role === 'fabric_seller' ? 'Seller Dashboard'
-                        : authUser?.role === 'qa' ? 'QA Dashboard'
-                        : authUser?.role === 'admin' ? 'Admin Dashboard'
-                        : 'My Account'}
-                    </Link>
-                    {(authUser?.role === 'designer' || authUser?.role === 'fabric_seller') && (
-                      <Link href="/dashboard/inventory" className="block px-4 py-2 text-sm hover:bg-[#f8f2ea] transition-colors" onClick={() => setUserMenuOpen(false)}>Inventory</Link>
-                    )}
-                    <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">Sign out</button>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
               </>
             ) : (
               <div className="hidden md:flex items-center gap-2 ml-2">
-                <Link href="/login" className="text-sm font-medium text-[var(--color-primary)]/80 hover:text-[var(--color-primary)] transition-colors px-3 py-2">Sign in</Link>
-                <Link href="/register" className="text-sm font-semibold text-[#1E3A5F] hover:opacity-90 transition-colors px-4 py-2 uppercase tracking-wider rounded-md" style={{ backgroundColor: 'var(--color-secondary)' }}>Register</Link>
+                <Link href="/login" className="text-xs font-medium text-white/85 hover:text-white transition-colors px-2 py-2 uppercase tracking-[0.14em]">Sign in</Link>
+                <Link href="/register" className="text-xs font-semibold text-[#1f3a63] hover:opacity-90 transition-colors px-3 py-1.5 uppercase tracking-[0.14em] rounded-md bg-[#f2c14d]">Register</Link>
               </div>
             )}
           </div>
         </div>
 
-        {/* Desktop expandable search */}
         {searchOpen && (
-          <div className="hidden md:block pb-3 pt-2 border-t" style={{ borderColor: 'var(--color-border)' }}>
+          <div className="hidden md:block pb-3 pt-2 border-t border-white/10">
             <GlobalSearch onClose={() => setSearchOpen(false)} autoFocus />
           </div>
         )}
 
-        {/* Mobile always-visible search */}
-        <div className="md:hidden pb-3 pt-2 border-t" style={{ borderColor: 'var(--color-border)' }}>
+        <div className="lg:hidden pb-3 pt-2 border-t border-white/10">
           <GlobalSearch />
         </div>
 
-        {/* Mobile menu */}
         {mobileOpen && (
-          <div className="md:hidden py-2 border-t space-y-0.5" style={{ borderColor: 'var(--color-border)' }}>
+          <div className="lg:hidden py-2 border-t border-white/10 space-y-0.5">
             <div className="px-3 py-1">
-              <CurrencySwitcher />
+              <CurrencySwitcher tone="dark" />
             </div>
-            {navLinks.map((link) => (
+            {[
+              { href: '/', label: 'Home' },
+              { href: '/products', label: 'Shop' },
+              { href: '/designers', label: 'Designers' },
+              { href: '/orders/custom-design', label: '3D Try-On' },
+            ].map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={['block px-3 py-2.5 text-sm font-medium uppercase tracking-widest transition-colors', pathname === link.href ? 'text-[var(--color-primary)]' : 'text-[var(--color-primary)]/70 hover:text-[var(--color-primary)]'].join(' ')}
+                className={['block px-3 py-2.5 text-sm font-medium uppercase tracking-widest transition-colors', pathname === link.href ? 'text-[#f2c14d]' : 'text-white/80 hover:text-white'].join(' ')}
                 onClick={() => setMobileOpen(false)}
               >
                 {link.label}
               </Link>
             ))}
-            <Link href="/products" className="block px-3 py-2.5 text-sm font-medium uppercase tracking-widest text-[var(--color-primary)]/70 hover:text-[var(--color-primary)] transition-colors" onClick={() => setMobileOpen(false)}>Ready-to-Wear</Link>
-            <Link href="/fabrics" className="block px-3 py-2.5 text-sm font-medium uppercase tracking-widest text-[var(--color-primary)]/70 hover:text-[var(--color-primary)] transition-colors" onClick={() => setMobileOpen(false)}>Fabrics</Link>
-            <Link href="/orders/custom-design" className="block px-3 py-2.5 text-sm font-medium uppercase tracking-widest text-[var(--color-primary)]/70 hover:text-[var(--color-primary)] transition-colors" onClick={() => setMobileOpen(false)}>Custom Design</Link>
             {isAuthenticated ? (
               <>
-                <Link href="/orders" className="block px-3 py-2.5 text-sm font-medium uppercase tracking-widest text-[var(--color-primary)]/70 hover:text-[var(--color-primary)] transition-colors" onClick={() => setMobileOpen(false)}>My Orders</Link>
-                <Link
-                  href={
-                    authUser?.role === 'designer' ? '/dashboard/designer'
-                    : authUser?.role === 'fabric_seller' ? '/dashboard/fabric-seller'
-                    : authUser?.role === 'qa' ? '/dashboard/qa'
-                    : authUser?.role === 'admin' ? '/admin'
-                    : '/account'
-                  }
-                  className="block px-3 py-2.5 text-sm font-medium uppercase tracking-widest text-[var(--color-primary)]/70 hover:text-[var(--color-primary)] transition-colors"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {authUser?.role === 'designer' ? 'Designer Dashboard'
-                    : authUser?.role === 'fabric_seller' ? 'Seller Dashboard'
-                    : authUser?.role === 'qa' ? 'QA Dashboard'
-                    : authUser?.role === 'admin' ? 'Admin Dashboard'
-                    : 'My Account'}
-                </Link>
-                <button onClick={handleLogout} className="block w-full text-left px-3 py-2.5 text-sm font-medium text-red-600 hover:text-red-700 transition-colors">Sign out</button>
+                <Link href="/orders" className="block px-3 py-2.5 text-sm font-medium uppercase tracking-widest text-white/80 hover:text-white transition-colors" onClick={() => setMobileOpen(false)}>My Orders</Link>
+                <Link href={accountHref} className="block px-3 py-2.5 text-sm font-medium uppercase tracking-widest text-white/80 hover:text-white transition-colors" onClick={() => setMobileOpen(false)}>{authUser?.role === 'admin' ? 'Admin' : 'Dashboard'}</Link>
+                <button onClick={handleLogout} className="block w-full text-left px-3 py-2.5 text-sm font-medium text-red-300 hover:text-red-200 transition-colors">Sign out</button>
               </>
             ) : (
               <div className="flex gap-2 pt-2 px-3">
-                <Link href="/login" className="flex-1 text-center py-2.5 text-sm font-medium border text-[var(--color-primary)]/80 border-[var(--color-border)] hover:border-[var(--color-primary)]/30 transition-colors rounded-md" onClick={() => setMobileOpen(false)}>
-                  Sign in
-                </Link>
-                <Link href="/register" className="flex-1 text-center py-2.5 text-sm font-semibold text-[#1E3A5F] hover:opacity-90 transition-colors uppercase tracking-wider rounded-md" style={{ backgroundColor: 'var(--color-secondary)' }} onClick={() => setMobileOpen(false)}>
-                  Register
-                </Link>
+                <Link href="/login" className="flex-1 text-center py-2.5 text-sm font-medium border text-white/90 border-white/25 hover:border-white/40 transition-colors rounded-md" onClick={() => setMobileOpen(false)}>Sign in</Link>
+                <Link href="/register" className="flex-1 text-center py-2.5 text-sm font-semibold text-[#1f3a63] hover:opacity-90 transition-colors uppercase tracking-wider rounded-md bg-[#f2c14d]" onClick={() => setMobileOpen(false)}>Register</Link>
               </div>
             )}
           </div>

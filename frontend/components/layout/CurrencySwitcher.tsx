@@ -4,7 +4,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useCurrency } from '../../lib/currency-context';
 import { SUPPORTED_CURRENCIES } from '../../lib/geo-currency';
 
-export function CurrencySwitcher() {
+interface CurrencySwitcherProps {
+  tone?: 'light' | 'dark';
+}
+
+export function CurrencySwitcher({ tone = 'light' }: CurrencySwitcherProps) {
   const { currency, setCurrency, detectedCurrency } = useCurrency();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -25,12 +29,16 @@ export function CurrencySwitcher() {
   };
 
   const showReset = detectedCurrency && detectedCurrency !== currency;
+  const triggerClass =
+    tone === 'dark'
+      ? 'flex items-center gap-1 text-xs font-medium text-white/80 hover:text-white transition-colors px-2 py-2'
+      : 'flex items-center gap-1 text-xs font-medium text-[var(--color-primary)]/70 hover:text-[var(--color-primary)] transition-colors px-2 py-2';
 
   return (
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1 text-xs font-medium text-[var(--color-primary)]/70 hover:text-[var(--color-primary)] transition-colors px-2 py-2"
+        className={triggerClass}
         aria-label="Select currency"
         aria-expanded={open}
         aria-haspopup="listbox"
