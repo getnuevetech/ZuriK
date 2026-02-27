@@ -45,7 +45,7 @@ function NavItem({
         <button
           onClick={() => setOpen((prev) => !prev)}
           title={collapsed ? item.label : undefined}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm font-medium ${
+          className={`w-full flex items-center gap-3 px-3 py-2.5 transition-colors text-sm font-medium ${
             isActive
               ? 'bg-[#00c853] text-white'
               : 'text-white/70 hover:bg-white/10 hover:text-white'
@@ -69,7 +69,7 @@ function NavItem({
                   key={child.href}
                   href={child.href}
                   onClick={onMobileClose}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm font-medium ${
+                  className={`flex items-center gap-2 px-3 py-2 transition-colors text-sm font-medium ${
                     childActive
                       ? 'bg-[#00c853]/80 text-white'
                       : 'text-white/60 hover:bg-white/10 hover:text-white'
@@ -91,7 +91,7 @@ function NavItem({
       href={item.href}
       title={collapsed ? item.label : undefined}
       onClick={onMobileClose}
-      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm font-medium ${
+      className={`flex items-center gap-3 px-3 py-2.5 transition-colors text-sm font-medium ${
         isActive
           ? 'bg-[#00c853] text-white'
           : 'text-white/70 hover:bg-white/10 hover:text-white'
@@ -125,6 +125,7 @@ export default function AdminSidebar({ items, collapsed, onToggle }: AdminSideba
       className={`flex flex-col h-full bg-[#1a237e] text-white transition-all duration-300 ${
         collapsed ? 'w-16' : 'w-64'
       }`}
+      style={{ backgroundColor: '#1a237e' }}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-4 border-b border-white/10 min-h-[64px]">

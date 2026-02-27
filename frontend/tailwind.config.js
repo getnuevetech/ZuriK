@@ -24,16 +24,18 @@ module.exports = {
           950: '#040b12',
         },
         secondary: {
-          50: '#fffde0',
-          100: '#fffac0',
-          200: '#fff585',
-          300: '#ffed47',
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
+          /* Legacy shades */
           400: '#FFD100',
-          500: '#e6bc00',
-          600: '#b89500',
-          700: '#8a6f00',
-          800: '#5c4a00',
-          900: '#2e2500',
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
         },
         accent: {
           50: '#f0f4f9',
@@ -48,6 +50,7 @@ module.exports = {
           900: '#07121c',
           950: '#040b12',
         },
+        navy: '#1a237e',
         neutral: {
           50: '#fafafa',
           100: '#f5f5f5',

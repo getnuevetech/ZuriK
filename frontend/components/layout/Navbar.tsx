@@ -15,19 +15,15 @@ interface NavbarProps {
   wishlistCount?: number;
 }
 
-const COUNTRIES = [
-  { name: 'Nigeria', flag: '🇳🇬' },
-  { name: 'Ghana', flag: '🇬🇭' },
-  { name: 'Kenya', flag: '🇰🇪' },
-  { name: 'South Africa', flag: '🇿🇦' },
-  { name: 'Senegal', flag: '🇸🇳' },
-  { name: 'Ethiopia', flag: '🇪🇹' },
-];
+const categories = ['All', 'Dresses', 'Fabrics', 'Accessories', 'Designers'];
 
-const navLinks = [
-  { href: '/', label: 'Home' },
-  { href: '/designers', label: 'Designers' },
-];
+const CATEGORY_HREFS: Record<string, string> = {
+  All: '/products',
+  Dresses: '/products',
+  Fabrics: '/fabrics',
+  Accessories: '/products',
+  Designers: '/designers',
+};
 
 export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -195,6 +191,8 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
               )}
             </div>
           </div>
+        </div>
+      </div>
 
           {/* Center: Logo */}
           <div className="flex justify-center">
@@ -204,19 +202,20 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
             </Link>
           </div>
 
-          {/* Right: search + user icons + cart */}
-          <div className="flex items-center gap-1 justify-end">
-            <CurrencySwitcher />
+          {/* Right icons */}
+          <div className="flex items-center gap-3">
+            {/* Search */}
             <button
               onClick={() => setSearchOpen((v) => !v)}
               className="hidden md:flex p-2 text-[#1a237e]/70 hover:text-[#1a237e] transition-colors"
               aria-label="Toggle search"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
               </svg>
             </button>
 
+            {/* Wishlist */}
             {isAuthenticated && (
               <Link href="/wishlist" className="relative p-2 text-[#1a237e]/70 hover:text-[#1a237e] transition-colors" aria-label="Wishlist">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -241,7 +240,8 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
               )}
             </Link>
 
-            {isAuthenticated ? (
+            {/* Authenticated user menu */}
+            {isAuthenticated && (
               <>
                 <LoyaltyBadge />
                 <NotificationBell />
@@ -297,10 +297,28 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
                 <Link href="/register" className="text-sm font-semibold bg-[#00c853] hover:bg-[#00b248] text-white transition-colors px-4 py-2 uppercase tracking-wider">Register</Link>
               </div>
             )}
+
+            {/* Mobile hamburger */}
+            <button
+              className="lg:hidden text-[#1a237e] p-1"
+              onClick={() => setMobileOpen((v) => !v)}
+              aria-label="Toggle menu"
+              aria-expanded={mobileOpen}
+            >
+              {mobileOpen ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
           </div>
         </div>
 
-        {/* Desktop expandable search */}
+        {/* Desktop search bar */}
         {searchOpen && (
           <div className="hidden md:block pb-3 pt-2 border-t border-gray-200">
             <GlobalSearch onClose={() => setSearchOpen(false)} autoFocus />
@@ -311,6 +329,7 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
         <div className="md:hidden pb-3 pt-2 border-t border-gray-200">
           <GlobalSearch />
         </div>
+      </div>
 
         {/* Mobile menu */}
         {mobileOpen && (
@@ -361,11 +380,45 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
                 <Link href="/register" className="flex-1 text-center py-2.5 text-sm font-semibold bg-[#00c853] hover:bg-[#00b248] text-white transition-colors uppercase tracking-wider" onClick={() => setMobileOpen(false)}>
                   Register
                 </Link>
-              </div>
-            )}
+              );
+            })}
+
+            {/* Shop dropdown items */}
+            <div className="border-t border-gray-100 pt-2 mt-2">
+              <Link href="/orders/custom-design" className="block py-2.5 text-[#1a237e] hover:text-[#00c853] transition-colors" onClick={() => setMobileOpen(false)}>Custom Design</Link>
+              {isAuthenticated && (
+                <>
+                  <Link href="/orders" className="block py-2.5 text-[#1a237e] hover:text-[#00c853] transition-colors" onClick={() => setMobileOpen(false)}>My Orders</Link>
+                  <Link
+                    href={
+                      authUser?.role === 'designer' ? '/dashboard/designer'
+                      : authUser?.role === 'fabric_seller' ? '/dashboard/fabric-seller'
+                      : authUser?.role === 'qa' ? '/dashboard/qa'
+                      : authUser?.role === 'admin' ? '/admin'
+                      : '/account'
+                    }
+                    className="block py-2.5 text-[#1a237e] hover:text-[#00c853] transition-colors"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    Dashboard
+                  </Link>
+                  <button onClick={handleLogout} className="block w-full text-left py-2.5 text-red-500 hover:text-red-700 transition-colors">Sign out</button>
+                </>
+              )}
+              {!isAuthenticated && (
+                <div className="flex gap-2 pt-2">
+                  <Link href="/login" className="flex-1 text-center py-2.5 text-sm font-medium border border-[#1a237e] text-[#1a237e] hover:bg-[#1a237e] hover:text-white transition-colors" onClick={() => setMobileOpen(false)}>
+                    Sign in
+                  </Link>
+                  <Link href="/register" className="flex-1 text-center py-2.5 text-sm font-semibold bg-[#00c853] text-white hover:bg-[#00b248] transition-colors" onClick={() => setMobileOpen(false)}>
+                    Register
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </nav>
   );
 }

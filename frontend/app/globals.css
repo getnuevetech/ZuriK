@@ -1,6 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ─── Mueble Design System CSS Variables ──────────────────────────────────── */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 233 75% 30%;
+    --card: 0 0% 100%;
+    --card-foreground: 233 75% 30%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 233 75% 30%;
+    --primary: 233 75% 30%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 233 75% 30%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 145 100% 40%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 233 75% 30%;
+    --radius: 0px;
+
+    /* Legacy tokens (kept for backwards compatibility) */
+    --color-primary: #1a237e;
+    --color-primary-dark: #0d1450;
+    --color-secondary: #FFD100;
+    --color-accent: #1a237e;
+    --color-background: #FFFFFF;
+    --color-neutral-bg: #F9FAFB;
+    --color-text: #1a237e;
+    --color-text-muted: #666666;
+    --color-surface: #F9FAFB;
+    --color-border: #e0e0e0;
+    --font-heading: 'Playfair Display', Georgia, serif;
+    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
 
 /* ─── Page transition ──────────────────────────────────────────────────────── */
 @keyframes fade-in-up {
@@ -13,7 +55,6 @@
   100% { background-position: 400px 0; }
 }
 
-/* Applied to the <main> children via the root layout */
 .page-transition {
   animation: fade-in-up 0.35s ease both;
 }
@@ -84,15 +125,12 @@
   html {
     scroll-behavior: smooth;
   }
-
   body {
     @apply font-body text-neutral-900 bg-white;
   }
-
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading;
+    font-family: 'Playfair Display', Georgia, serif;
   }
-
   *:focus-visible {
     @apply outline-2 outline-offset-2;
     outline-color: #1a237e;
