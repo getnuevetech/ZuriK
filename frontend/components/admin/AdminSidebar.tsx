@@ -60,7 +60,7 @@ function NavItem({
           )}
         </button>
         {open && !collapsed && (
-          <div className="mt-1 ml-4 space-y-1 border-l pl-3" style={{ borderColor: 'rgba(255,255,255,0.15)' }}>
+          <div className="mt-1 ml-4 space-y-1 border-l border-white/20 pl-3">
             {item.children.map((child) => {
               const childActive =
                 pathname === child.href || pathname.startsWith(child.href + '/');
@@ -71,7 +71,7 @@ function NavItem({
                   onClick={onMobileClose}
                   className={`flex items-center gap-2 px-3 py-2 transition-colors text-sm font-medium ${
                     childActive
-                      ? 'bg-[#00c853] text-white'
+                      ? 'bg-[#00c853]/80 text-white'
                       : 'text-white/60 hover:bg-white/10 hover:text-white'
                   }`}
                 >
@@ -122,17 +122,17 @@ export default function AdminSidebar({ items, collapsed, onToggle }: AdminSideba
 
   const sidebarContent = (
     <div
-      className={`flex flex-col h-full transition-all duration-300 ${
+      className={`flex flex-col h-full bg-[#1a237e] text-white transition-all duration-300 ${
         collapsed ? 'w-16' : 'w-64'
       }`}
       style={{ backgroundColor: '#1a237e' }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-4 border-b min-h-[64px]" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+      <div className="flex items-center justify-between px-4 py-4 border-b border-white/10 min-h-[64px]">
         {!collapsed && (
           <div className="flex items-center gap-2 overflow-hidden">
             <span className="text-[#00c853] text-xl flex-shrink-0">🛡️</span>
-            <span className="font-bold text-lg whitespace-nowrap text-white" style={{ fontFamily: 'Playfair Display, serif' }}>Admin Panel</span>
+            <span className="font-bold text-lg whitespace-nowrap" style={{ fontFamily: 'Playfair Display, serif' }}>Admin Panel</span>
           </div>
         )}
         {collapsed && (
@@ -194,12 +194,12 @@ export default function AdminSidebar({ items, collapsed, onToggle }: AdminSideba
             collapsed ? '-translate-x-full' : 'translate-x-0'
           }`}
         >
-          <div className="flex flex-col h-full w-64 text-white" style={{ backgroundColor: '#1a237e' }}>
+          <div className="flex flex-col h-full bg-[#1a237e] text-white w-64">
             {/* Mobile header */}
-            <div className="flex items-center justify-between px-4 py-4 border-b min-h-[64px]" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+            <div className="flex items-center justify-between px-4 py-4 border-b border-white/10 min-h-[64px]">
               <div className="flex items-center gap-2">
                 <span className="text-[#00c853] text-xl">🛡️</span>
-                <span className="font-bold text-lg text-white" style={{ fontFamily: 'Playfair Display, serif' }}>Admin Panel</span>
+                <span className="font-bold text-lg" style={{ fontFamily: 'Playfair Display, serif' }}>Admin Panel</span>
               </div>
               <button
                 onClick={onToggle}

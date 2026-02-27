@@ -40,21 +40,21 @@ export function Footer() {
 
   return (
     <footer className="bg-[#1a237e] text-white">
-      {/* Main footer */}
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
-          {/* Logo & Description */}
+          {/* Brand column */}
           <div className="lg:col-span-1">
-            <Link
-              href="/"
-              className="text-2xl font-bold text-white hover:text-white/80 transition-colors mb-4 inline-block"
-              style={{ fontFamily: 'Playfair Display, serif' }}
-            >
+            <Link href="/" className="font-heading font-bold text-2xl text-white flex items-center gap-1.5 mb-4 tracking-tight">
               African Fashion<sup className="text-sm">®</sup>
             </Link>
-            <p className="text-white/70 text-sm mb-6 leading-relaxed">
+            <p className="text-sm text-white/70 leading-relaxed mb-5 font-light max-w-xs">
               Celebrating the richness of African culture through fashion, fabrics, and craftsmanship. Every piece tells a story.
             </p>
+            <div className="text-sm text-white/60 font-light space-y-1 mb-5">
+              <div>📍 Lagos, Nigeria</div>
+              <div>✉ hello@africanfashion.com</div>
+              <div>📞 +234 800 FASHION</div>
+            </div>
             <div className="flex gap-3">
               {/* Facebook */}
               <a href="#" aria-label="Facebook" className="footer-social w-8 h-8 rounded-full flex items-center justify-center">
@@ -79,41 +79,38 @@ export function Footer() {
 
           {/* Menu */}
           <div>
-            <h4 className="text-xs uppercase tracking-widest text-white/50 mb-5">Menu</h4>
-            <ul className="space-y-3">
-              {FOOTER_LINKS.menu.map((link) => (
-                <li key={link.label}>
-                  <Link href={link.href} className="footer-link text-sm">{link.label}</Link>
+            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-[0.15em] mb-5">Menu</h3>
+            <ul className="space-y-3 text-sm">
+              {FOOTER_LINKS.quickLinks.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="footer-link font-light">{link.label}</Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Store */}
+          {/* Store links */}
           <div>
-            <h4 className="text-xs uppercase tracking-widest text-white/50 mb-5">Store</h4>
-            <ul className="space-y-3">
-              {FOOTER_LINKS.store.map((link) => (
-                <li key={link.label}>
-                  <Link href={link.href} className="footer-link text-sm">{link.label}</Link>
+            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-[0.15em] mb-5">Store</h3>
+            <ul className="space-y-3 text-sm">
+              {FOOTER_LINKS.countries.slice(0, 5).map((c) => (
+                <li key={c.name}>
+                  <Link href={`/products?country=${encodeURIComponent(c.name)}`} className="footer-link font-light">
+                    {c.flag} {c.name}
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Featured */}
+          {/* Featured products */}
           <div>
-            <h4 className="text-xs uppercase tracking-widest text-white/50 mb-5">Featured</h4>
-            <ul className="space-y-4">
-              {featuredProducts.map((product) => (
-                <li key={product.name} className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-white/10 flex-shrink-0 flex items-center justify-center text-white/40 text-xs font-bold">
-                    AF
-                  </div>
-                  <div>
-                    <p className="footer-link text-sm">{product.name}</p>
-                    <p className="text-white/40 text-xs">${product.price}.00 USD</p>
-                  </div>
+            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-[0.15em] mb-5">Featured</h3>
+            <ul className="space-y-4 text-sm">
+              {FOOTER_LINKS.quickLinks.slice(0, 3).map((link) => (
+                <li key={link.label} className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-white/10 flex-shrink-0" />
+                  <Link href={link.href} className="footer-link font-light">{link.label}</Link>
                 </li>
               ))}
             </ul>
@@ -121,64 +118,47 @@ export function Footer() {
 
           {/* Newsletter */}
           <div>
-            <h4 className="text-xs uppercase tracking-widest text-white/50 mb-5">Newsletter</h4>
-            {submitted ? (
-              <p className="text-[#00c853] text-sm py-2">Thanks for subscribing! 🎉</p>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-3">
-                <input
-                  type="text"
-                  placeholder="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-white text-gray-900 px-4 py-3 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00c853]"
-                />
-                <input
-                  type="email"
-                  placeholder="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="w-full bg-white text-gray-900 px-4 py-3 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00c853]"
-                />
-                <button
-                  type="submit"
-                  className="w-full bg-[#00c853] hover:bg-[#00b248] text-white py-3 font-medium transition-colors text-sm"
-                >
-                  Subscribe
-                </button>
-              </form>
-            )}
+            <h3 className="text-xs font-semibold text-white/50 uppercase tracking-[0.15em] mb-5">Newsletter</h3>
+            <div className="space-y-3">
+              <input
+                type="text"
+                placeholder="name"
+                className="w-full bg-white text-gray-900 px-4 py-3 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00c853]"
+              />
+              <input
+                type="email"
+                placeholder="email"
+                className="w-full bg-white text-gray-900 px-4 py-3 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00c853]"
+              />
+              <button className="w-full bg-[#00c853] hover:bg-[#00b248] text-white py-3 font-medium transition-colors">
+                Submit
+              </button>
+            </div>
             <div className="mt-4 space-y-2">
               <div className="flex items-center gap-2 text-sm text-white/70">
-                <svg className="w-4 h-4 text-[#00c853] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <svg className="w-4 h-4 text-[#00c853] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
                 <span>Exclusive Product Releases</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-white/70">
-                <svg className="w-4 h-4 text-[#00c853] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <svg className="w-4 h-4 text-[#00c853] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                <span>Subscribers-Only Offers</span>
+                <span>Only Subscribers Offers</span>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Bottom bar */}
-      <div className="border-t border-white/10">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-white/50">
-            <span>© 2026 African Fashion. All rights reserved.</span>
-            <span>|</span>
-            <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <span>|</span>
-            <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
-            <span>|</span>
-            <span>✦ Proudly African. Globally Delivered.</span>
-          </div>
+        <div className="mt-14 pt-6 flex flex-wrap items-center justify-center gap-4 text-xs text-white/50" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+          <span>&copy; 2026 African Fashion</span>
+          <span>|</span>
+          <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
+          <span>|</span>
+          <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
+          <span>|</span>
+          <span>Made with love for African fashion</span>
         </div>
       </div>
     </footer>

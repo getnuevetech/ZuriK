@@ -72,16 +72,61 @@
   border-radius: 0.375rem;
 }
 
+/* ─── Mueble Design System CSS Variables ───────────────────────────────────── */
 @layer base {
-  * {
-    @apply border-border;
+  :root {
+    /* Legacy tokens (kept for backward compat) */
+    --color-primary: #1a237e;
+    --color-primary-dark: #0d1450;
+    --color-secondary: #FFD100;
+    --color-accent: #1a237e;
+    --color-background: #FFFFFF;
+    --color-neutral-bg: #F9FAFB;
+    --color-text: #1a237e;
+    --color-text-muted: #666666;
+    --color-surface: #F9FAFB;
+    --color-border: #e0e0e0;
+    --font-heading: 'Playfair Display', Georgia, serif;
+    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+
+    /* Mueble shadcn/ui CSS variable tokens */
+    --background: 0 0% 100%;
+    --foreground: 233 75% 30%;
+    --card: 0 0% 100%;
+    --card-foreground: 233 75% 30%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 233 75% 30%;
+    --primary: 233 75% 30%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 233 75% 30%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 145 100% 40%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 233 75% 30%;
+    --radius: 0px;
+
+    /* Sidebar tokens */
+    --sidebar-background: 233 75% 30%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 145 100% 40%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 233 60% 40%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 233 50% 40%;
+    --sidebar-ring: 145 100% 40%;
   }
+
   html {
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-white text-[#1a237e] font-sans antialiased;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    @apply font-body text-neutral-900 bg-white;
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Playfair Display', Georgia, serif;
@@ -90,49 +135,54 @@
     @apply outline-2 outline-offset-2;
     outline-color: #1a237e;
   }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1a237e;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #0d1450;
+  }
+
+  /* Hide scrollbar for horizontal scroll */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
-/* ─── Custom scrollbar ─────────────────────────────────────────────────────── */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-::-webkit-scrollbar-thumb {
-  background: #1a237e;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #0d1450;
-}
+/* ─── Mueble Utility Classes ───────────────────────────────────────────────── */
 
-/* Hide scrollbar for horizontal scroll */
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-/* ─── Mueble utility classes ───────────────────────────────────────────────── */
+/* Green CTA button */
 .btn-green {
   @apply bg-[#00c853] hover:bg-[#00b248] text-white transition-colors;
 }
 
+/* Navy text */
 .text-navy {
   @apply text-[#1a237e];
 }
 
+/* Full width section */
 .section-full {
   @apply w-full;
 }
 
+/* Container with padding */
 .container-padded {
   @apply max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8;
 }
 
-/* ─── Footer link hover ────────────────────────────────────────────────────── */
+/* Footer link hover — white accent */
 .footer-link {
   color: rgba(255,255,255,0.6);
   transition: color 0.15s;

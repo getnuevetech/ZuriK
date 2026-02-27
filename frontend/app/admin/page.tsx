@@ -144,7 +144,7 @@ export default function AdminDashboardPage() {
 
       {/* Revenue chart */}
       {overview?.revenueByMonth && overview.revenueByMonth.length > 0 && (
-        <div className="bg-white border border-neutral-200 p-6">
+        <div className="bg-white border border-gray-200 p-6">
           <h2 className="text-base font-semibold text-[#1a237e] mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>Revenue by Month</h2>
           <SimpleBarChart data={overview.revenueByMonth} height={180} color="navy" />
         </div>
@@ -152,13 +152,13 @@ export default function AdminDashboardPage() {
 
       {/* Orders by status */}
       {overview?.ordersByStatus && Object.keys(overview.ordersByStatus).length > 0 && (
-        <div className="bg-white border border-neutral-200 p-6">
+        <div className="bg-white border border-gray-200 p-6">
           <h2 className="text-base font-semibold text-[#1a237e] mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>Orders by Status</h2>
           <div className="flex flex-wrap gap-3">
             {Object.entries(overview.ordersByStatus).map(([status, count]) => (
               <div key={status} className="flex items-center gap-2">
                 <StatusBadge status={status} />
-                <span className="text-sm text-neutral-600 font-medium">{count}</span>
+                <span className="text-sm text-[#1a237e]/70 font-medium">{count}</span>
               </div>
             ))}
           </div>
@@ -166,7 +166,7 @@ export default function AdminDashboardPage() {
       )}
 
       {/* Recent orders table */}
-      <div className="bg-white border border-neutral-200 p-6">
+      <div className="bg-white border border-gray-200 p-6">
         <h2 className="text-base font-semibold text-[#1a237e] mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>Recent Orders</h2>
         <DataTable<RecentOrder>
           columns={recentOrderColumns}
@@ -177,17 +177,17 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white border border-neutral-200 p-6">
+      <div className="bg-white border border-gray-200 p-6">
         <h2 className="text-base font-semibold text-[#1a237e] mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>Quick Actions</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {QUICK_ACTIONS.map((action) => (
             <Link
               key={action.href}
               href={action.href}
-              className="flex items-center gap-3 p-4 border border-neutral-200 hover:border-[#00c853] hover:bg-[#00c853]/5 transition-colors"
+              className="flex items-center gap-3 p-4 border border-gray-200 hover:border-[#1a237e]/30 hover:bg-[#1a237e]/5 transition-colors"
             >
               <span className="text-2xl">{action.icon}</span>
-              <span className="text-sm font-medium text-[#1a237e]">{action.label}</span>
+              <span className="text-sm font-medium text-[#1a237e]/80">{action.label}</span>
             </Link>
           ))}
         </div>
