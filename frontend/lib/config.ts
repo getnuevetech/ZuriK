@@ -24,7 +24,7 @@ const canUseDirectApi = Boolean(
     isAbsoluteHttpUrl(publicApiUrl) &&
     !(isProduction && (isLocalhostUrl(publicApiUrl) || isInsecureRemoteHttpUrl(publicApiUrl))),
 );
-const effectiveApiUrl = canUseDirectApi ? publicApiUrl : '/api';
+const effectiveApiUrl = canUseDirectApi && publicApiUrl ? publicApiUrl : '/api';
 const apiUrl = normalizeApiUrl(effectiveApiUrl);
 
 if (canUseDirectApi) {
