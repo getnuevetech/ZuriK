@@ -5,8 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { heroBannersApi, type HeroBanner as ApiHeroBanner } from '../../lib/api';
 
-const DESIGN_REFERENCE_IMAGE_BASE =
-  'https://raw.githubusercontent.com/agolomola/africanfashionone/main/frontend/design-reference/app/public/images';
+const DESIGN_REFERENCE_IMAGE_BASE = '/images';
 
 const img = (name: string) => `${DESIGN_REFERENCE_IMAGE_BASE}/${name}`;
 
