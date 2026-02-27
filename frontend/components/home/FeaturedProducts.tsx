@@ -67,9 +67,18 @@ export function FeaturedProducts() {
 
   useEffect(() => {
     homepageApi.getFeaturedProducts()
-      .then((res: any[]) => {
+      .then((res: Array<{ items?: Product[]; products?: Product[] }>) => {
         const products: Product[] = [];
-        res.forEach((section: any) => { if (section.products) products.push(...section.products); });
+        res.forEach((section) => {
+          const sectionItems = Array.isArray(section.items)
+            ? section.items
+            : Array.isArray(section.products)
+              ? section.products
+              : [];
+          if (sectionItems.length > 0) {
+            products.push(...sectionItems);
+          }
+        });
         setApiProducts(products.slice(0, 4));
       })
       .catch(() => setApiProducts([]))

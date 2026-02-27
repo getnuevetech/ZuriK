@@ -1,5 +1,5 @@
-import { ReferenceStyleHomepage } from '../components/home/ReferenceStyleHomepage';
+import { AdminConnectedHomepage } from '../components/home/AdminConnectedHomepage';
 
 export default function Home() {
-  return <ReferenceStyleHomepage />;
+  return <AdminConnectedHomepage />;
 }

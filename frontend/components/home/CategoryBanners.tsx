@@ -46,8 +46,15 @@ export function CategoryBanners() {
 
   useEffect(() => {
     homepageApi.getCollections()
-      .then((data: CollectionCard[]) => {
-        if (data && data.length > 0) setCards(data.slice(0, 3));
+      .then((data: Array<{ collection?: CollectionCard } | CollectionCard>) => {
+        if (!data || data.length === 0) return;
+        const mapped = data.map((entry) => {
+          const collection = (entry as { collection?: CollectionCard }).collection;
+          return collection ?? (entry as CollectionCard);
+        });
+        if (mapped.length > 0) {
+          setCards(mapped.slice(0, 3));
+        }
       })
       .catch(() => {});
   }, []);
