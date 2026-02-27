@@ -156,31 +156,110 @@ api.interceptors.response.use(
  * @param fallback - Message to display when no specific message can be extracted.
  */
 export function extractErrorMessage(err: unknown, fallback: string): string {
-  if (typeof err === 'object' && err !== null) {
-    const axiosErr = err as { response?: { status?: number; data?: { message?: string | string[] } }; message?: string };
-    if (!axiosErr.response) {
-      // Network error or no response from server
-      if (API_URL === '/api') {
-        return 'Unable to reach backend through API proxy. Set API_URL (or NEXT_PUBLIC_API_URL) to your backend URL.';
-      }
-      if (/^https?:\/\/localhost(:\d+)?/.test(API_URL)) {
-        return 'API is configured to connect to localhost. Please set NEXT_PUBLIC_API_URL environment variable.';
-      }
-      return 'Unable to connect to server. Please check your connection.';
-    }
-    if (axiosErr.response.status === 429) {
-      return 'Too many attempts. Please wait a moment before trying again.';
-    }
-    if (axiosErr.response.status === 401) {
-      const msg = axiosErr.response.data?.message;
-      if (msg) return Array.isArray(msg) ? msg[0] : msg;
-      return 'Invalid email or password';
-    }
-    const msg = axiosErr.response.data?.message;
-    if (msg) {
-      return Array.isArray(msg) ? msg[0] : msg;
-    }
+  if (typeof err !== 'object' || err === null) {
+    return fallback;
   }
+
+  const axiosErr = err as {
+    code?: string;
+    message?: string;
+    config?: { url?: string };
+    response?: { status?: number; data?: unknown };
+  };
+
+  const extractBackendMessage = (data: unknown): string | null => {
+    if (!data || typeof data !== 'object') return null;
+    const payload = data as { message?: unknown; error?: unknown };
+    if (Array.isArray(payload.message) && payload.message.length > 0 && typeof payload.message[0] === 'string') {
+      return payload.message[0];
+    }
+    if (typeof payload.message === 'string' && payload.message.trim()) {
+      return payload.message;
+    }
+    if (typeof payload.error === 'string' && payload.error.trim()) {
+      return payload.error;
+    }
+    return null;
+  };
+
+  const backendMessage = extractBackendMessage(axiosErr.response?.data);
+  const status = axiosErr.response?.status;
+  const requestUrl = axiosErr.config?.url || '';
+
+  if (!axiosErr.response) {
+    if (axiosErr.code === 'ECONNABORTED') {
+      return 'The request timed out while contacting the server. Please try again.';
+    }
+    if (API_URL === '/api') {
+      return (
+        'The website could not reach the backend through its API proxy. ' +
+        'Please try again shortly. If this persists, verify frontend API_URL/BACKEND_URL and backend availability.'
+      );
+    }
+    if (/^https?:\/\/localhost(:\d+)?/.test(API_URL)) {
+      return 'API is configured to localhost, which is not reachable from deployed clients. Update NEXT_PUBLIC_API_URL.';
+    }
+    if (
+      typeof window !== 'undefined' &&
+      window.location.protocol === 'https:' &&
+      /^http:\/\//.test(API_URL)
+    ) {
+      return (
+        'This page is HTTPS but the API URL is HTTP, so the browser blocked the request. ' +
+        'Use an HTTPS backend URL or proxy through /api.'
+      );
+    }
+    return 'Unable to reach the server. Check your internet connection and try again.';
+  }
+
+  if (status === 429) {
+    return 'Too many attempts. Please wait a moment and try again.';
+  }
+
+  if (status === 401) {
+    if (backendMessage) return backendMessage;
+    if (
+      requestUrl.includes('/auth/login') ||
+      requestUrl.includes('/auth/register') ||
+      requestUrl.includes('/auth/google/exchange')
+    ) {
+      return 'Authentication failed. Verify your credentials and try again.';
+    }
+    return 'Your session has expired or you are not authorized. Please sign in again.';
+  }
+
+  if (status === 400) {
+    return backendMessage || 'Some submitted fields are invalid. Please review and try again.';
+  }
+
+  if (status === 403) {
+    return backendMessage || 'You do not have permission to perform this action.';
+  }
+
+  if (status === 404) {
+    return backendMessage || 'The requested resource could not be found.';
+  }
+
+  if (status === 409) {
+    return backendMessage || 'This action conflicts with existing data (for example, duplicate email).';
+  }
+
+  if (status === 422) {
+    return backendMessage || 'Validation failed. Please correct the highlighted inputs and try again.';
+  }
+
+  if (status === 500) {
+    return backendMessage || 'The server encountered an internal error. Please try again shortly.';
+  }
+
+  if (status === 502 || status === 503 || status === 504) {
+    return backendMessage || 'The service is temporarily unavailable. Please try again shortly.';
+  }
+
+  if (backendMessage) {
+    return backendMessage;
+  }
+
   return fallback;
 }
 

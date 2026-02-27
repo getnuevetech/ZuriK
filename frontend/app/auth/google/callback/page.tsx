@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { authApi } from '../../../../lib/api';
+import { authApi, extractErrorMessage } from '../../../../lib/api';
 
 function GoogleCallbackContent() {
   const searchParams = useSearchParams();
@@ -19,11 +19,11 @@ function GoogleCallbackContent() {
           localStorage.setItem('auth_user', JSON.stringify(result.user));
           window.location.replace('/');
         })
-        .catch(() => {
-          setError('Google sign-in session expired. Please try again.');
+        .catch((err: unknown) => {
+          setError(extractErrorMessage(err, 'Google sign-in could not be completed. Please try again.'));
         });
     } else {
-      setError('Google sign-in failed. Please try again.');
+      setError('Google sign-in was cancelled or missing an authorization code. Please try again.');
     }
   }, [searchParams]);
 

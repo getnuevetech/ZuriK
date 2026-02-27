@@ -55,7 +55,7 @@ export default function RegisterPage() {
       toast('success', 'Account created successfully!');
       router.push('/');
     } catch (err: unknown) {
-      toast('error', extractErrorMessage(err, 'Registration failed. Please try again.'));
+      toast('error', extractErrorMessage(err, 'Account creation failed. Please review your details and try again.'));
     } finally {
       setLoading(false);
     }
