@@ -201,3 +201,40 @@
   background-color: #00c853;
   color: #ffffff;
 }
+
+/* Mueble Design System */
+@layer base {
+  :root {
+    --mueble-background: 0 0% 100%;
+    --mueble-foreground: 233 75% 30%;
+    --mueble-primary: 233 75% 30%;
+    --mueble-primary-foreground: 0 0% 100%;
+    --mueble-accent: 145 100% 40%;
+    --mueble-accent-foreground: 0 0% 100%;
+    --mueble-border: 0 0% 90%;
+    --mueble-radius: 0px;
+  }
+}
+
+/* Mueble utility classes */
+.btn-green {
+  @apply bg-[#00c853] hover:bg-[#00b248] text-white transition-colors;
+}
+.text-navy {
+  @apply text-[#1a237e];
+}
+.section-full {
+  @apply w-full;
+}
+.container-padded {
+  @apply max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Custom scrollbar for mueble */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

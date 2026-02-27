@@ -8,22 +8,18 @@ export function MuebleCategoryShowcase() {
     <section className="py-16 lg:py-24">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Category 1 - Fabrics */}
+          {/* Fabrics */}
           <div className="relative group overflow-hidden">
-            <div className="aspect-[4/3] overflow-hidden bg-gray-100">
+            <div className="aspect-[4/3] overflow-hidden bg-amber-100">
               <img
-                src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=700&h=525&fit=crop"
+                src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=800&h=600&fit=crop"
                 alt="African Fabrics"
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                loading="lazy"
               />
             </div>
             <div className="absolute bottom-0 left-0 right-0 bg-white p-6 lg:p-8">
               <span className="text-xs uppercase tracking-wider text-gray-500">Fabrics</span>
-              <h3
-                className="text-xl lg:text-2xl font-bold text-[#1a237e] mt-2"
-                style={{ fontFamily: 'Playfair Display, serif' }}
-              >
+              <h3 className="text-xl lg:text-2xl font-bold text-[#1a237e] mt-2" style={{ fontFamily: 'Playfair Display, serif' }}>
                 —Find authentic fabrics your wardrobe will love
               </h3>
               <Link
@@ -35,22 +31,18 @@ export function MuebleCategoryShowcase() {
             </div>
           </div>
 
-          {/* Category 2 - Dresses */}
+          {/* Dresses */}
           <div className="relative group overflow-hidden">
-            <div className="aspect-[4/3] overflow-hidden bg-gray-100">
+            <div className="aspect-[4/3] overflow-hidden bg-indigo-100">
               <img
-                src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=700&h=525&fit=crop"
+                src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&h=600&fit=crop"
                 alt="African Dresses"
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                loading="lazy"
               />
             </div>
             <div className="absolute bottom-0 left-0 right-0 bg-white p-6 lg:p-8">
               <span className="text-xs uppercase tracking-wider text-gray-500">Dresses</span>
-              <h3
-                className="text-xl lg:text-2xl font-bold text-[#1a237e] mt-2"
-                style={{ fontFamily: 'Playfair Display, serif' }}
-              >
+              <h3 className="text-xl lg:text-2xl font-bold text-[#1a237e] mt-2" style={{ fontFamily: 'Playfair Display, serif' }}>
                 —Top colors for our new season collection
               </h3>
               <Link

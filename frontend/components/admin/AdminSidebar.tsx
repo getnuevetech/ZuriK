@@ -48,7 +48,7 @@ function NavItem({
           className={`w-full flex items-center gap-3 px-3 py-2.5 transition-colors text-sm font-medium ${
             isActive
               ? 'bg-[#00c853] text-white'
-              : 'text-white/70 hover:bg-white/10 hover:text-white'
+              : 'text-white/80 hover:bg-white/10 hover:text-white'
           } ${collapsed ? 'justify-center' : ''}`}
         >
           <span className="text-lg flex-shrink-0">{item.icon}</span>
@@ -94,7 +94,7 @@ function NavItem({
       className={`flex items-center gap-3 px-3 py-2.5 transition-colors text-sm font-medium ${
         isActive
           ? 'bg-[#00c853] text-white'
-          : 'text-white/70 hover:bg-white/10 hover:text-white'
+          : 'text-white/80 hover:bg-white/10 hover:text-white'
       } ${collapsed ? 'justify-center' : ''}`}
     >
       <span className="text-lg flex-shrink-0">{item.icon}</span>
@@ -128,11 +128,11 @@ export default function AdminSidebar({ items, collapsed, onToggle }: AdminSideba
       style={{ backgroundColor: '#1a237e' }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-4 border-b border-white/10 min-h-[64px]">
+      <div className="flex items-center justify-between px-4 py-4 border-b border-white/20 min-h-[64px]">
         {!collapsed && (
           <div className="flex items-center gap-2 overflow-hidden">
             <span className="text-[#00c853] text-xl flex-shrink-0">🛡️</span>
-            <span className="font-bold text-lg whitespace-nowrap" style={{ fontFamily: 'Playfair Display, serif' }}>Admin Panel</span>
+            <span className="font-bold text-lg whitespace-nowrap">Admin Panel</span>
           </div>
         )}
         {collapsed && (
@@ -141,7 +141,7 @@ export default function AdminSidebar({ items, collapsed, onToggle }: AdminSideba
         <button
           onClick={onToggle}
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className={`text-white/40 hover:text-white hover:bg-white/10 rounded p-1 transition-colors flex-shrink-0 ${
+          className={`text-white/60 hover:text-white hover:bg-white/10 rounded p-1 transition-colors flex-shrink-0 ${
             collapsed ? 'mx-auto' : ''
           }`}
         >
@@ -196,15 +196,15 @@ export default function AdminSidebar({ items, collapsed, onToggle }: AdminSideba
         >
           <div className="flex flex-col h-full bg-[#1a237e] text-white w-64">
             {/* Mobile header */}
-            <div className="flex items-center justify-between px-4 py-4 border-b border-white/10 min-h-[64px]">
+            <div className="flex items-center justify-between px-4 py-4 border-b border-white/20 min-h-[64px]">
               <div className="flex items-center gap-2">
                 <span className="text-[#00c853] text-xl">🛡️</span>
-                <span className="font-bold text-lg" style={{ fontFamily: 'Playfair Display, serif' }}>Admin Panel</span>
+                <span className="font-bold text-lg">Admin Panel</span>
               </div>
               <button
                 onClick={onToggle}
                 aria-label="Close sidebar"
-                className="text-white/40 hover:text-white hover:bg-white/10 rounded p-1 transition-colors"
+                className="text-white/60 hover:text-white hover:bg-white/10 rounded p-1 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
