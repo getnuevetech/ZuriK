@@ -23,12 +23,19 @@ function getBackendBaseUrl(): string {
     process.env.API_URL ||
     process.env.BACKEND_URL ||
     process.env.NEXT_PUBLIC_API_URL ||
-    'http://localhost:3001';
+    '';
+
+  if (!configured) {
+    if (process.env.NODE_ENV === 'production') {
+      return '';
+    }
+    return 'http://localhost:3001';
+  }
+
   return normalizeBaseUrl(configured);
 }
 
-function buildTargetUrl(req: NextRequest, path: string[]): string {
-  const backend = getBackendBaseUrl();
+function buildTargetUrl(req: NextRequest, path: string[], backend: string): string {
   const encodedPath = path.map((segment) => encodeURIComponent(segment)).join('/');
   const target = new URL(`${backend}/${encodedPath}`);
   target.search = req.nextUrl.search;
@@ -36,7 +43,18 @@ function buildTargetUrl(req: NextRequest, path: string[]): string {
 }
 
 async function proxyRequest(req: NextRequest, path: string[]): Promise<NextResponse> {
-  const targetUrl = buildTargetUrl(req, path);
+  const backendBaseUrl = getBackendBaseUrl();
+  if (!backendBaseUrl) {
+    return NextResponse.json(
+      {
+        message:
+          'API proxy is not configured. Set API_URL (or BACKEND_URL) on the frontend server environment.',
+      },
+      { status: 500 },
+    );
+  }
+
+  const targetUrl = buildTargetUrl(req, path, backendBaseUrl);
   const upstreamHeaders = new Headers(req.headers);
 
   // Ensure fetch computes correct protocol-level headers for the upstream.

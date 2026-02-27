@@ -3,10 +3,23 @@ function normalizeApiUrl(url: string): string {
   return url.replace(/\/+$/, '');
 }
 
-const publicApiUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
-const apiUrl = normalizeApiUrl(publicApiUrl || '/api');
+function isLocalhostUrl(url: string): boolean {
+  return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/i.test(url);
+}
 
-if (!publicApiUrl) {
+const publicApiUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
+const forceProxyInProd = Boolean(
+  process.env.NODE_ENV === 'production' && publicApiUrl && isLocalhostUrl(publicApiUrl),
+);
+const effectiveApiUrl = forceProxyInProd ? '/api' : (publicApiUrl || '/api');
+const apiUrl = normalizeApiUrl(effectiveApiUrl);
+
+if (forceProxyInProd) {
+  console.warn(
+    `[config] NEXT_PUBLIC_API_URL is set to "${publicApiUrl}" (localhost) in production. ` +
+    'Falling back to same-origin API proxy (/api). Set API_URL on the frontend server to your backend URL.',
+  );
+} else if (!publicApiUrl) {
   if (process.env.NODE_ENV === 'production') {
     console.warn(
       '[config] NEXT_PUBLIC_API_URL is not set in production. ' +
@@ -17,14 +30,6 @@ if (!publicApiUrl) {
       '[config] NEXT_PUBLIC_API_URL is not set. Using same-origin API proxy (/api).',
     );
   }
-} else if (
-  process.env.NODE_ENV === 'production' &&
-  /^https?:\/\/localhost(:\d+)?/.test(apiUrl)
-) {
-  console.warn(
-    `[config] WARNING: NEXT_PUBLIC_API_URL is set to "${apiUrl}" which points to localhost. ` +
-    'This will fail in production. Set NEXT_PUBLIC_API_URL to your deployed backend URL.',
-  );
 }
 
 console.log(`[config] API URL resolved to: ${apiUrl}`);
