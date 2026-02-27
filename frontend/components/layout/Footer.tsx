@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { CurrencySwitcher } from './CurrencySwitcher';
+import { newsletterApi } from '../../lib/api';
 
 const menuLinks = [
   { href: '/products', label: 'Ready-to-Wear' },
@@ -73,6 +73,9 @@ export function Footer() {
                 </a>
               ))}
             </div>
+            <span className="inline-block bg-white/10 text-xs px-3 py-1">
+              Secure payments via <span className="font-semibold">Stripe &amp; Paystack</span>
+            </span>
           </div>
 
           {/* Menu */}
@@ -163,6 +166,16 @@ export function Footer() {
               <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
             </div>
           </div>
+        </div>
+
+        <div className="mt-14 pt-6 flex flex-wrap items-center justify-center gap-4 text-xs text-white/50" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+          <span>&copy; 2026 African Fashion</span>
+          <span>|</span>
+          <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
+          <span>|</span>
+          <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
+          <span>|</span>
+          <span>Made with love for African fashion</span>
         </div>
       </div>
     </footer>

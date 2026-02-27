@@ -17,7 +17,7 @@ const COLOR_MAP: Record<ChartColor, { bar: string; text: string }> = {
   navy:    { bar: 'bg-[#1a237e]',    text: 'text-[#1a237e]' },
   indigo:  { bar: 'bg-indigo-500',  text: 'text-indigo-700' },
   amber:   { bar: 'bg-amber-400',   text: 'text-amber-700' },
-  emerald: { bar: 'bg-emerald-500', text: 'text-emerald-700' },
+  emerald: { bar: 'bg-[#00c853]',   text: 'text-[#00c853]' },
   red:     { bar: 'bg-red-500',     text: 'text-red-700' },
 };
 
