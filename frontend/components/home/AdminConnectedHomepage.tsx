@@ -1,20 +1,16 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { homepageApi, type PromoBanner as PromoBannerType } from '../../lib/api';
+import { homepageApi, type PromoBanner } from '../../lib/api';
 import { HeroBannerCarousel } from './HeroBannerCarousel';
 import { FeaturedProducts } from './FeaturedProducts';
-import { FeaturedSections } from './FeaturedSections';
 import { ShopByCountry } from './ShopByCountry';
 import { CategoryBanners } from './CategoryBanners';
-import { TrendingProducts } from './TrendingProducts';
 import { HowItWorks } from './HowItWorks';
-import { DesignerSpotlight } from './DesignerSpotlight';
 import { CollectionPosts } from './CollectionPosts';
 import { CulturalHeritage } from './CulturalHeritage';
 import { TryOnShowcase } from './TryOnShowcase';
 import { Newsletter } from './Newsletter';
-import { PromoBanner } from './PromoBanner';
 import { PromoBannerSlot } from './PromoBannerSlot';
 
 type LayoutItem = {
@@ -69,8 +65,7 @@ function mapThemeColorsToVars(colors?: Record<string, string>): Record<string, s
 
 export function AdminConnectedHomepage() {
   const [layout, setLayout] = useState<LayoutItem[]>(DEFAULT_LAYOUT);
-  const [promoByLocation, setPromoByLocation] = useState<Record<string, PromoBannerType | null>>({});
-  const [promoLoaded, setPromoLoaded] = useState(false);
+  const [promoByLocation, setPromoByLocation] = useState<Record<string, PromoBanner | null>>({});
   const [themeVars, setThemeVars] = useState<Record<string, string>>(DEFAULT_THEME_VARS);
 
   useEffect(() => {
@@ -89,9 +84,7 @@ export function AdminConnectedHomepage() {
           setPromoByLocation(promoResult.value);
         }
       },
-    ).finally(() => {
-      setPromoLoaded(true);
-    });
+    );
   }, []);
 
   useEffect(() => {
@@ -114,18 +107,13 @@ export function AdminConnectedHomepage() {
     () => (layout.length > 0 ? layout : DEFAULT_LAYOUT),
     [layout],
   );
-  const hasAnyPromo = useMemo(
-    () => Object.values(promoByLocation).some(Boolean),
-    [promoByLocation],
-  );
 
   return (
     <div className="mueble-home">
-      {orderedSections.map((section, index) => {
-        const key = `${section.type}-${section.order}-${section.sectionId ?? index}`;
+      {orderedSections.map((section) => {
         if (section.type === 'HERO_BANNER') {
           return (
-            <React.Fragment key={key}>
+            <React.Fragment key={section.type}>
               <HeroBannerCarousel />
               <PromoBannerSlot banner={promoByLocation.AFTER_HERO} />
             </React.Fragment>
@@ -134,7 +122,7 @@ export function AdminConnectedHomepage() {
 
         if (section.type === 'FEATURED_PRODUCTS') {
           return (
-            <React.Fragment key={key}>
+            <React.Fragment key={section.type}>
               <FeaturedProducts />
               <PromoBannerSlot banner={promoByLocation.AFTER_RTW} />
             </React.Fragment>
@@ -142,12 +130,12 @@ export function AdminConnectedHomepage() {
         }
 
         if (section.type === 'COUNTRY_CATEGORIES') {
-          return <ShopByCountry key={key} />;
+          return <ShopByCountry key={section.type} />;
         }
 
         if (section.type === 'COLLECTIONS') {
           return (
-            <React.Fragment key={key}>
+            <React.Fragment key={section.type}>
               <CategoryBanners />
               <PromoBannerSlot banner={promoByLocation.AFTER_FABRICS} />
             </React.Fragment>
@@ -157,12 +145,8 @@ export function AdminConnectedHomepage() {
         return null;
       })}
 
-      {promoLoaded && !hasAnyPromo && <PromoBanner />}
-      <FeaturedSections />
-      <TrendingProducts />
       <HowItWorks />
       <PromoBannerSlot banner={promoByLocation.AFTER_HOW_IT_WORKS} />
-      <DesignerSpotlight />
       <CollectionPosts />
       <CulturalHeritage />
       <PromoBannerSlot banner={promoByLocation.AFTER_HERITAGE} />

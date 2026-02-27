@@ -131,13 +131,10 @@ export default function AdminHomepagePage() {
           { href: '/admin/homepage/featured', label: 'Featured Products', icon: '⭐' },
           { href: '/admin/homepage/countries', label: 'Country Categories', icon: '🌍' },
           { href: '/admin/homepage/collections', label: 'Collections', icon: '👗' },
-          { href: '/admin/homepage/how-it-works', label: 'How It Works', icon: '🧭' },
           { href: '/admin/homepage/theme', label: 'Theme Settings', icon: '🎨' },
           { href: '/admin/homepage/collection-posts', label: 'Collection Stories', icon: '📝' },
           { href: '/admin/homepage/heritage', label: 'Heritage Stories', icon: '🏺' },
-          { href: '/admin/homepage/newsletter', label: 'Newsletter', icon: '📬' },
           { href: '/admin/homepage/promo-banners', label: 'Promo Banners', icon: '📢' },
-          { href: '/admin/integrations/tryon', label: 'Virtual Try-On', icon: '🪞' },
         ].map((item) => (
           <Link
             key={item.href}

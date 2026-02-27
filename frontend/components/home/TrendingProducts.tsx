@@ -7,10 +7,10 @@ import { homepageApi } from '../../lib/api';
 import type { Product } from '../../types';
 
 const CATEGORIES = [
-  { label: 'All', value: '', apiCategory: undefined },
-  { label: 'Ready-to-Wear', value: 'ready-to-wear', apiCategory: 'ready-to-wear' },
-  { label: 'Fabrics', value: 'fabrics', apiCategory: 'fabrics' },
-  { label: 'Custom Designs', value: 'custom-designs', apiCategory: 'custom-designs' },
+  { label: 'All', value: '' },
+  { label: 'Ready-to-Wear', value: 'ready-to-wear' },
+  { label: 'Fabrics', value: 'fabrics' },
+  { label: 'Custom Designs', value: 'custom-designs' },
 ];
 
 const STATIC_TRENDING = [
@@ -21,45 +21,6 @@ const STATIC_TRENDING = [
   { id: 't5', name: 'Ndop Print Set', category: 'Ready-to-Wear', badge: 'Ready-to-Wear', badgeColor: 'bg-[#C97B3A]', price: 410, image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80', designer: 'Amara Okafor', rating: 4.6, reviews: 113 },
   { id: 't6', name: 'Shweshwe Evening Gown', category: 'Custom Design', badge: 'Custom Design', badgeColor: 'bg-purple-600', price: 890, image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80', designer: 'Kwame Mensah', rating: 4.9, reviews: 27 },
 ];
-
-function categoryMatches(productCategory: string | undefined, selectedCategory: string): boolean {
-  if (!selectedCategory) return true;
-  const normalized = (productCategory || '').toLowerCase();
-  if (!normalized) return false;
-  if (selectedCategory === 'ready-to-wear') return /ready|rtw/.test(normalized);
-  if (selectedCategory === 'custom-designs') return /custom|design/.test(normalized);
-  if (selectedCategory === 'fabrics') return /fabric/.test(normalized);
-  return normalized === selectedCategory;
-}
-
-function getBadgeForCategory(category: string): { label: string; color: string } {
-  const normalized = category.toLowerCase();
-  if (/ready|rtw/.test(normalized)) {
-    return { label: 'Ready-to-Wear', color: 'bg-[#C97B3A]' };
-  }
-  if (/fabric/.test(normalized)) {
-    return { label: 'Fabric', color: 'bg-indigo-600' };
-  }
-  if (/custom|design/.test(normalized)) {
-    return { label: 'Custom Design', color: 'bg-purple-600' };
-  }
-  return { label: 'Trending', color: 'bg-red-500' };
-}
-
-function getDesignerName(product: Product): string {
-  const designer = product.designer as
-    | { firstName?: string; lastName?: string; name?: string }
-    | string
-    | undefined;
-
-  if (typeof designer === 'string' && designer.trim()) return designer.trim();
-  if (designer && typeof designer === 'object') {
-    const full = `${designer.firstName ?? ''} ${designer.lastName ?? ''}`.trim();
-    if (full) return full;
-    if (designer.name?.trim()) return designer.name.trim();
-  }
-  return 'Designer';
-}
 
 function StarRating({ rating }: { rating: number }) {
   return (
@@ -80,41 +41,27 @@ export function TrendingProducts() {
 
   const fetchProducts = useCallback((category: string) => {
     setLoading(true);
-    const categoryConfig = CATEGORIES.find((c) => c.value === category);
-    homepageApi.getTrending(6, categoryConfig?.apiCategory)
+    homepageApi.getTrending(6)
       .then((data: Product[]) => {
-        const filtered = data.filter((p) => categoryMatches(p.category, category));
+        const filtered = category ? data.filter((p) => p.category === category) : data;
         if (filtered.length > 0) {
-          setProducts(filtered.slice(0, 6).map((p, i) => {
-            const badge = getBadgeForCategory(p.category || '');
-            return {
-              id: p.id,
-              name: p.name,
-              category: p.category || 'Fashion',
-              badge: badge.label,
-              badgeColor: badge.color,
-              price: Number(p.customerPrice),
-              image: (p.images as string[])?.[0] || STATIC_TRENDING[i % 6].image,
-              designer: getDesignerName(p),
-              rating: p.averageRating ?? STATIC_TRENDING[i % 6].rating,
-              reviews: p.totalReviews ?? 0,
-            };
-          }));
+          setProducts(filtered.slice(0, 6).map((p, i) => ({
+            id: p.id,
+            name: p.name,
+            category: p.category || 'Fashion',
+            badge: i % 3 === 0 ? 'Trending' : i % 3 === 1 ? 'Ready-to-Wear' : 'Custom Design',
+            badgeColor: i % 3 === 0 ? 'bg-red-500' : i % 3 === 1 ? 'bg-[#C97B3A]' : 'bg-purple-600',
+            price: Number(p.customerPrice),
+            image: (p.images as string[])?.[0] || STATIC_TRENDING[i % 6].image,
+            designer: (p.designer as any)?.firstName || 'Designer',
+            rating: p.averageRating ?? 0,
+            reviews: p.totalReviews ?? 0,
+          })));
         } else {
-          setProducts(
-            STATIC_TRENDING
-              .filter((p) => categoryMatches(p.category, category))
-              .slice(0, 6),
-          );
+          setProducts(STATIC_TRENDING);
         }
       })
-      .catch(() => {
-        setProducts(
-          STATIC_TRENDING
-            .filter((p) => categoryMatches(p.category, category))
-            .slice(0, 6),
-        );
-      })
+      .catch(() => setProducts(STATIC_TRENDING))
       .finally(() => setLoading(false));
   }, []);
 
