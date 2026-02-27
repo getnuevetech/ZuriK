@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: ['class'],
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -8,44 +9,56 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        /* Mueble design system — CSS variable tokens */
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
         primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
+          /* Legacy shades */
           50: '#f0f4f9',
           100: '#d9e4f0',
           200: '#b3c9e2',
           300: '#8daed4',
           400: '#6793c5',
           500: '#4178b7',
-          600: '#1E3A5F',
-          700: '#162D4A',
-          800: '#0f1f33',
-          900: '#07121c',
-          950: '#040b12',
+          600: '#1a237e',
+          700: '#0d1450',
+          800: '#0a0f3d',
+          900: '#07091f',
         },
         secondary: {
-          50: '#fffde0',
-          100: '#fffac0',
-          200: '#fff585',
-          300: '#ffed47',
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
+          /* Legacy shades */
           400: '#FFD100',
-          500: '#e6bc00',
-          600: '#b89500',
-          700: '#8a6f00',
-          800: '#5c4a00',
-          900: '#2e2500',
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
         },
         accent: {
-          50: '#f0f4f9',
-          100: '#d9e4f0',
-          200: '#b3c9e2',
-          300: '#8daed4',
-          400: '#6793c5',
-          500: '#4178b7',
-          600: '#1E3A5F',
-          700: '#162D4A',
-          800: '#0f1f33',
-          900: '#07121c',
-          950: '#040b12',
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
+          green: '#00c853',
+          'green-hover': '#00b248',
         },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
+        },
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
+        },
+        navy: '#1a237e',
         neutral: {
           50: '#fafafa',
           100: '#f5f5f5',
@@ -64,15 +77,16 @@ module.exports = {
         body: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
+      borderRadius: {
+        xl: 'calc(var(--radius) + 4px)',
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
+      },
       boxShadow: {
         card: '0 1px 4px rgba(0,0,0,0.06)',
         'card-hover': '0 4px 16px rgba(0,0,0,0.10)',
         modal: '0 20px 60px rgba(0,0,0,0.15)',
-      },
-      borderRadius: {
-        xl: '0.75rem',
-        '2xl': '1rem',
-        '3xl': '1.5rem',
       },
       spacing: {
         18: '4.5rem',
