@@ -74,7 +74,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="bg-white border-b border-neutral-200 px-4 py-3 flex items-center justify-between flex-shrink-0">
           <button
-            className="md:hidden text-neutral-600 hover:text-neutral-900 p-1 rounded"
+            className="md:hidden text-[#1a237e] hover:text-[#00c853] p-1"
             onClick={toggleSidebar}
             aria-label="Open sidebar"
           >
@@ -84,12 +84,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </button>
           <div className="hidden md:block" />
           <div className="flex items-center gap-4">
-            <span className="text-sm text-neutral-600">
+            <span className="text-sm text-[#1a237e] font-medium">
               {user?.firstName ? `${user.firstName} ${user.lastName ?? ''}`.trim() : user?.email}
             </span>
             <button
               onClick={logout}
-              className="text-sm text-neutral-500 hover:text-neutral-900 border border-neutral-200 rounded px-3 py-1.5 transition-colors"
+              className="text-sm text-[#1a237e] hover:text-white border border-[#1a237e] hover:bg-[#1a237e] px-3 py-1.5 transition-colors"
             >
               Logout
             </button>

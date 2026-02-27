@@ -45,10 +45,10 @@ function NavItem({
         <button
           onClick={() => setOpen((prev) => !prev)}
           title={collapsed ? item.label : undefined}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm font-medium ${
+          className={`w-full flex items-center gap-3 px-3 py-2.5 transition-colors text-sm font-medium ${
             isActive
-              ? 'bg-indigo-600 text-white'
-              : 'text-neutral-300 hover:bg-neutral-800 hover:text-white'
+              ? 'bg-[#00c853] text-white'
+              : 'text-white/70 hover:bg-white/10 hover:text-white'
           } ${collapsed ? 'justify-center' : ''}`}
         >
           <span className="text-lg flex-shrink-0">{item.icon}</span>
@@ -60,7 +60,7 @@ function NavItem({
           )}
         </button>
         {open && !collapsed && (
-          <div className="mt-1 ml-4 space-y-1 border-l border-neutral-700 pl-3">
+          <div className="mt-1 ml-4 space-y-1 border-l pl-3" style={{ borderColor: 'rgba(255,255,255,0.15)' }}>
             {item.children.map((child) => {
               const childActive =
                 pathname === child.href || pathname.startsWith(child.href + '/');
@@ -69,10 +69,10 @@ function NavItem({
                   key={child.href}
                   href={child.href}
                   onClick={onMobileClose}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm font-medium ${
+                  className={`flex items-center gap-2 px-3 py-2 transition-colors text-sm font-medium ${
                     childActive
-                      ? 'bg-indigo-500 text-white'
-                      : 'text-neutral-400 hover:bg-neutral-800 hover:text-white'
+                      ? 'bg-[#00c853] text-white'
+                      : 'text-white/60 hover:bg-white/10 hover:text-white'
                   }`}
                 >
                   <span className="text-base flex-shrink-0">{child.icon}</span>
@@ -91,10 +91,10 @@ function NavItem({
       href={item.href}
       title={collapsed ? item.label : undefined}
       onClick={onMobileClose}
-      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm font-medium ${
+      className={`flex items-center gap-3 px-3 py-2.5 transition-colors text-sm font-medium ${
         isActive
-          ? 'bg-indigo-600 text-white'
-          : 'text-neutral-300 hover:bg-neutral-800 hover:text-white'
+          ? 'bg-[#00c853] text-white'
+          : 'text-white/70 hover:bg-white/10 hover:text-white'
       } ${collapsed ? 'justify-center' : ''}`}
     >
       <span className="text-lg flex-shrink-0">{item.icon}</span>
@@ -122,25 +122,26 @@ export default function AdminSidebar({ items, collapsed, onToggle }: AdminSideba
 
   const sidebarContent = (
     <div
-      className={`flex flex-col h-full bg-neutral-900 text-white transition-all duration-300 ${
+      className={`flex flex-col h-full transition-all duration-300 ${
         collapsed ? 'w-16' : 'w-64'
       }`}
+      style={{ backgroundColor: '#1a237e' }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-4 border-b border-neutral-700 min-h-[64px]">
+      <div className="flex items-center justify-between px-4 py-4 border-b min-h-[64px]" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
         {!collapsed && (
           <div className="flex items-center gap-2 overflow-hidden">
-            <span className="text-indigo-400 text-xl flex-shrink-0">🛡️</span>
-            <span className="font-bold text-lg whitespace-nowrap">Admin Panel</span>
+            <span className="text-[#00c853] text-xl flex-shrink-0">🛡️</span>
+            <span className="font-bold text-lg whitespace-nowrap text-white" style={{ fontFamily: 'Playfair Display, serif' }}>Admin Panel</span>
           </div>
         )}
         {collapsed && (
-          <span className="text-indigo-400 text-xl mx-auto">🛡️</span>
+          <span className="text-[#00c853] text-xl mx-auto">🛡️</span>
         )}
         <button
           onClick={onToggle}
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className={`text-neutral-400 hover:text-white hover:bg-neutral-700 rounded p-1 transition-colors flex-shrink-0 ${
+          className={`text-white/40 hover:text-white hover:bg-white/10 rounded p-1 transition-colors flex-shrink-0 ${
             collapsed ? 'mx-auto' : ''
           }`}
         >
@@ -193,17 +194,17 @@ export default function AdminSidebar({ items, collapsed, onToggle }: AdminSideba
             collapsed ? '-translate-x-full' : 'translate-x-0'
           }`}
         >
-          <div className="flex flex-col h-full bg-neutral-900 text-white w-64">
+          <div className="flex flex-col h-full w-64 text-white" style={{ backgroundColor: '#1a237e' }}>
             {/* Mobile header */}
-            <div className="flex items-center justify-between px-4 py-4 border-b border-neutral-700 min-h-[64px]">
+            <div className="flex items-center justify-between px-4 py-4 border-b min-h-[64px]" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
               <div className="flex items-center gap-2">
-                <span className="text-indigo-400 text-xl">🛡️</span>
-                <span className="font-bold text-lg">Admin Panel</span>
+                <span className="text-[#00c853] text-xl">🛡️</span>
+                <span className="font-bold text-lg text-white" style={{ fontFamily: 'Playfair Display, serif' }}>Admin Panel</span>
               </div>
               <button
                 onClick={onToggle}
                 aria-label="Close sidebar"
-                className="text-neutral-400 hover:text-white hover:bg-neutral-700 rounded p-1 transition-colors"
+                className="text-white/40 hover:text-white hover:bg-white/10 rounded p-1 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
