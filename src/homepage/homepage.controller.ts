@@ -270,8 +270,8 @@ export class HomepageController {
 
   @Get('trending')
   @ApiOperation({ summary: 'Get trending products sorted by purchase count (public)' })
-  getTrending(@Query('limit') limit?: string) {
-    return this.homepageService.getTrendingProducts(limit ? Number(limit) : 10);
+  getTrending(@Query('limit') limit?: string, @Query('category') category?: string) {
+    return this.homepageService.getTrendingProducts(limit ? Number(limit) : 10, category);
   }
 
   @Get('collection-posts')

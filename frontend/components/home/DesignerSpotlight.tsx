@@ -18,6 +18,12 @@ interface DesignerInfo {
   image: string | null;
 }
 
+type DesignerRecord = User & {
+  productCount?: number;
+  specialties?: string;
+  avatarUrl?: string;
+};
+
 const COUNTRY_FLAGS: Record<string, string> = {
   'Nigeria': '🇳🇬', 'Ghana': '🇬🇭', 'Kenya': '🇰🇪', 'South Africa': '🇿🇦',
   'Senegal': '🇸🇳', 'Ethiopia': '🇪🇹', 'Tanzania': '🇹🇿', 'Morocco': '🇲🇦',
@@ -53,18 +59,23 @@ export function DesignerSpotlight() {
   useEffect(() => {
     designersApi.featured(8)
       .then((users: User[]) => {
+        const records = users as DesignerRecord[];
         const mapped = users
           .filter((u) => u.id)
-          .map((u) => ({
+          .map((u, idx) => {
+            const record = records[idx];
+            const country = record.country || '';
+            return {
             id: u.id,
             name: getUserDisplayName(u),
-            country: (u as any).country || '',
-            flag: COUNTRY_FLAGS[(u as any).country || ''] || '',
+            country,
+            flag: COUNTRY_FLAGS[country] || '',
             initials: getInitials(getUserDisplayName(u)),
-            productCount: (u as any).productCount ?? 0,
-            specialties: (u as any).specialties || '',
-            image: (u as any).avatarUrl || null,
-          }));
+            productCount: record.productCount ?? 0,
+            specialties: record.specialties || '',
+            image: record.avatarUrl || null,
+            };
+          });
         setDesigners(mapped.length > 0 ? mapped : PLACEHOLDER_DESIGNERS);
       })
       .catch(() => setDesigners(PLACEHOLDER_DESIGNERS))

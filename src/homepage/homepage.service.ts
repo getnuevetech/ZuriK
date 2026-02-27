@@ -430,22 +430,50 @@ export class HomepageService {
 
   // ─── Trending Products ────────────────────────────────────────────────────────
 
-  async getTrendingProducts(limit = 10): Promise<Design[]> {
-    const trending = await this.designRepo
-      .createQueryBuilder('p')
-      .where('p.isActive = :active', { active: true })
+  private getTrendingCategoryFilters(category?: string): string[] {
+    const normalized = category?.trim().toLowerCase();
+    if (!normalized) return [];
+    if (normalized === 'ready-to-wear') return ['ready-to-wear', 'ready to wear', 'rtw'];
+    if (normalized === 'custom-designs') return ['custom-designs', 'custom design', 'custom'];
+    if (normalized === 'fabrics') return ['fabrics', 'fabric'];
+    return [normalized];
+  }
+
+  async getTrendingProducts(limit = 10, category?: string): Promise<Design[]> {
+    const categoryFilters = this.getTrendingCategoryFilters(category);
+    const buildBaseQuery = () => {
+      const qb = this.designRepo
+        .createQueryBuilder('p')
+        .where('p.isActive = :active', { active: true });
+      if (categoryFilters.length > 0) {
+        qb.andWhere('LOWER(p.category) IN (:...categoryFilters)', { categoryFilters });
+      }
+      return qb;
+    };
+
+    const trending = await buildBaseQuery()
       .orderBy('p.totalReviews', 'DESC')
       .limit(limit)
       .getMany();
 
     if (trending.length > 0) return trending;
 
-    // Fallback to highest-rated designs
-    return this.designRepo.find({
-      where: { isActive: true },
-      order: { averageRating: 'DESC' },
-      take: limit,
-    });
+    const highestRated = await buildBaseQuery()
+      .orderBy('p.averageRating', 'DESC')
+      .limit(limit)
+      .getMany();
+
+    if (highestRated.length > 0 || categoryFilters.length === 0) {
+      return highestRated;
+    }
+
+    // If the category filter has no records, fall back to a global trending list.
+    return this.designRepo
+      .createQueryBuilder('p')
+      .where('p.isActive = :active', { active: true })
+      .orderBy('p.averageRating', 'DESC')
+      .limit(limit)
+      .getMany();
   }
 
   // ─── Collection Posts ─────────────────────────────────────────────────────────

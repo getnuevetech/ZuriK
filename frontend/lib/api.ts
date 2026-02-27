@@ -647,8 +647,8 @@ export const homepageApi = {
 
   // Public — Shop by Country / Trending
   getShopByCountry: () => api.get('/homepage/shop-by-country').then((r) => r.data),
-  getTrending: (limit?: number) =>
-    api.get('/homepage/trending', { params: { limit } }).then((r) => r.data),
+  getTrending: (limit?: number, category?: string) =>
+    api.get('/homepage/trending', { params: { limit, category } }).then((r) => r.data),
 
   // Public — Collection Posts
   getCollectionPosts: () => api.get('/homepage/collection-posts').then((r) => r.data),
