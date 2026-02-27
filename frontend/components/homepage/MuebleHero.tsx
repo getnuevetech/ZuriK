@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 
 const heroProducts = [
   { id: 1, name: 'Kente Gown', price: 450, image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=200&h=200&fit=crop' },
@@ -28,12 +29,12 @@ export function MuebleHero() {
             Discover our new Collection
           </h2>
           <p className="text-gray-600 mb-6">Shop from $49</p>
-          <a
+          <Link
             href="/products"
             className="inline-block bg-[#00c853] hover:bg-[#00b248] text-white px-6 py-3 font-medium transition-colors"
           >
             Shop Now
-          </a>
+          </Link>
         </div>
       </div>
 
