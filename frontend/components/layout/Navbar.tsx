@@ -17,6 +17,14 @@ interface NavbarProps {
 
 const categories = ['All', 'Dresses', 'Fabrics', 'Accessories', 'Designers'];
 
+const CATEGORY_HREFS: Record<string, string> = {
+  All: '/products',
+  Dresses: '/products',
+  Fabrics: '/fabrics',
+  Accessories: '/products',
+  Designers: '/designers',
+};
+
 export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [shopOpen, setShopOpen] = useState(false);
@@ -112,13 +120,7 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
           {/* Category tabs — Desktop */}
           <div className="hidden lg:flex items-center gap-8">
             {categories.map((cat) => {
-              const href =
-                cat === 'All' ? '/products'
-                : cat === 'Dresses' ? '/products'
-                : cat === 'Fabrics' ? '/fabrics'
-                : cat === 'Accessories' ? '/products'
-                : cat === 'Designers' ? '/designers'
-                : '/products';
+              const href = CATEGORY_HREFS[cat] ?? '/products';
               return (
                 <Link
                   key={cat}
@@ -262,13 +264,7 @@ export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
         <div className="lg:hidden bg-white border-t border-gray-200">
           <div className="max-w-[1400px] mx-auto px-4 py-4 space-y-1">
             {categories.map((cat) => {
-              const href =
-                cat === 'All' ? '/products'
-                : cat === 'Dresses' ? '/products'
-                : cat === 'Fabrics' ? '/fabrics'
-                : cat === 'Accessories' ? '/products'
-                : cat === 'Designers' ? '/designers'
-                : '/products';
+              const href = CATEGORY_HREFS[cat] ?? '/products';
               return (
                 <Link
                   key={cat}
