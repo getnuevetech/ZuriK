@@ -15,24 +15,32 @@ const HOP_BY_HOP_HEADERS = new Set([
 ]);
 
 function normalizeBaseUrl(value: string): string {
-  return value.replace(/\/+$/, '');
+  return value.trim().replace(/\/+$/, '');
+}
+
+function isAbsoluteHttpUrl(value: string): boolean {
+  return /^https?:\/\//i.test(value);
 }
 
 function getBackendBaseUrl(): string {
-  const configured =
-    process.env.API_URL ||
-    process.env.BACKEND_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    '';
+  const candidates = [
+    process.env.API_URL,
+    process.env.BACKEND_URL,
+    process.env.NEXT_PUBLIC_API_URL,
+  ];
 
-  if (!configured) {
-    if (process.env.NODE_ENV === 'production') {
-      return '';
+  for (const candidate of candidates) {
+    if (!candidate) continue;
+    const normalized = normalizeBaseUrl(candidate);
+    if (isAbsoluteHttpUrl(normalized)) {
+      return normalized;
     }
-    return 'http://localhost:3001';
   }
 
-  return normalizeBaseUrl(configured);
+  if (process.env.NODE_ENV === 'production') {
+    return '';
+  }
+  return 'http://localhost:3001';
 }
 
 function buildTargetUrl(req: NextRequest, path: string[], backend: string): string {
@@ -48,7 +56,7 @@ async function proxyRequest(req: NextRequest, path: string[]): Promise<NextRespo
     return NextResponse.json(
       {
         message:
-          'API proxy is not configured. Set API_URL (or BACKEND_URL) on the frontend server environment.',
+          'API proxy is not configured with an absolute backend URL. Set API_URL (or BACKEND_URL) on the frontend server.',
       },
       { status: 500 },
     );
@@ -68,13 +76,26 @@ async function proxyRequest(req: NextRequest, path: string[]): Promise<NextRespo
     body = raw.byteLength > 0 ? raw : undefined;
   }
 
-  const upstreamResponse = await fetch(targetUrl, {
-    method,
-    headers: upstreamHeaders,
-    body,
-    redirect: 'manual',
-    cache: 'no-store',
-  });
+  let upstreamResponse: Response;
+  try {
+    upstreamResponse = await fetch(targetUrl, {
+      method,
+      headers: upstreamHeaders,
+      body,
+      redirect: 'manual',
+      cache: 'no-store',
+    });
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    return NextResponse.json(
+      {
+        message:
+          `Unable to reach backend API from proxy (${reason}). ` +
+          'Verify API_URL/BACKEND_URL and backend service availability.',
+      },
+      { status: 502 },
+    );
+  }
 
   const responseHeaders = new Headers(upstreamResponse.headers);
   HOP_BY_HOP_HEADERS.forEach((header) => responseHeaders.delete(header));
