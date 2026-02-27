@@ -1,18 +1,65 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { heroBannersApi, type HeroBanner as ApiHeroBanner } from '../../lib/api';
 
 const DESIGN_REFERENCE_IMAGE_BASE =
   'https://raw.githubusercontent.com/agolomola/africanfashionone/main/frontend/design-reference/app/public/images';
 
 const img = (name: string) => `${DESIGN_REFERENCE_IMAGE_BASE}/${name}`;
 
-const heroProducts = [
-  { id: 1, name: 'Kente Gown', price: 450, image: img('product-1.jpg') },
-  { id: 2, name: 'Ankara Set', price: 295, image: img('product-2.jpg') },
-  { id: 3, name: 'Dashiki', price: 180, image: img('product-3.jpg') },
+type HeroSlide = {
+  id: string;
+  title: string;
+  subtitle: string;
+  ctaText: string;
+  ctaLink: string;
+  mediaType: string;
+  mediaUrl: string;
+  thumbName: string;
+  thumbPrice: string;
+  thumbImage: string;
+};
+
+const FALLBACK_HERO_SLIDES: HeroSlide[] = [
+  {
+    id: 'fallback-1',
+    title: 'Discover our new Collection',
+    subtitle: 'Shop from $49',
+    ctaText: 'Learn more',
+    ctaLink: '/products',
+    mediaType: 'image',
+    mediaUrl: img('hero-bg.jpg'),
+    thumbName: 'Kente Gown',
+    thumbPrice: '$ 450.00 USD',
+    thumbImage: img('product-1.jpg'),
+  },
+  {
+    id: 'fallback-2',
+    title: 'Authentic African Craftsmanship',
+    subtitle: 'Premium quality, curated globally',
+    ctaText: 'Shop now',
+    ctaLink: '/products',
+    mediaType: 'image',
+    mediaUrl: img('category-dresses.jpg'),
+    thumbName: 'Ankara Set',
+    thumbPrice: '$ 295.00 USD',
+    thumbImage: img('product-2.jpg'),
+  },
+  {
+    id: 'fallback-3',
+    title: 'Made for Modern African Style',
+    subtitle: 'Styles for every occasion',
+    ctaText: 'View products',
+    ctaLink: '/products',
+    mediaType: 'image',
+    mediaUrl: img('category-fabrics.jpg'),
+    thumbName: 'Dashiki',
+    thumbPrice: '$ 180.00 USD',
+    thumbImage: img('product-3.jpg'),
+  },
 ];
 
 const categories = [
@@ -57,45 +104,98 @@ const instagramImages = [
 
 export function ReferenceStyleHomepage() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [heroSlides, setHeroSlides] = useState<HeroSlide[]>(FALLBACK_HERO_SLIDES);
+
+  useEffect(() => {
+    heroBannersApi.listActive()
+      .then((banners: ApiHeroBanner[]) => {
+        if (!Array.isArray(banners) || banners.length === 0) return;
+        const sorted = [...banners].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+        const mapped: HeroSlide[] = sorted.map((banner, index) => {
+          const fallback = FALLBACK_HERO_SLIDES[index % FALLBACK_HERO_SLIDES.length];
+          const mediaUrl = banner.mediaUrl || fallback.mediaUrl;
+          return {
+            id: banner.id,
+            title: banner.title || fallback.title,
+            subtitle: banner.subtitle || fallback.subtitle,
+            ctaText: banner.ctaText || fallback.ctaText,
+            ctaLink: banner.ctaLink || fallback.ctaLink,
+            mediaType: banner.mediaType || fallback.mediaType,
+            mediaUrl,
+            thumbName: banner.title || fallback.thumbName,
+            thumbPrice: fallback.thumbPrice,
+            thumbImage: banner.mediaType === 'image' && mediaUrl ? mediaUrl : fallback.thumbImage,
+          };
+        });
+        setHeroSlides(mapped);
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (currentSlide >= heroSlides.length) {
+      setCurrentSlide(0);
+    }
+  }, [currentSlide, heroSlides.length]);
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + heroProducts.length) % heroProducts.length);
+    setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
   };
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % heroProducts.length);
+    setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
   };
+
+  const activeSlide = heroSlides[currentSlide] ?? FALLBACK_HERO_SLIDES[0];
+  const showVideo = activeSlide.mediaType === 'video' && Boolean(activeSlide.mediaUrl);
+  const showGradient = activeSlide.mediaType === 'gradient';
+  const heroImage = showGradient ? img('hero-bg.jpg') : activeSlide.mediaUrl;
 
   return (
     <div className="bg-white">
       <section className="pt-[104px] relative">
         <div className="relative w-full h-[600px] lg:h-[700px]">
-          <Image
-            src={img('hero-bg.jpg')}
-            alt="African Fashion Collection"
-            fill
-            priority
-            className="w-full h-full object-cover"
-            sizes="100vw"
-          />
+          {showVideo ? (
+            <video
+              key={activeSlide.id}
+              src={activeSlide.mediaUrl}
+              className="w-full h-full object-cover"
+              autoPlay
+              muted
+              loop
+              playsInline
+            />
+          ) : (
+            <Image
+              src={heroImage}
+              alt={activeSlide.title}
+              fill
+              priority
+              className="w-full h-full object-cover"
+              sizes="100vw"
+            />
+          )}
+          {showGradient && (
+            <div className="absolute inset-0 bg-gradient-to-r from-[#1f2d7a]/70 via-[#1f2d7a]/35 to-transparent" />
+          )}
 
           <div className="absolute top-1/2 left-4 sm:left-8 lg:left-16 transform -translate-y-1/2 bg-white p-6 sm:p-8 max-w-sm shadow-xl">
             <h2 className="text-2xl sm:text-3xl font-bold text-[#1a237e] mb-2 font-heading">
-              Discover our new Collection
+              {activeSlide.title}
             </h2>
-            <p className="text-gray-600 mb-6">Shop from $49</p>
+            <p className="text-gray-600 mb-6">{activeSlide.subtitle}</p>
             <Link
-              href="/products"
+              href={activeSlide.ctaLink || '/products'}
               className="inline-block bg-[#00c853] hover:bg-[#00b248] text-white px-6 py-3 font-medium transition-colors"
             >
-              Learn more
+              {activeSlide.ctaText || 'Learn more'}
             </Link>
           </div>
 
           <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm">
             <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
               <div className="flex items-center justify-between">
-                <span className="text-xs uppercase tracking-wider text-gray-500">Products</span>
+                <span className="text-xs uppercase tracking-wider text-gray-500">Hero Banners</span>
                 <div className="flex gap-2">
                   <button
                     onClick={prevSlide}
@@ -118,24 +218,24 @@ export function ReferenceStyleHomepage() {
                 </div>
               </div>
               <div className="flex gap-4 mt-4 overflow-x-auto scrollbar-hide">
-                {heroProducts.map((product, index) => (
+                {heroSlides.map((slide, index) => (
                   <div
-                    key={product.id}
+                    key={slide.id}
                     className={`flex items-center gap-3 min-w-[200px] p-2 border-b-2 transition-all cursor-pointer ${
                       index === currentSlide ? 'border-[#1a237e]' : 'border-transparent'
                     }`}
                     onClick={() => setCurrentSlide(index)}
                   >
                     <Image
-                      src={product.image}
-                      alt={product.name}
+                      src={slide.thumbImage}
+                      alt={slide.thumbName}
                       width={48}
                       height={48}
                       className="w-12 h-12 object-cover"
                     />
                     <div>
-                      <p className="font-medium text-[#1a237e]">{product.name}</p>
-                      <p className="text-sm text-gray-500">$ {product.price}.00 USD</p>
+                      <p className="font-medium text-[#1a237e] line-clamp-1">{slide.thumbName}</p>
+                      <p className="text-sm text-gray-500">{slide.thumbPrice}</p>
                     </div>
                   </div>
                 ))}
