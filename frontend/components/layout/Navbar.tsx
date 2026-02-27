@@ -15,29 +15,32 @@ interface NavbarProps {
   wishlistCount?: number;
 }
 
-const COUNTRIES = [
-  { name: 'Nigeria', flag: '🇳🇬' },
-  { name: 'Ghana', flag: '🇬🇭' },
-  { name: 'Kenya', flag: '🇰🇪' },
-  { name: 'South Africa', flag: '🇿🇦' },
-  { name: 'Senegal', flag: '🇸🇳' },
-  { name: 'Ethiopia', flag: '🇪🇹' },
-];
+const categories = ['All', 'Dresses', 'Fabrics', 'Accessories', 'Designers'];
 
-const navLinks = [
-  { href: '/', label: 'Home' },
-  { href: '/designers', label: 'Designers' },
-];
+const CATEGORY_HREFS: Record<string, string> = {
+  All: '/products',
+  Dresses: '/products',
+  Fabrics: '/fabrics',
+  Accessories: '/products',
+  Designers: '/designers',
+};
 
 export function Navbar({ cartCount = 0, wishlistCount = 0 }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [shopOpen, setShopOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const { user: authUser, isAuthenticated, logout } = useAuth();
   const pathname = usePathname();
   const userMenuRef = useRef<HTMLDivElement>(null);
   const shopMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {

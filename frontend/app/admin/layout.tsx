@@ -65,16 +65,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const toggleSidebar = () => setSidebarCollapsed((prev: boolean) => !prev);
 
   return (
-    <div className="flex h-screen bg-neutral-50">
+    <div className="flex h-screen bg-gray-50">
       <AdminSidebar
         items={ADMIN_NAV_ITEMS}
         collapsed={sidebarCollapsed}
         onToggle={toggleSidebar}
       />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white border-b border-neutral-200 px-4 py-3 flex items-center justify-between flex-shrink-0">
+        <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between flex-shrink-0">
           <button
-            className="md:hidden text-neutral-600 hover:text-neutral-900 p-1 rounded"
+            className="md:hidden text-[#1a237e]/60 hover:text-[#1a237e] p-1 rounded"
             onClick={toggleSidebar}
             aria-label="Open sidebar"
           >
@@ -84,12 +84,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </button>
           <div className="hidden md:block" />
           <div className="flex items-center gap-4">
-            <span className="text-sm text-neutral-600">
+            <span className="text-sm text-[#1a237e]/70 font-medium">
               {user?.firstName ? `${user.firstName} ${user.lastName ?? ''}`.trim() : user?.email}
             </span>
             <button
               onClick={logout}
-              className="text-sm text-neutral-500 hover:text-neutral-900 border border-neutral-200 rounded px-3 py-1.5 transition-colors"
+              className="text-sm text-[#1a237e]/60 hover:text-[#1a237e] border border-gray-200 hover:border-[#1a237e]/30 rounded px-3 py-1.5 transition-colors"
             >
               Logout
             </button>
