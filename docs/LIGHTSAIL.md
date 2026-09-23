@@ -264,10 +264,7 @@ openssl rand -base64 32
 URL-encode the database password from step 9:
 
 ```bash
-python3 - <<'PY'
-import urllib.parse
-print(urllib.parse.quote(input("Database password: "), safe=""))
-PY
+python3 -c 'import urllib.parse; print(urllib.parse.quote(input("Database password: "), safe=""))'
 ```
 
 ```bash
