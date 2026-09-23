@@ -1,3 +1,4 @@
+# Local development only. Lightsail uses deploy/lightsail/docker-compose.db.yml.
 version: '3.8'
 services:
   postgres:

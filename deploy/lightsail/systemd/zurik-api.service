@@ -1,7 +1,7 @@
 [Unit]
 Description=ZuriK API
-After=network-online.target
-Wants=network-online.target
+After=network-online.target zurik-db.service
+Wants=network-online.target zurik-db.service
 
 [Service]
 Type=simple

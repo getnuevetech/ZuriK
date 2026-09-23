@@ -1,0 +1,16 @@
+[Unit]
+Description=ZuriK Postgres
+After=docker.service network-online.target
+Requires=docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/zurik/deploy/lightsail
+ExecStart=/usr/bin/docker compose -f docker-compose.db.yml up -d --wait
+ExecStop=/usr/bin/docker compose -f docker-compose.db.yml stop
+TimeoutStartSec=180
+
+[Install]
+WantedBy=multi-user.target
