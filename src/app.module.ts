@@ -84,6 +84,24 @@ import { ShopByCountrySettings } from './homepage/entities/shop-by-country-setti
 
 const isProduction = process.env.NODE_ENV === 'production';
 
+function databaseSsl():
+  | false
+  | { rejectUnauthorized: boolean; ca?: string } {
+  // Same-instance Postgres never leaves the machine. Managed Lightsail
+  // Postgres must keep SSL on (leave DATABASE_SSL unset).
+  if (process.env.DATABASE_SSL === 'false') {
+    return false;
+  }
+  if (!isProduction) {
+    return false;
+  }
+  const ca = process.env.DATABASE_CA_CERT;
+  return {
+    rejectUnauthorized: !!ca,
+    ...(ca ? { ca } : {}),
+  };
+}
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -124,14 +142,7 @@ const isProduction = process.env.NODE_ENV === 'production';
       ],
       // TODO: switch back to `synchronize: false` and use proper TypeORM migrations once tables are created
       synchronize: true,
-      ssl: isProduction
-        ? {
-            rejectUnauthorized: !!process.env.DATABASE_CA_CERT,
-            ...(process.env.DATABASE_CA_CERT
-              ? { ca: process.env.DATABASE_CA_CERT }
-              : {}),
-          }
-        : false,
+      ssl: databaseSsl(),
     }),
     AuthModule.register(),
     UsersModule,

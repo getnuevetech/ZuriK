@@ -10,6 +10,13 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule, { rawBody: true });
 
+  // Nginx on Lightsail is one hop in front of this process. Without this,
+  // every visitor shares 127.0.0.1 and the global rate limit locks the site.
+  if (process.env.TRUST_PROXY === '1' || process.env.TRUST_PROXY === 'true') {
+    app.getHttpAdapter().getInstance().set('trust proxy', 1);
+    logger.log('Trusting one reverse-proxy hop');
+  }
+
   const allowedOrigins = (
     process.env.FRONTEND_URL || 'http://localhost:3000'
   )

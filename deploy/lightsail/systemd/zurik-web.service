@@ -1,0 +1,20 @@
+[Unit]
+Description=ZuriK web
+After=network-online.target zurik-api.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=zurik
+Group=zurik
+WorkingDirectory=/opt/zurik/frontend/.next/standalone-run
+EnvironmentFile=/etc/zurik/web.env
+Environment=PORT=3000
+Environment=HOSTNAME=127.0.0.1
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+
+[Install]
+WantedBy=multi-user.target
