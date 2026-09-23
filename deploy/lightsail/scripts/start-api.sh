@@ -1,6 +1,6 @@
 #!/bin/bash
-# Loads the Lightsail database CA into DATABASE_CA_CERT, then starts the API.
-# systemd EnvironmentFile has already exported the rest of the variables.
+# Starts the API. systemd EnvironmentFile has already exported the variables.
+# A CA file is optional. The Docker Postgres container on this host does not use one.
 set -euo pipefail
 
 CA_FILE="${DATABASE_CA_FILE:-/etc/zurik/lightsail-ca.pem}"

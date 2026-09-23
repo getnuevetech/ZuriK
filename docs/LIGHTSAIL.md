@@ -1,75 +1,83 @@
 # AWS Lightsail setup for ZuriK
 
-This is the server setup for this repository. One Ubuntu instance runs all three pieces:
+Follow this from an empty Lightsail account through a running site. One Ubuntu instance runs the whole app.
 
-| Piece | How it runs | Public URL |
+| Piece | Where it runs | Address |
 |---|---|---|
-| Storefront, account, and admin UI | Next.js in `frontend/`, systemd | `https://example.com` |
-| API | NestJS from the repo root, systemd | `https://api.example.com` |
-| Database | PostgreSQL 15 in Docker | not public |
+| Website (storefront, account, admin) | Next.js, systemd service `zurik-web` | `https://example.com` → `127.0.0.1:3000` |
+| API | NestJS, systemd service `zurik-api` | `https://api.example.com` → `127.0.0.1:3001` |
+| Database | PostgreSQL 15 container `zurik-postgres` | `127.0.0.1:5432` only |
+| HTTPS | Nginx on the instance | ports 80 and 443 |
 
-Nginx is the only process that faces the internet. The API listens on `127.0.0.1:3001`. The website listens on `127.0.0.1:3000`. Postgres listens on `127.0.0.1:5432`. Images go to Cloudinary, so the instance does not store uploads.
+Images are stored in Cloudinary. The instance disk holds the Postgres Docker volume, the app code, and backup dumps.
 
-Use one app instance. Abandoned-cart, order, and review emails are scheduled inside the API process. A second copy of the API sends those twice.
+Run one app instance. Order, abandoned-cart, and review emails are scheduled inside the API process. A second API process sends them twice.
 
-Replace `example.com` everywhere below with the domain you will actually serve. Commands are meant to be copied in order.
+The file `docker-compose.yml` at the repository root is for a laptop. On the server, Postgres comes from `deploy/lightsail/docker-compose.db.yml`. `DEPLOYMENT_SIMPLE.md` describes an older app. Use this file instead.
 
-`DEPLOYMENT_SIMPLE.md` describes a different, older app. Do not follow it. The `docker-compose.yml` file at the repo root is for local development. On the server, start Postgres only from `deploy/lightsail/docker-compose.db.yml`.
+Throughout this guide the domain is `example.com`. Use your real domain in its place. On the server you will save it once:
 
-## What you create in Lightsail
+```bash
+echo 'example.com' | sudo tee /etc/zurik/domain
+```
 
-| Resource | Choice |
-|---|---|
-| App instance | Ubuntu 24.04 LTS, OS Only blueprint. 4 GB RAM. A 2 GB instance can build this app only with the swap file in step 5, and the build is easy to run out of memory. |
-| Static IP | One static IP attached to the app instance. |
-| DNS | `example.com`, `www.example.com`, and `api.example.com` as A records to that static IP. |
+Later commands read it back with `DOMAIN=$(cat /etc/zurik/domain)`.
 
-Postgres is a Docker container on that instance. There is no separate Lightsail database. Confirm the instance price in the console before you create it. A static IP is free while it is attached. Detaching it and leaving it unused is billed.
+## What you need before the console
 
-You also need, outside Lightsail:
-
-- A domain you control
+- An AWS account that can open Lightsail
+- A domain, and access to its DNS or registrar
 - A Cloudinary account
-- SMTP credentials (Gmail app password, or another provider)
-- Stripe and/or Paystack live keys, when you take payments
-- A Google OAuth client, if you want Google sign-in
+- SMTP credentials
+- Stripe and Paystack keys when you take payment
+- A Google OAuth client if you want Google sign-in
 
-## 1. Create the app instance
+Confirm the 4 GB instance price in the Lightsail console before you create it. A static IP is free while it is attached to a running instance.
 
-1. From the Lightsail home page choose **Create instance**.
-2. Pick the region closest to your customers. The database lives on this instance, so there is no second region to match.
-3. Platform: **Linux/Unix**. Blueprint: **OS Only**, **Ubuntu 24.04 LTS**. Do not use a Node.js blueprint. This app needs Node 20 installed in the steps below.
-4. Choose the **4 GB** instance plan. Postgres, the API, and the Next.js build share this memory.
-5. Name it `zurik-app`.
+## 1. Create the instance
+
+1. Lightsail home → **Create instance**.
+2. Region: closest to your customers.
+3. Platform: **Linux/Unix**. Blueprint: **OS Only** → **Ubuntu 24.04 LTS**.
+4. Plan: **4 GB RAM**. Postgres, the API, and the Next.js build share this memory. The swap file in step 5 covers the build spike.
+5. Name: `zurik-app`.
 6. Create the instance. Wait until it is **Running**.
-7. Open the instance, then the **Networking** tab.
-8. Under **IPv4 Firewall**, add:
-   - HTTP, TCP, port 80, source `0.0.0.0/0` (Anywhere)
-   - HTTPS, TCP, port 443, source `0.0.0.0/0`
-   - SSH, TCP, port 22. Restrict the source to your current IP if the console lets you.
-9. Do not add rules for 3000, 3001, or 5432.
-10. Do not add an IPv6 AAAA record later. You can leave the IPv6 firewall as Lightsail created it.
-11. Still on Networking, choose **Create static IP**. Attach it to `zurik-app` and name it `zurik-ip`. Copy the address.
 
-On the instance **Snapshots** tab, turn on automatic snapshots. The Docker volume is on this disk, so a snapshot is a copy of the database as well as the app. Take one before every deploy. Also keep the `pg_dump` files from step 9, because a snapshot of a running database is a crash copy, and a logical dump restores more cleanly.
+### Firewall
 
-The public IP on the instance page changes when the instance stops unless this static IP stays attached. Use the static IP for DNS and SSH.
+Open the instance → **Networking** → **IPv4 Firewall**. Add:
 
-## 2. Point the domain at the static IP
+| Application | Protocol | Port | Source |
+|---|---|---|---|
+| HTTP | TCP | 80 | Anywhere `0.0.0.0/0` |
+| HTTPS | TCP | 443 | Anywhere `0.0.0.0/0` |
+| SSH | TCP | 22 | Your current IP, if the console allows it |
 
-Create these A records. The value of each one is the static IP from step 1. Do not create AAAA records.
+Leave 3000, 3001, and 5432 closed. Those stay on localhost. Do not add AAAA records later, so the IPv6 firewall can stay as Lightsail created it.
+
+### Static IP
+
+On the same Networking tab, **Create static IP**. Attach it to `zurik-app`. Name it `zurik-ip`. Copy the address. DNS and SSH use this address. If the static IP is detached, the instance address changes the next time it stops.
+
+### Snapshots
+
+Open the instance **Snapshots** tab and turn on automatic snapshots. The Docker volume lives on this disk, so a snapshot includes the database. Take a manual snapshot before every code deploy as well. Step 8 also writes a logical `pg_dump`, which restores more cleanly than a snapshot of a running database.
+
+## 2. Point DNS at the static IP
+
+Create three A records. The value is the static IP from step 1.
 
 | Name | Type | Value |
 |---|---|---|
-| `@` (apex) | A | static IP |
+| `@` | A | static IP |
 | `www` | A | static IP |
 | `api` | A | static IP |
 
-**Lightsail DNS.** Networking → **Create DNS zone** → enter the domain. Add the three A records. Lightsail shows four name servers. At the registrar, replace the domain's name servers with those four. Propagation can take from a few minutes to a few hours.
+**Lightsail DNS.** Networking → **Create DNS zone** → your domain. Add the three records. Copy the four name servers Lightsail shows, and set those as the name servers at the registrar.
 
-**DNS you already have** (Route 53, Cloudflare, the registrar). Add the same three A records there. If the domain is on Cloudflare, set the records to **DNS only** (grey cloud) until the certificate in step 13 is issued. An orange-cloud proxy answers Let's Encrypt from Cloudflare instead of from this instance.
+**DNS you already manage.** Add the same three records there. On Cloudflare, set them to **DNS only** until the certificate in step 12 exists. A proxied record makes Let's Encrypt talk to Cloudflare instead of this instance.
 
-Check from your own computer, after the records exist:
+From your own computer:
 
 ```bash
 dig +short example.com
@@ -77,24 +85,24 @@ dig +short www.example.com
 dig +short api.example.com
 ```
 
-Each command should print the static IP before you request a certificate.
+Each line must be the static IP before you request a certificate. Propagation can take from a few minutes to a few hours.
 
 ## 3. Log in
 
-Lightsail has a different default SSH key **per region**. Download the key for this instance's region from the account menu → **Account** → **SSH keys**.
+Lightsail has a separate default SSH key for each region. Download the key for this instance's region: account menu → **Account** → **SSH keys**.
 
 ```bash
 chmod 400 ~/Downloads/LightsailDefaultKey-*.pem
 ssh -i ~/Downloads/LightsailDefaultKey-*.pem ubuntu@STATIC_IP
 ```
 
-The browser SSH button on the instance page also works. A local SSH session is easier when you later copy dump files off the server.
+The browser SSH button on the instance page works too. A local terminal is easier when you copy database dumps off the server.
 
-Every command from here through step 13 is run on the instance, as `ubuntu`, unless it says otherwise.
+From here through step 12, commands run on the instance as `ubuntu`.
 
 ## 4. Update the OS and set the clock
 
-Scheduled emails use the instance clock. `EVERY_DAY_AT_10AM` means 10:00 in this timezone. Use the zone where the business operates.
+Scheduled mail uses the instance clock. `EVERY_DAY_AT_10AM` is 10:00 in the timezone you set. Pick the zone where the business operates.
 
 ```bash
 sudo apt-get update
@@ -105,8 +113,6 @@ timedatectl
 
 ## 5. Add swap
 
-Next.js needs the extra memory while it compiles. Leave the swap in place afterwards.
-
 ```bash
 sudo fallocate -l 2G /swapfile
 sudo chmod 600 /swapfile
@@ -116,9 +122,9 @@ echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 free -h
 ```
 
-## 6. Install Docker, Node 20, and Nginx
+Leave the swap file in place after the build.
 
-The repo root `.nvmrc` is Node 20. Postgres uses the Docker engine, not Ubuntu's `postgresql` package.
+## 6. Install Docker, Node 20, and Nginx
 
 ```bash
 sudo apt-get install -y ca-certificates curl gnupg git build-essential python3 nginx certbot postgresql-client
@@ -138,16 +144,19 @@ npm -v
 nginx -v
 ```
 
-`node -v` should print `v20.x`. `docker compose version` should print a v2 version. Do not enable `ufw`. The Lightsail firewall from step 1 is the firewall for this instance. A second firewall is how SSH gets locked out.
+`node -v` must print `v20.x`. `docker compose version` must print a v2 version. Leave `ufw` off. The Lightsail firewall from step 1 is the firewall for this machine.
 
-## 7. Create the app user and directories
+## 7. Create the app user
 
 ```bash
 sudo adduser --system --group --home /home/zurik --shell /bin/bash zurik
 sudo mkdir -p /etc/zurik /var/www/certbot /var/backups/zurik /opt/zurik
 sudo chown zurik:zurik /opt/zurik
 sudo chmod 700 /var/backups/zurik
+echo 'example.com' | sudo tee /etc/zurik/domain
 ```
+
+Change `example.com` in that last command to your apex domain before you run it.
 
 ## 8. Clone the repository
 
@@ -157,14 +166,14 @@ Public repository:
 sudo -u zurik -H git clone https://github.com/getnuevetech/ZuriK.git /opt/zurik
 ```
 
-Private repository. On the instance:
+Private repository:
 
 ```bash
 sudo -u zurik -H ssh-keygen -t ed25519 -f /home/zurik/.ssh/id_ed25519 -N ""
 sudo cat /home/zurik/.ssh/id_ed25519.pub
 ```
 
-In GitHub, open the `getnuevetech/ZuriK` repository → **Settings** → **Deploy keys** → **Add deploy key**. Paste the public key. Leave write access off.
+GitHub → `getnuevetech/ZuriK` → **Settings** → **Deploy keys** → **Add deploy key**. Paste the public key. Leave write access off.
 
 ```bash
 sudo -u zurik -H bash -lc 'ssh-keyscan github.com >> ~/.ssh/known_hosts'
@@ -173,13 +182,11 @@ sudo -u zurik -H git clone git@github.com:getnuevetech/ZuriK.git /opt/zurik
 
 ## 9. Start Postgres in Docker
 
-Generate a database password:
+Generate the database password and save it in a password manager:
 
 ```bash
 openssl rand -base64 32
 ```
-
-Put the raw password in the Docker env file. You will URL-encode a copy of it for the API in the next step.
 
 ```bash
 sudo cp /opt/zurik/deploy/lightsail/env/db.env.example /etc/zurik/db.env
@@ -188,15 +195,13 @@ sudo chown root:root /etc/zurik/db.env
 sudo chmod 600 /etc/zurik/db.env
 ```
 
-`/etc/zurik/db.env` should look like this, with your password in place:
+The file contents are the raw password, not the URL-encoded form:
 
 ```
 POSTGRES_DB=african_fashion_db
 POSTGRES_USER=zurik
 POSTGRES_PASSWORD=the raw password
 ```
-
-Install and start the database service. It runs `docker compose up -d --wait` from `deploy/lightsail/docker-compose.db.yml`. The container is `zurik-postgres`. Its port is published only on `127.0.0.1`.
 
 ```bash
 sudo cp /opt/zurik/deploy/lightsail/systemd/zurik-db.service /etc/systemd/system/zurik-db.service
@@ -205,7 +210,9 @@ sudo systemctl enable --now zurik-db
 sudo docker ps
 ```
 
-`docker ps` should show `zurik-postgres` with a healthy status. Then confirm the host can log in:
+`zurik-db` runs `docker compose up -d --wait` on `deploy/lightsail/docker-compose.db.yml`. The container name is `zurik-postgres`. Port 5432 is published on `127.0.0.1` only. Data is the Docker volume `zurik_postgres`.
+
+`docker ps` should show the container as healthy. Then:
 
 ```bash
 PGPASSWORD='the raw password' psql \
@@ -213,9 +220,9 @@ PGPASSWORD='the raw password' psql \
   -c 'select version();'
 ```
 
-`POSTGRES_PASSWORD` is applied only when the data volume is created. A later edit of `db.env` does not change the password inside an existing volume. `docker compose down -v` deletes that volume and every table in it. Stopping the service does not.
+The version string must print. `POSTGRES_PASSWORD` is read only when the volume is first created. Editing `db.env` later does not change the password inside an existing volume. `docker compose down -v` deletes that volume.
 
-Nightly logical backup, kept on the instance for seven days:
+Install the nightly dump. It keeps seven days on the instance:
 
 ```bash
 sudo tee /etc/cron.daily/zurik-pgdump >/dev/null <<'EOF'
@@ -227,11 +234,11 @@ docker exec zurik-postgres pg_dump -U zurik african_fashion_db \
 find /var/backups/zurik -name 'african_fashion_db-*.sql.gz' -mtime +7 -delete
 EOF
 sudo chmod 755 /etc/cron.daily/zurik-pgdump
+sudo bash /etc/cron.daily/zurik-pgdump
+ls -l /var/backups/zurik
 ```
 
-Copy those files off the instance as well. A Lightsail snapshot is the other copy.
-
-Restore a dump into an empty database with:
+Copy those `.sql.gz` files off the instance on a schedule you control. Restore one into the same database with:
 
 ```bash
 gunzip -c /var/backups/zurik/african_fashion_db-DATE.sql.gz \
@@ -240,14 +247,14 @@ gunzip -c /var/backups/zurik/african_fashion_db-DATE.sql.gz \
 
 ## 10. Configure the API
 
-Generate two different secrets:
+Generate two different JWT secrets:
 
 ```bash
 openssl rand -base64 32
 openssl rand -base64 32
 ```
 
-URL-encode the same database password you put in `db.env`:
+URL-encode the database password from step 9:
 
 ```bash
 python3 - <<'PY'
@@ -263,7 +270,9 @@ sudo chmod 640 /etc/zurik/api.env
 sudoedit /etc/zurik/api.env
 ```
 
-Set these. Leave the rest as you fill in Cloudinary, SMTP, and payment keys. You can restart the API after those keys exist. The process starts without them, and mail, uploads, and payments fail until they are set.
+Set these now. Cloudinary, SMTP, Stripe, Paystack, and Google can stay as the placeholders until step 14. The API starts without them. Mail, uploads, and payments fail until they are filled in.
+
+`DOMAIN` below is your apex, already saved in `/etc/zurik/domain`.
 
 ```
 NODE_ENV=production
@@ -276,13 +285,13 @@ JWT_ACCESS_SECRET=first openssl value
 JWT_REFRESH_SECRET=second openssl value
 ```
 
-`DATABASE_SSL=false` is required. In production the API otherwise expects TLS, and this Postgres container does not speak TLS. The connection stays on the loopback interface. Do not add `?sslmode=require` to `DATABASE_URL`.
+`DATABASE_SSL=false` stays. This Postgres container does not speak TLS, and the connection stays on the loopback interface. Do not append `?sslmode=require` to `DATABASE_URL`.
 
-`FRONTEND_URL` is the browser origin, not the API origin. It is also the allow-list for browser calls. One origin is enough because Nginx sends `www` to the apex. Quote a value only when it contains a space. systemd strips one pair of double quotes, which is why the template quotes `SMTP_FROM`.
+`FRONTEND_URL` is the site origin the browser uses. Nginx sends `www` to the apex, so one origin is enough. Quote a value in this file only when it contains a space. systemd removes one pair of double quotes. The template already quotes `SMTP_FROM`.
 
-## 11. Configure and build the website
+## 11. Build the website and start both apps
 
-`NEXT_PUBLIC_API_URL` is compiled into the browser bundle. Changing it later does nothing until you build again.
+`NEXT_PUBLIC_API_URL` is compiled into the browser bundle. Changing it later has no effect until you build again.
 
 ```bash
 sudo cp /opt/zurik/deploy/lightsail/env/web.env.example /etc/zurik/web.env
@@ -297,7 +306,7 @@ NEXT_PUBLIC_API_URL=https://api.example.com
 NEXT_PUBLIC_APP_URL=https://example.com
 ```
 
-Build both apps. The first build downloads dependencies and compiles Next.js. On a 4 GB instance with swap, expect several minutes.
+Build. The first run downloads dependencies and compiles Next.js. On a 4 GB instance with swap, expect several minutes.
 
 ```bash
 sudo -u zurik -H bash -lc 'cd /opt/zurik && npm ci && npm run build'
@@ -305,8 +314,6 @@ sudo -u zurik -H bash /opt/zurik/deploy/lightsail/scripts/build-web.sh
 ```
 
 The web script prints `Standalone server ready at ...` and links that directory to `/opt/zurik/frontend/.next/standalone-run`.
-
-## 12. Run the API and the website
 
 ```bash
 sudo cp /opt/zurik/deploy/lightsail/systemd/zurik-api.service /etc/systemd/system/zurik-api.service
@@ -316,9 +323,7 @@ sudo systemctl enable --now zurik-api
 sudo systemctl enable --now zurik-web
 ```
 
-On boot, `zurik-db` starts the Postgres container, then the API starts, then the website. The first API start creates the database tables. This project boots with TypeORM `synchronize` turned on, including in production. There is no migration that creates the schema. Do not run `npm run typeorm:run` on this server. That command applies one later alteration and expects the tables to exist already.
-
-Watch the API until it logs that it is listening:
+Boot order is Docker, then `zurik-db`, then `zurik-api`, then `zurik-web`. The first API start creates the tables. TypeORM schema sync is on in production, and the repository has no migration that creates the schema. Do not run `npm run typeorm:run`. Do not run `npm run seed` or `npm run seed:prod`. The seed writes `admin@africanfashion.com` with password `Password123!`.
 
 ```bash
 sudo journalctl -u zurik-api -n 80 --no-pager
@@ -326,20 +331,15 @@ curl -fsS http://127.0.0.1:3001/health
 curl -fsS -o /dev/null -w "%{http_code}\n" http://127.0.0.1:3000/
 ```
 
-`/health` returns `{"status":"ok"}`. The website command prints `200`. If the API exits, the log is the source of truth. The usual causes are a bad `DATABASE_URL`, `DATABASE_SSL` left unset, Postgres not healthy, or `FRONTEND_URL` left empty.
+`/health` returns `{"status":"ok"}`. The second command prints `200`. If the API exits, read the journal. Typical causes are a wrong `DATABASE_URL`, `DATABASE_SSL` missing, Postgres not healthy, or an empty `FRONTEND_URL`.
 
-Do not run `npm run seed` or `npm run seed:prod`. The seed writes `admin@africanfashion.com` with password `Password123!` and a demo catalog.
-
-## 13. Issue the certificate and turn on HTTPS
+## 12. Turn on HTTPS
 
 DNS from step 2 must already return the static IP.
 
-Install the temporary HTTP site. It proxies the two apps and answers the certificate challenge.
-
-The sample below uses `zurik.com`. Use your apex domain in that position. The dot in `example.com` is a sed pattern, so keep the backslash.
-
 ```bash
-sudo sed 's/example\.com/zurik.com/g' \
+DOMAIN=$(cat /etc/zurik/domain)
+sudo sed "s/example\\.com/${DOMAIN}/g" \
   /opt/zurik/deploy/lightsail/nginx/zurik-http.conf \
   | sudo tee /etc/nginx/sites-available/zurik.conf >/dev/null
 sudo ln -sfn /etc/nginx/sites-available/zurik.conf /etc/nginx/sites-enabled/zurik.conf
@@ -348,27 +348,29 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-That substitution rewrites `example.com` to the apex, `www.example.com` to `www.` plus the apex, and `api.example.com` to `api.` plus the apex. With `zurik.com` the three names are `zurik.com`, `www.zurik.com`, and `api.zurik.com`. Use those same three names in the `certbot` command.
-
-Request the certificate:
+That rewrite turns `example.com` into your apex, `www.example.com` into `www.` plus the apex, and `api.example.com` into `api.` plus the apex.
 
 ```bash
+DOMAIN=$(cat /etc/zurik/domain)
 sudo certbot certonly --webroot -w /var/www/certbot \
-  -d example.com -d www.example.com -d api.example.com \
-  --agree-tos -m you@example.com --no-eff-email
+  -d "$DOMAIN" -d "www.$DOMAIN" -d "api.$DOMAIN" \
+  --agree-tos -m "admin@${DOMAIN}" --no-eff-email
 ```
 
-Install the HTTPS site, using the same domain substitution:
+Use a mailbox you actually read for the `-m` address.
 
 ```bash
-sudo sed 's/example\.com/zurik.com/g' \
+DOMAIN=$(cat /etc/zurik/domain)
+sudo sed "s/example\\.com/${DOMAIN}/g" \
   /opt/zurik/deploy/lightsail/nginx/zurik.conf \
   | sudo tee /etc/nginx/sites-available/zurik.conf >/dev/null
 sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-Reload Nginx when a certificate renews:
+Nginx now redirects HTTP to HTTPS, redirects `www` to the apex, proxies the apex to port 3000, and proxies `api` to port 3001. The upload limit is 55 MB.
+
+Reload Nginx when the certificate renews:
 
 ```bash
 sudo tee /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh >/dev/null <<'EOF'
@@ -379,20 +381,18 @@ sudo chmod 755 /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh
 sudo systemctl status certbot.timer
 ```
 
-Ubuntu enables `certbot.timer` with the certbot package. `systemctl status` should show it active.
-
-From your own computer:
+`certbot.timer` should be active. From your own computer, with your domain:
 
 ```bash
 curl -fsS https://api.example.com/health
 curl -fsS -o /dev/null -w "%{http_code}\n" https://example.com/
 ```
 
-Open `https://example.com` in a browser. `http://` and `https://www` should both land on `https://example.com`.
+Open `https://example.com`. `http://example.com` and `https://www.example.com` should both land on `https://example.com`.
 
-## 14. Create the first admin
+## 13. Create the first admin
 
-Registration only creates a customer, designer, or fabric seller. Register your own account on the site, then promote it on the instance.
+The register form creates a customer, designer, or fabric seller. Register your own account on the site, then promote it:
 
 ```bash
 PGPASSWORD='the raw password' psql \
@@ -400,93 +400,84 @@ PGPASSWORD='the raw password' psql \
   -c "update users set role = 'admin', \"isEmailVerified\" = true where email = 'you@example.com';"
 ```
 
-Sign out and sign in again. The admin screens read the role from the new token.
+Sign out and sign in again so the new token carries the admin role.
 
-## 15. Connect Cloudinary, email, payments, and Google
+## 14. Connect Cloudinary, email, payments, and Google
 
-Edit `/etc/zurik/api.env` and fill in the keys from `deploy/lightsail/env/api.env.example`. Then:
+Edit `/etc/zurik/api.env` and replace the remaining placeholders from `deploy/lightsail/env/api.env.example`. Then:
 
 ```bash
 sudo systemctl restart zurik-api
 ```
 
-Use these public URLs in the provider dashboards:
+Register these URLs with the providers. `example.com` is your apex.
 
 | Provider | URL |
 |---|---|
 | Stripe webhook | `https://api.example.com/payments/webhooks/stripe` |
 | Paystack webhook | `https://api.example.com/payments/webhooks/paystack` |
 | Google authorized redirect URI | `https://api.example.com/auth/google/callback` |
-| Stripe and Paystack callback after checkout | `https://example.com/payments/callback` |
+| Checkout return URL | `https://example.com/payments/callback` |
 
-`PAYMENT_CALLBACK_URL` in `/etc/zurik/api.env` is the checkout callback, `https://example.com/payments/callback`.
-
-Google sign-in stays off until both `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set. Leave the pair empty if you are not using Google.
-
-SMTP failures are logged and do not stop registration. Check them with:
+`PAYMENT_CALLBACK_URL` in `/etc/zurik/api.env` is that checkout return URL. Google sign-in stays off until both `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set. SMTP errors are logged and do not block registration:
 
 ```bash
 sudo journalctl -u zurik-api -n 50 --no-pager
 ```
 
-Hero banner uploads accept up to 50 MB. Nginx is already set to 55 MB. Product images are limited to 5 MB by the API.
+Hero banners accept up to 50 MB. Product images accept up to 5 MB.
 
-## 16. Deploy an update
+## 15. Deploy a later change
 
-Take a Lightsail snapshot of the instance, and run the dump once by hand, before you pull. The running API can alter tables on startup because schema sync is enabled.
+Snapshot the instance in the Lightsail console, then dump the database:
 
 ```bash
 sudo bash /etc/cron.daily/zurik-pgdump
 sudo bash /opt/zurik/deploy/lightsail/scripts/build-and-restart.sh
 ```
 
-The script fast-forwards git, builds the API, rebuilds the website with `/etc/zurik/web.env`, waits until `/health` answers, and restarts both app services. It leaves the Postgres container running.
+The script fast-forwards git, builds the API, rebuilds the website from `/etc/zurik/web.env`, waits for `/health`, and restarts the API and the website. The Postgres container keeps running.
 
-Change a `NEXT_PUBLIC_` value only in `/etc/zurik/web.env`, then run that same script. A restart without a build keeps the old API URL in the browser bundle.
+Change `NEXT_PUBLIC_API_URL` or `NEXT_PUBLIC_APP_URL` only in `/etc/zurik/web.env`, then run that script. A restart without a build keeps the previous URL in the browser bundle.
 
-After a git pull that changes `docker-compose.db.yml`, restart the database service too:
+If the pull changes `docker-compose.db.yml`:
 
 ```bash
 sudo systemctl restart zurik-db
 ```
 
-## Day-to-day checks
+## Checks
 
 ```bash
 sudo systemctl status zurik-db zurik-api zurik-web nginx
 sudo docker ps
 sudo journalctl -u zurik-api -f
 sudo journalctl -u zurik-web -f
-curl -fsS https://api.example.com/health
+curl -fsS http://127.0.0.1:3001/health
 ```
 
-`/health` means the API process is up. It does not query PostgreSQL. `docker logs zurik-postgres` is the database log.
+`/health` means the API process is up. It does not query Postgres. `sudo docker logs zurik-postgres` is the database log.
 
 ## Stop or resize
 
-Stop the instance from the Lightsail console only when you mean to. The static IP stays attached and DNS does not change. Postgres stops with the instance and starts again on boot from the Docker volume. To resize, snapshot the instance first, create a larger instance from that snapshot, move the static IP, and stop the old instance.
+Stopping the instance from the Lightsail console stops Postgres with it. The static IP stays attached, and DNS stays valid. On the next boot, Docker starts, then Postgres, then the API, then the website, and the same Docker volume is reused.
 
-## What this layout does not do
+To resize: snapshot `zurik-app`, create a new instance from that snapshot, attach `zurik-ip` to the new instance, and stop the old one.
 
-- It does not run the root `Dockerfile` or the root `docker-compose.yml`. That compose file starts Postgres with the password `postgres` and publishes port 5432 on every interface, and it also starts the API in development mode.
-- It does not use `ecosystem.config.js`, `start.sh`, or `build.sh`. Those scripts start the wrong process and call npm scripts this repo does not have.
-- It does not scale the API to a second instance. The scheduled jobs would run twice.
-- It does not turn schema sync off. Turning it off without a baseline migration leaves later entity changes unapplied. Snapshot and dump before every deploy until that migration exists.
+## When a step fails
 
-## When something fails
+**`dig` does not show the static IP.** Wait for the name servers, or fix the A records. Certificate requests fail until this matches.
 
-**API restarts in a loop.** `sudo journalctl -u zurik-api -n 100 --no-pager`. Missing `DATABASE_URL`, `FRONTEND_URL`, or either JWT secret exits on purpose in production. `ECONNREFUSED` on port 5432 means the container is not up: `sudo systemctl status zurik-db` and `sudo docker ps`.
+**`docker ps` has no `zurik-postgres`, or it is not healthy.** `sudo systemctl status zurik-db` and `sudo docker logs zurik-postgres`. The first start can take a few seconds. A password edited in `db.env` after the volume exists is ignored. The password that worked at first start is still the one in the volume.
 
-**`psql` works and the API does not.** `DATABASE_URL` must use `127.0.0.1`, the user `zurik`, and the URL-encoded password. `DATABASE_SSL` must be `false`.
+**`psql` succeeds and the API restarts.** `DATABASE_URL` must use `127.0.0.1`, user `zurik`, and the URL-encoded password. `DATABASE_SSL` must be `false`. `sudo journalctl -u zurik-api -n 100 --no-pager` prints a missing `FRONTEND_URL` or JWT secret directly.
 
-**The container restarts or stays unhealthy.** `sudo docker logs zurik-postgres`. The first start needs a few seconds. If you changed `POSTGRES_PASSWORD` after the volume was created, the old password is still the one inside the volume.
+**The site loads and API calls fail in the browser.** Rebuild after fixing `NEXT_PUBLIC_API_URL` in `/etc/zurik/web.env`. `FRONTEND_URL` must match the address bar, including `https://`.
 
-**The site loads and every API call fails in the browser.** The website was built with the wrong `NEXT_PUBLIC_API_URL`, or `FRONTEND_URL` does not exactly match the origin in the address bar, including `https://`. Fix the env file and run the build script again. CORS allows the origins in `FRONTEND_URL` plus any `*.vercel.app` host.
+**Pages return 429.** The API allows 3 requests per second per visitor, then 20 per 10 seconds, then 100 per minute. `TRUST_PROXY=1` must be set. After a restart the log should contain `Trusting one reverse-proxy hop`.
 
-**The homepage or admin pages return 429.** The API allows 3 requests per second per visitor, then 20 per 10 seconds, then 100 per minute. `TRUST_PROXY=1` must be set, or every visitor is counted as `127.0.0.1` and the limit is shared by the whole site. Confirm the log line `Trusting one reverse-proxy hop` after a restart.
+**Certbot fails.** `dig +short` for the apex, `www`, and `api` must be the static IP. Cloudflare must be DNS-only. Port 80 must be open in the instance firewall. The HTTP Nginx site from the start of step 12 must be loaded.
 
-**Certificate request fails.** `dig +short example.com` must be the static IP you attached. Cloudflare must not be proxying the name. Port 80 must be open in the Lightsail IPv4 firewall.
+**Uploads fail.** Fill the three `CLOUDINARY_` values and restart `zurik-api`. The API log has the Cloudinary error.
 
-**Uploads return an error.** Cloudinary keys are missing or the Nginx body limit was replaced. The API logs the Cloudinary error.
-
-**Google redirects to the wrong host.** `GOOGLE_CALLBACK_URL` and the Google console redirect URI are both `https://api.example.com/auth/google/callback`. The API then sends the browser to `FRONTEND_URL/auth/google/callback`.
+**Google returns to the wrong host.** `GOOGLE_CALLBACK_URL` and the Google console redirect URI are both `https://api.example.com/auth/google/callback`. The API then sends the browser to `FRONTEND_URL/auth/google/callback`.
