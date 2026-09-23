@@ -160,10 +160,17 @@ Change `example.com` in that last command to your apex domain before you run it.
 
 ## 8. Clone the repository
 
-Public repository:
+Public repository. Clone the branch that contains `deploy/lightsail`. `main` does not have those files until that branch is merged.
 
 ```bash
-sudo -u zurik -H git clone https://github.com/getnuevetech/ZuriK.git /opt/zurik
+sudo -u zurik -H git clone -b cursor/lightsail-setup-guide-35ca https://github.com/getnuevetech/ZuriK.git /opt/zurik
+```
+
+If `/opt/zurik` is already a clone of `main`, switch it instead of cloning again:
+
+```bash
+sudo -u zurik -H git -C /opt/zurik fetch origin cursor/lightsail-setup-guide-35ca
+sudo -u zurik -H git -C /opt/zurik checkout cursor/lightsail-setup-guide-35ca
 ```
 
 Private repository:
@@ -177,7 +184,7 @@ GitHub → `getnuevetech/ZuriK` → **Settings** → **Deploy keys** → **Add d
 
 ```bash
 sudo -u zurik -H bash -lc 'ssh-keyscan github.com >> ~/.ssh/known_hosts'
-sudo -u zurik -H git clone git@github.com:getnuevetech/ZuriK.git /opt/zurik
+sudo -u zurik -H git clone -b cursor/lightsail-setup-guide-35ca git@github.com:getnuevetech/ZuriK.git /opt/zurik
 ```
 
 ## 9. Start Postgres in Docker
