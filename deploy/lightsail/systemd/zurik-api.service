@@ -1,0 +1,18 @@
+[Unit]
+Description=ZuriK API
+After=network-online.target zurik-db.service
+Wants=network-online.target zurik-db.service
+
+[Service]
+Type=simple
+User=zurik
+Group=zurik
+WorkingDirectory=/opt/zurik
+EnvironmentFile=/etc/zurik/api.env
+ExecStart=/opt/zurik/deploy/lightsail/scripts/start-api.sh
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+
+[Install]
+WantedBy=multi-user.target

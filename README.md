@@ -20,6 +20,10 @@ This is Phase 1 of the phased development plan, establishing the backend foundat
 - **Validation**: class-validator + class-transformer
 - **Docs**: Swagger / OpenAPI
 
+## Deploying to AWS Lightsail
+
+The production app is this NestJS API plus the Next.js app in `frontend/`, with PostgreSQL. Follow [docs/LIGHTSAIL.md](docs/LIGHTSAIL.md). `DEPLOYMENT_SIMPLE.md` describes an older single Next.js app and will not deploy this repository.
+
 ## 🐳 Running with Docker Compose
 
 ```bash

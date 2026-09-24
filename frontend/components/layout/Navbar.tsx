@@ -27,6 +27,24 @@ const CATEGORY_HREFS: Record<string, string> = {
 
 const CATEGORY_TABS = ['All', 'Dresses', 'Fabrics', 'Accessories', 'Designers'];
 
+const navLinks = [
+  { href: '/', label: 'Home' },
+  { href: '/designers', label: 'Designers' },
+  { href: '/orders/custom-design', label: '3D Try-On' },
+];
+
+const COUNTRIES = [
+  { name: 'Nigeria', flag: '🇳🇬' },
+  { name: 'Ghana', flag: '🇬🇭' },
+  { name: 'Kenya', flag: '🇰🇪' },
+  { name: 'Senegal', flag: '🇸🇳' },
+  { name: 'Ethiopia', flag: '🇪🇹' },
+  { name: 'Tanzania', flag: '🇹🇿' },
+  { name: 'Cameroon', flag: '🇨🇲' },
+  { name: 'Morocco', flag: '🇲🇦' },
+  { name: 'South Africa', flag: '🇿🇦' },
+];
+
 const SOCIAL_BAR_ICONS = [
   {
     label: 'Facebook',

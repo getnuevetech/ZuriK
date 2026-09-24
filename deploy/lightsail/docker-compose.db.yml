@@ -1,0 +1,28 @@
+# Postgres for the Lightsail instance. The API on the host connects to
+# 127.0.0.1:5432. Do not publish this port on 0.0.0.0.
+# The dev stack at the repo root (docker-compose.yml) is a different file.
+
+name: zurik-db
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: zurik-postgres
+    restart: unless-stopped
+    stop_grace_period: 30s
+    env_file:
+      - /etc/zurik/db.env
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - zurik_postgres:/var/lib/postgresql/data
+    shm_size: 256mb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+volumes:
+  zurik_postgres:

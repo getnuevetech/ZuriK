@@ -1,5 +1,7 @@
 # Simple Deployment Guide for African Fashion eCommerce
 
+> This file describes an older single Next.js app (NextAuth, Vercel, Railway). It does not match the current repository. To deploy the NestJS API and the `frontend/` Next.js app on AWS Lightsail, follow [docs/LIGHTSAIL.md](docs/LIGHTSAIL.md).
+
 This guide will help you deploy the African Fashion eCommerce platform to various hosting providers with minimal configuration.
 
 ## 📋 Prerequisites
