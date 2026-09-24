@@ -310,7 +310,7 @@ NEXT_PUBLIC_API_URL=https://api.example.com
 NEXT_PUBLIC_APP_URL=https://example.com
 ```
 
-Build. The first run downloads dependencies and compiles Next.js. On a 4 GB instance with swap, expect several minutes.
+Build. The first run downloads dependencies and compiles Next.js. On a 4 GB instance with swap, expect several minutes. `web.env` sets `NODE_ENV=production`; the build script still installs development packages such as Tailwind, which the production compile needs.
 
 ```bash
 sudo -u zurik -H bash -lc 'cd /opt/zurik && npm ci && npm run build'

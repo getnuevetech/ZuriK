@@ -17,7 +17,9 @@ source "$ENV_FILE"
 set +a
 
 cd "$ROOT/frontend"
-npm ci
+# web.env sets NODE_ENV=production. Plain `npm ci` would then skip
+# tailwindcss, postcss, and typescript, and `next build` would fail.
+npm ci --include=dev
 npm run build
 
 STANDALONE=""
