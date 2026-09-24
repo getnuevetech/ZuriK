@@ -480,7 +480,18 @@ To resize: snapshot `zurik-app`, create a new instance from that snapshot, attac
 
 **Pages return 429.** The API allows 3 requests per second per visitor, then 20 per 10 seconds, then 100 per minute. `TRUST_PROXY=1` must be set. After a restart the log should contain `Trusting one reverse-proxy hop`.
 
-**Certbot fails.** `dig +short` for the apex, `www`, and `api` must be the static IP. Cloudflare must be DNS-only. Port 80 must be open in the instance firewall. The HTTP Nginx site from the start of step 12 must be loaded.
+**Certbot fails.** Each of the apex, `www`, and `api` needs an A record for the static IPv4 address, and no AAAA record. Let's Encrypt checks every address it finds. `NXDOMAIN` means that name has no record. An error that names an IPv6 address and HTTP 204 means an AAAA record sent the challenge somewhere other than Nginx. Delete the AAAA records, add the missing A record, wait until the lookups below are right, and run Certbot again.
+
+```bash
+dig +short example.com A
+dig +short example.com AAAA
+dig +short www.example.com A
+dig +short www.example.com AAAA
+dig +short api.example.com A
+dig +short api.example.com AAAA
+```
+
+The three A lookups must print only the static IP. The three AAAA lookups must print nothing. Cloudflare must be DNS-only. Port 80 must be open in the instance IPv4 firewall. The HTTP Nginx site from the start of step 12 must be loaded.
 
 **Uploads fail.** Fill the three `CLOUDINARY_` values and restart `zurik-api`. The API log has the Cloudinary error.
 
