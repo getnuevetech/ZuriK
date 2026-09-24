@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { newsletterApi } from '../../lib/api';
+import { CurrencySwitcher } from './CurrencySwitcher';
 
 const menuLinks = [
   { href: '/products', label: 'Ready-to-Wear' },
